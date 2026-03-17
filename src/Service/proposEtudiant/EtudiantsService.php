@@ -135,6 +135,16 @@ class EtudiantsService
 
         ];
     }
+    public function transformerArray(array $etudiants): array
+    { 
+        $results=[];
+
+        foreach ($etudiants as $etudiant) {
+
+                $results[] = $this->toArray($etudiant);
+            }
+        return $results;
+    }
 
     public function rechercheEtudiant($nom, $prenom): ?array
     {

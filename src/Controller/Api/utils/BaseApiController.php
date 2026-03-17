@@ -1,9 +1,8 @@
 <?php
 
 namespace App\Controller\Api\utils;
-
 use App\Entity\Utilisateur;
-use App\Service\utilisateur\UtilisateurService;
+use App\Service\utilisateurs\UtilisateursService;
 use App\Service\utils\JwtTokenManager;
 use App\Service\utils\ValidationService;
 use Exception;
@@ -18,7 +17,7 @@ use Symfony\Contracts\Service\Attribute\Required;
 abstract class BaseApiController extends AbstractController
 {
     public JwtTokenManager $jwtManager;
-    public UtilisateurService $utilisateurService;
+    public UtilisateursService $utilisateurService;
     public ValidationService $validatorService;
     public SerializerInterface $serializer;
 
@@ -28,7 +27,7 @@ abstract class BaseApiController extends AbstractController
     #[Required]
     public function setDependencies(
         JwtTokenManager $jwtManager,
-        UtilisateurService $utilisateurService,
+        UtilisateursService $utilisateurService,
         ValidationService $validatorService,
         SerializerInterface $serializer,
         ValidatorInterface $validator,

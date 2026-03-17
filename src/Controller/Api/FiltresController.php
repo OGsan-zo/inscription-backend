@@ -2,6 +2,7 @@
 
 namespace App\Controller\Api;
 
+use App\Controller\Api\utils\BaseApiController;
 use App\Service\proposEtudiant\EtudiantsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -10,7 +11,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use App\Service\proposEtudiant\NiveauEtudiantsService;
 use App\Annotation\TokenRequired;
 #[Route('/filtres')]
-class FiltresController extends AbstractController
+class FiltresController extends BaseApiController
 {
     private NiveauEtudiantsService $niveauEtudiantsService;
     private EtudiantsService $etudiantsService;
@@ -59,16 +60,10 @@ class FiltresController extends AbstractController
                 ];
             }, array_values($niveauEtudiants));
 
-            return new JsonResponse([
-                'status' => 'success',
-                'data' => $data
-            ], 200);
+                return $this->jsonSuccess($data);
 
         } catch (\Exception $e) {
-            return new JsonResponse([
-                'status' => 'error',
-                'message' => $e->getMessage()
-            ], 400);
+             return $this->jsonError($e->getMessage(),  400);
         }
     }
     #[Route('/etudiant/export', name: 'filtre_etudiant_export', methods: ['GET'])]
@@ -90,18 +85,10 @@ class FiltresController extends AbstractController
             $niveauEtudiants = $this->niveauEtudiantsService->getAllNiveauEtudiantAnnee($annee, $idMention, $idNiveau, $limit, $idParcours ? (int) $idParcours : null);
 
             $data = $this->etudiantsService->toArrayListeNiveauEtudiants($niveauEtudiants);
-            return new JsonResponse([
-                'status' => 'success',
-                'taille' => count($data),
-                'data' => $data
-                
-            ], 200);
+            return $this->jsonSuccess($data);
 
         } catch (\Exception $e) {
-            return new JsonResponse([
-                'status' => 'error',
-                'message' => $e->getMessage()
-            ], 400);
+             return $this->jsonError($e->getMessage(),  400);
         }
     }
 }

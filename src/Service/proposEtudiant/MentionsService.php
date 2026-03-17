@@ -3,18 +3,24 @@
 namespace App\Service\proposEtudiant;
 use App\Repository\MentionsRepository;
 use App\Entity\Mentions;
+use App\Service\utils\BaseService;
+use Doctrine\ORM\EntityManagerInterface;
 
-class MentionsService
+class MentionsService extends BaseService
 {   private $mentionRepository;
 
-    public function __construct(MentionsRepository $mentionRepository)
+    public function __construct(MentionsRepository $mentionRepository,EntityManagerInterface $em)
     {
         $this->mentionRepository = $mentionRepository;
-
+        parent::__construct($em);
     }   
     public function getAllMentions(): array
     {
         return $this->mentionRepository->findAll();
+    }
+    protected function getRepository()
+    {
+        return $this->mentionRepository;
     }
     
     public function toArray(?Mentions $mention): array

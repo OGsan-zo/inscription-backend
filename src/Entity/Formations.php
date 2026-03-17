@@ -92,5 +92,13 @@ class Formations
 
         return $this;
     }
+    public function toArray(): array
+    {
+        return [
+            'id' => $this->getId(),
+            'nom' => $this->getNom(),
+            'typeFormation' => $this->getTypeFormation()->getNom()
+        ];
+    }
 
 }

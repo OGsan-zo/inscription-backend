@@ -2,72 +2,48 @@
 
 namespace App\Controller\Api;
 
+use App\Controller\Api\utils\BaseApiController;
 use App\Entity\Etudiants;
 use App\Entity\Payments;
-use App\Entity\Propos;
 use App\Service\inscription\InscriptionService;
-use App\Service\JwtTokenManager;
 use App\Service\proposEtudiant\EtudiantsService;
 use App\Service\proposEtudiant\FormationEtudiantsService;
 use App\Service\proposEtudiant\NiveauEtudiantsService;
 use App\Service\proposEtudiant\MentionsService;
 use App\Annotation\TokenRequired;
 use App\Dto\EtudiantRequestDto;
-use App\Repository\UtilisateurRepository;
 use App\Service\payment\PaymentService;
-use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Serializer\SerializerInterface;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 use App\Dto\etudiant\NiveauEtudiantRequestDto;
 
 #[Route('/etudiants')]
-class EtudiantsController extends AbstractController
+class EtudiantsController extends BaseApiController
 {
-    private ParameterBagInterface $params;
-    private EntityManagerInterface $em;
     private EtudiantsService $etudiantsService;
-    private JwtTokenManager $jwtTokenManager;
     private NiveauEtudiantsService $niveauEtudiantsService;
     private FormationEtudiantsService $formationEtudiantsService;
     private InscriptionService $inscriptionService;
     private MentionsService $mentionsService;
     private PaymentService $paymentService;
-    private UtilisateurRepository $utilisateurRepository;
-    private SerializerInterface $serializer;
-    private ValidatorInterface $validator;
+
 
     public function __construct(
-        EntityManagerInterface $em,
         EtudiantsService $etudiantsService,
-        JwtTokenManager $jwtTokenManager,
-        ParameterBagInterface $params,
         NiveauEtudiantsService $niveauEtudiantsService,
         FormationEtudiantsService $formationEtudiantsService,
         InscriptionService $inscriptionService,
         MentionsService $mentionsService,
         PaymentService $paymentService,
-        UtilisateurRepository $utilisateurRepository,
-        SerializerInterface $serializer,
-        ValidatorInterface $validator
     ) {
-        $this->em = $em;
         $this->etudiantsService = $etudiantsService;
-        $this->jwtTokenManager = $jwtTokenManager;
-        $this->params = $params;
         $this->niveauEtudiantsService = $niveauEtudiantsService;
         $this->formationEtudiantsService = $formationEtudiantsService;
         $this->inscriptionService = $inscriptionService;
         $this->mentionsService = $mentionsService;
         $this->paymentService = $paymentService;
-        $this->utilisateurRepository = $utilisateurRepository;
-        $this->serializer = $serializer;
-        $this->validator = $validator;
     }
 
     #[Route('/recherche', name: 'etudiant_recherche', methods: ['POST'])]
@@ -78,61 +54,22 @@ class EtudiantsController extends AbstractController
             $data = json_decode($request->getContent(), true);
 
             $requiredFields = ['nom', 'prenom'];
-            $missingFields = [];
-
-            foreach ($requiredFields as $field) {
-                if (!isset($data[$field])) {
-                    $missingFields[] = $field;
-                }
-            }
-
-            if (!empty($missingFields)) {
-                return new JsonResponse([
-                    'status' => 'error',
-                    'message' => 'Champs requis manquants ' . implode(', ', $missingFields),
-                    'missingFields' => $missingFields
-                ], 400);
-            }
-
+            $this->validatorService->validateRequiredFields($data, $requiredFields);
             $nom = $data['nom'];
             $prenom = $data['prenom'];
 
             $etudiants = $this->etudiantsService->rechercheEtudiant($nom, $prenom);
 
             if (empty($etudiants)) {
-                return new JsonResponse([
-                    'status' => 'error',
-                    'message' => 'Étudiant non trouvé',
-                    'data' => []
-                ], 404);
+                return $this->jsonError('Étudiant non trouvé', 404);
             }
 
-            $resultats = [];
-
-            foreach ($etudiants as $etudiant) {
-
-                $resultats[] = $this->etudiantsService->toArray($etudiant);
-            }
-
-            return new JsonResponse([
-                'status' => 'success',
-                'total' => count($resultats),
-                'data' => $resultats
-            ], 200);
+            $data = $this->etudiantsService->transformerArray($etudiants);
+            return $this->jsonSuccess($data);
 
 
         } catch (\Exception $e) {
-            if ($e->getMessage() === 'Inactif') {
-                return new JsonResponse([
-                    'status' => 'error',
-                    'message' => 'Etudiants inactif'
-                ], 401); // ← renvoie bien 401
-            }
-
-            return new JsonResponse([
-                'status' => 'error',
-                'message' => $e->getMessage()
-            ], 400);
+             return $this->jsonError($e->getMessage(), 400);
         }
 
     }
@@ -151,8 +88,8 @@ class EtudiantsController extends AbstractController
 
                 ], 400);
             }
-            $token = $this->jwtTokenManager->extractTokenFromRequest($request);
-            $arrayToken = $this->jwtTokenManager->extractClaimsFromToken($token);
+            $token = $this->jwtManager->extractTokenFromRequest($request);
+            $arrayToken = $this->jwtManager->extractClaimsFromToken($token);
             $role = $arrayToken['role'];
             $idEtudiant = (int) $idEtudiant;
             $date = new \DateTime(); // ou une autre date
@@ -162,37 +99,18 @@ class EtudiantsController extends AbstractController
             if (in_array($role, $recherche)) {
                 $dejaInscrit = $this->inscriptionService->dejaInscritEtudiantAnneeId($idEtudiant, $annee);
                 if ($dejaInscrit) {
-                    return new JsonResponse([
-                        'status' => 'error',
-                        'message' => 'Étudiant deja inscrit',
-                        'error' => 'Étudiant deja inscrit'
-                    ], 400);
+                    return $this->jsonError('Étudiant deja inscrit', 400);
 
                 }
             }
             $data = $this->etudiantsService->getInformationJsonId($idEtudiant);
-            return new JsonResponse([
-                'status' => 'success',
-                'data' => $data
-            ], 200);
+            return $this->jsonSuccess($data);
 
 
 
         } catch (\Exception $e) {
+            return $this->jsonError($e->getMessage(), 400);
 
-            if ($e->getMessage() === 'Inactif') {
-                return new JsonResponse([
-                    'status' => 'error',
-                    'message' => 'Étudiant inactif'
-                ], 401);
-            }
-
-            return new JsonResponse([
-                'status' => 'error',
-                'message' => $e->getMessage(),
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
-            ], 400);
         }
     }
     #[Route('/all', name: 'etudiant_show_sans_inscrit', methods: ['GET'])]
@@ -203,37 +121,17 @@ class EtudiantsController extends AbstractController
             $idEtudiant = $request->query->get('idEtudiant');
 
             if (!$idEtudiant) {
-                return new JsonResponse([
-                    'status' => 'error',
-                    'message' => 'Paramètre idEtudiant requis'
-
-                ], 400);
+                return $this->jsonError('Paramètre idEtudiant requis', 400);
             }
             $idEtudiant = (int) $idEtudiant;
            
             $data = $this->etudiantsService->getInformationJsonId($idEtudiant);
-            return new JsonResponse([
-                'status' => 'success',
-                'data' => $data
-            ], 200);
+            return $this->jsonSuccess($data);
 
 
 
         } catch (\Exception $e) {
-
-            if ($e->getMessage() === 'Inactif') {
-                return new JsonResponse([
-                    'status' => 'error',
-                    'message' => 'Étudiant inactif'
-                ], 401);
-            }
-
-            return new JsonResponse([
-                'status' => 'error',
-                'message' => $e->getMessage(),
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
-            ], 400);
+            return $this->jsonError($e->getMessage(), 400);
         }
     }
 
@@ -244,10 +142,7 @@ class EtudiantsController extends AbstractController
             $resultat = $this->etudiantsService->getEcolagesParNiveau($etudiant->getId());
             return $this->json($resultat);
         } catch (\Exception $e) {
-            return $this->json([
-                'status' => 'error',
-                'message' => $e->getMessage()
-            ], 400);
+            return $this->jsonError($e->getMessage(), 400);
         }
     }
 
@@ -266,26 +161,12 @@ class EtudiantsController extends AbstractController
                 $requiredFields[] = 'dateEcolage';
 
             }
-            $missingFields = [];
+            $this->validatorService->validateRequiredFields($data, $requiredFields);
 
-            foreach ($requiredFields as $field) {
-                if (!isset($data[$field])) {
-                    $missingFields[] = $field;
-                }
-            }
-
-            if (!empty($missingFields)) {
-                return new JsonResponse([
-                    'status' => 'error',
-                    'message' => 'Champs requis manquants ' . implode(', ', $missingFields),
-                    'missingFields' => $missingFields
-                ], 400);
-            }
             $idNiveau = $data['idNiveau'];
             $idFormation = $data['idFormation'];
-            $token = $this->jwtTokenManager->extractTokenFromRequest($request);
-            $arrayToken = $this->jwtTokenManager->extractClaimsFromToken($token);
-            $idUser = $arrayToken['id']; // Récupérer l'id de l'utilisateur à partir du token
+            $user = $this->getUserFromRequest($request);
+            $idUser = $user->getId();
             $idEtudiant = $data['idEtudiant'];
 
             $annee = date('Y');
@@ -319,25 +200,12 @@ class EtudiantsController extends AbstractController
                 (int) $idEtudiant,
                 $annee
             );
-            return new JsonResponse([
-                'status' => 'success',
-                'data' => $details
-            ], 200);
+            return $this->jsonSuccess($details);
 
 
 
         } catch (\Exception $e) {
-            if ($e->getMessage() === 'Inactif') {
-                return new JsonResponse([
-                    'status' => 'error',
-                    'message' => 'Etudiants inactif'
-                ], 401);
-            }
-
-            return new JsonResponse([
-                'status' => 'error',
-                'message' => $e->getMessage()
-            ], 400);
+            return $this->jsonError($e->getMessage(), 400);
         }
 
     }
@@ -348,34 +216,12 @@ class EtudiantsController extends AbstractController
     {
         try {
             $niveauxClass = $this->niveauEtudiantsService->getAllNiveaux();
-            $resultats = [];
-            foreach ($niveauxClass as $niveau) {
-                $resultats[] = [
-                    'id' => $niveau->getId(),
-                    'nom' => $niveau->getNom(),
-                    'type' => $niveau->getType(),
-                    'grade' => $niveau->getGrade(),
-                ];
-            }
-            return new JsonResponse([
-                'status' => 'success',
-
-                'data' => $resultats
-            ], 200);
+            $data = $this->niveauEtudiantsService->transformerArray($niveauxClass);
+            return $this->jsonSuccess($data);
 
 
         } catch (\Exception $e) {
-            if ($e->getMessage() === 'Inactif') {
-                return new JsonResponse([
-                    'status' => 'error',
-                    'message' => 'Utilsateur inactif'
-                ], 401); // ← renvoie bien 401
-            }
-
-            return new JsonResponse([
-                'status' => 'error',
-                'message' => $e->getMessage()
-            ], 400);
+            return $this->jsonError($e->getMessage(), 400);
         }
 
     }
@@ -389,31 +235,13 @@ class EtudiantsController extends AbstractController
             $formationClass = $this->formationEtudiantsService->findAllFormationExceptIds([5]);
             $resultats = [];
             foreach ($formationClass as $formation) {
-                $resultats[] = [
-                    'id' => $formation->getId(),
-                    'nom' => $formation->getNom(),
-                    'typeFormation' => $formation->getTypeFormation()->getNom(),
-                ];
+                $resultats[] = $formation->toArray();
             }
-            return new JsonResponse([
-                'status' => 'success',
-
-                'data' => $resultats
-            ], 200);
+            return $this->jsonSuccess($resultats);
 
 
         } catch (\Exception $e) {
-            if ($e->getMessage() === 'Inactif') {
-                return new JsonResponse([
-                    'status' => 'error',
-                    'message' => 'Utilisateur inactif'
-                ], 401); // ← renvoie bien 401
-            }
-
-            return new JsonResponse([
-                'status' => 'error',
-                'message' => $e->getMessage()
-            ], 400);
+            return $this->jsonError($e->getMessage(),  400);
         }
 
     }
@@ -425,33 +253,12 @@ class EtudiantsController extends AbstractController
         try {
             // $mentionClass = $this->mentionsService->getAllMentions();
             $mentionClass = $this->mentionsService->getAllMentionsExcept([15, 19,22]);
-            $resultats = [];
-            foreach ($mentionClass as $mention) {
-                $resultats[] = [
-                    'id' => $mention->getId(),
-                    'nom' => $mention->getNom(),
-                    'abr' => $mention->getAbr(),
-                ];
-            }
-            return new JsonResponse([
-                'status' => 'success',
-
-                'data' => $resultats
-            ], 200);
+            $data = $this->mentionsService->transformerArray($mentionClass);
+            return $this->jsonSuccess($data);
 
 
         } catch (\Exception $e) {
-            if ($e->getMessage() === 'Inactif') {
-                return new JsonResponse([
-                    'status' => 'error',
-                    'message' => 'Utilisateur inactif'
-                ], 401); // ← renvoie bien 401
-            }
-
-            return new JsonResponse([
-                'status' => 'error',
-                'message' => $e->getMessage()
-            ], 400);
+            return $this->jsonError($e->getMessage(), 400);
         }
     }
 
@@ -469,29 +276,16 @@ class EtudiantsController extends AbstractController
 
 
             if ($annee === null) {
-                return new JsonResponse([
-                    'status' => 'error',
-                    'message' => 'L\'année doit être comprise entre 2000 et 2100',
-                    'annee_fournie' => $anneeParam
-                ], 400);
+                return $this->jsonError('L\'année doit être comprise entre 2000 et 2100', 400);
             }
 
             // Récupération de la liste via le service
             $etudiants = $this->inscriptionService->getListeEtudiantsInscritsParAnnee($annee, $limit, $dateFin);
 
-            return new JsonResponse([
-                'status' => 'success',
-                'annee' => $annee,
-                'total' => count($etudiants),
-                'data' => $etudiants
-            ]);
+            return $this->jsonSuccess($etudiants);
 
         } catch (\Exception $e) {
-            return new JsonResponse([
-                'status' => 'error',
-                'message' => 'Une erreur est survenue lors de la récupération des étudiants',
-                'error' => $e->getMessage()
-            ], 500);
+            return $this->jsonError('Une erreur est survenue lors de la récupération des étudiants', 500);
         }
     }
     #[TokenRequired(['Admin', 'Utilisateur'])]
@@ -504,20 +298,13 @@ class EtudiantsController extends AbstractController
 
             // Validation des paramètres
             if (!$idEtudiant) {
-                return new JsonResponse([
-                    'status' => 'error',
-                    'message' => 'Le paramètre idEtudiant est requis'
-                ], 400);
+                return $this->jsonError('Le paramètre idEtudiant est requis', 400);
             }
 
             $annee = $this->inscriptionService->validerAnnee($anneeParam);
 
             if ($annee === null) {
-                return new JsonResponse([
-                    'status' => 'error',
-                    'message' => 'L\'année doit être comprise entre 2000 et 2100',
-                    'annee_fournie' => $anneeParam
-                ], 400);
+                return $this->jsonError('L\'année doit être comprise entre 2000 et 2100', 400);
             }
 
             // Récupération des détails via le service
@@ -527,26 +314,13 @@ class EtudiantsController extends AbstractController
             );
 
             if ($details === null) {
-                return new JsonResponse([
-                    'status' => 'error',
-                    'message' => 'Étudiant non trouvé ou non inscrit pour cette année',
-                    'idEtudiant' => $idEtudiant,
-                    'annee' => $annee
-                ], 404);
+                return $this->jsonError('Étudiant non trouvé ou non inscrit pour cette année '. $idEtudiant, 404);
             }
 
-            return new JsonResponse([
-                'status' => 'success',
-                'annee' => $annee,
-                'data' => $details
-            ]);
+            return $this->jsonSuccess($details);
 
         } catch (\Exception $e) {
-            return new JsonResponse([
-                'status' => 'error',
-                'message' => 'Une erreur est survenue lors de la récupération des détails',
-                'error' => $e->getMessage()
-            ], 500);
+            return $this->jsonError($e->getMessage(), 400);
         }
     }
     #[TokenRequired(['Admin', 'Utilisateur'])]
@@ -557,17 +331,10 @@ class EtudiantsController extends AbstractController
             $nbJours = $request->query->get('nbJours', 7);
             $statistiques = $this->inscriptionService->getStatistiquesInscriptions($nbJours);
 
-            return new JsonResponse([
-                'status' => 'success',
-                'data' => $statistiques
-            ], 200);
+            return $this->jsonSuccess($statistiques);
 
         } catch (\Exception $e) {
-            return new JsonResponse([
-                'status' => 'error',
-                'message' => 'Une erreur est survenue lors de la récupération des statistiques',
-                'error' => $e->getMessage()
-            ], 500);
+            return $this->jsonError($e->getMessage(), 400);
         }
     }
     #[Route('/niveauParEtudiant', name: 'etudiant_niveau_par_etudiant', methods: ['GET'])]
@@ -577,10 +344,7 @@ class EtudiantsController extends AbstractController
         try {
             $idEtudiant = $request->query->get('idEtudiant');
             if (!$idEtudiant) {
-                return new JsonResponse([
-                    'status' => 'error',
-                    'message' => 'Le paramètre idEtudiant est requis'
-                ], 400);
+                return $this->jsonError('Le paramètre idEtudiant est requis', 400);
             }
             $niveauEtudiants = $this->etudiantsService->getAllNiveauxParEtudiantId($idEtudiant);
             $resultats = [];
@@ -599,16 +363,10 @@ class EtudiantsController extends AbstractController
 
         } catch (\Exception $e) {
             if ($e->getMessage() === 'Inactif') {
-                return new JsonResponse([
-                    'status' => 'error',
-                    'message' => 'Utilisateur inactif'
-                ], 401); // ← renvoie bien 401
+                return $this->jsonError('Utilisateur inactif', 401);
             }
 
-            return new JsonResponse([
-                'status' => 'error',
-                'message' => $e->getMessage()
-            ], 400);
+            return $this->jsonError($e->getMessage(), 400);
         }
 
     }
@@ -618,37 +376,11 @@ class EtudiantsController extends AbstractController
     {
         try {
             // Désérialiser la requête en DTO
-            $dto = $this->serializer->deserialize(
-                $request->getContent(),
+            $dto = $this->deserializeAndValidate(
+                $request,
                 EtudiantRequestDto::class,
-                'json'
             );
-
-            // Valider le DTO
-            $errors = $this->validator->validate($dto);
-
-            if (count($errors) > 0) {
-                $errorMessages = [];
-                $messages = [];
-
-                foreach ($errors as $error) {
-                    $property = $error->getPropertyPath();
-                    $message = $error->getMessage();
-
-                    // erreurs par champ
-                    $errorMessages[$property][] = $message;
-
-                    // message global
-                    $messages[] = sprintf('%s : %s', $property, $message);
-                }
-
-                return $this->json([
-                    'status' => 'error',
-                    'message' => 'Erreur de validation : ' . implode(' | ', $messages),
-                    'errors' => $errorMessages
-                ], Response::HTTP_BAD_REQUEST);
-            }
-            // Appeler le service pour sauvegarder l'étudiant
+            
             $etudiantId = $this->etudiantsService->saveEtudiant($dto);
 
             return $this->json([
@@ -658,11 +390,7 @@ class EtudiantsController extends AbstractController
             ]);
 
         } catch (\Exception $e) {
-            return $this->json([
-                'status' => 'error',
-                'message' => 'Une erreur est survenue lors de la sauvegarde de l\'étudiant',
-                'error' => $e->getMessage()
-            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+             return $this->jsonError($e->getMessage(),  400);
         }
     }
 
@@ -675,15 +403,9 @@ class EtudiantsController extends AbstractController
             $dto = $this->etudiantsService->getDocumentsDto($etudiant);
 
             // 2. Retourne le DTO en JSON
-            return $this->json([
-                'status' => 'success',
-                'data' => $dto
-            ]);
+            return $this->jsonSuccess($dto);
         } catch (\Exception $e) {
-            return $this->json([
-                'status' => 'error',
-                'message' => 'Erreur lors de la recuperation des documents : ' . $e->getMessage()
-            ], 500);
+            return $this->jsonError('Erreur lors de la recuperation des documents : ' . $e->getMessage(), 400);
         }
     }
 
@@ -706,17 +428,10 @@ class EtudiantsController extends AbstractController
 
             $this->etudiantsService->updateProposParents((int) $idEtudiant, $nomPere, $nomMere);
 
-            return new JsonResponse([
-                'status' => 'success',
-                'message' => 'Filiation mise a jour avec succes'
-            ], 200);
+            return $this->jsonSuccess('Filiation mise a jour avec succes');
 
         } catch (\Exception $e) {
-            return new JsonResponse([
-                'status' => 'error',
-                'message' => 'Une erreur est survenue lors de la mise a jour de la filiation',
-                'error' => $e->getMessage()
-            ], 500);
+             return $this->jsonError($e->getMessage(),  400);
         }
     }
     #[Route('/changerNiveauEtudiant', name: 'api_changer_niveau', methods: ['POST'])]
@@ -724,50 +439,17 @@ class EtudiantsController extends AbstractController
     public function changerNiveaux(Request $request): JsonResponse
     {
         try {
-            $dto = $this->serializer->deserialize(
-                $request->getContent(),
+             $dto = $this->deserializeAndValidate(
+                $request,
                 NiveauEtudiantRequestDto::class,
-                'json'
-            );
-
-            // Valider le DTO
-            $errors = $this->validator->validate($dto);
-
-            if (count($errors) > 0) {
-                $errorMessages = [];
-                $messages = [];
-
-                foreach ($errors as $error) {
-                    $property = $error->getPropertyPath();
-                    $message = $error->getMessage();
-
-                    // erreurs par champ
-                    $errorMessages[$property][] = $message;
-
-                    // message global
-                    $messages[] = sprintf('%s : %s', $property, $message);
-                }
-
-                return $this->json([
-                    'status' => 'error',
-                    'message' => 'Erreur de validation : ' . implode(' | ', $messages),
-                    'errors' => $errorMessages
-                ], Response::HTTP_BAD_REQUEST);
-            }
-            
+            );            
             $this->etudiantsService->changerNiveauEtudiantDto($dto);
 
 
-            return new JsonResponse([
-                'status' => 'success',
-                'message' => 'Mention mise a jour avec succès'
-            ], 200);
+            return $this->jsonSuccess('Niveau mis a jour avec succès');
 
         } catch (\Exception $e) {
-            return new JsonResponse([
-                'status' => 'error',
-                'message' => $e->getMessage()
-            ], 400);
+            return $this->jsonError($e->getMessage(), 400);
         }
     } 
 }

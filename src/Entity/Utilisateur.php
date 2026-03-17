@@ -205,6 +205,16 @@ class Utilisateur
 
         return $this;
     }
-
+    public function toArray(): array
+    {
+        return [
+            'id' => $this->getId(),
+            'nom' => $this->getNom(),
+            'prenom' => $this->getPrenom(),
+            'email' => $this->getEmail(),
+            'role' => $this->getRole()?->getName(),
+            'status' => $this->getStatus()?->getName()
+        ];
+    }
     
 }

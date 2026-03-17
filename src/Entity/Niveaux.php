@@ -32,7 +32,7 @@ class Niveaux
     private ?int $grade = null;
 
     /**
-     * @var Collection<int, Payment>
+     * @var Collection<int, Payments>
      */
     #[ORM\OneToMany(targetEntity: Payments::class, mappedBy: 'niveau')]
     private Collection $payments;
@@ -178,5 +178,14 @@ class Niveaux
         }
 
         return $this;
+    }
+    public function toArray(): array
+    {
+        return [
+            'id' => $this->id,
+            'nom' => $this->nom,
+            'type' => $this->type,
+            'grade' => $this->grade,
+        ];
     }
 }

@@ -8,7 +8,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use Exception;
 use Symfony\Component\HttpFoundation\Request;
-use App\Service\JwtTokenManager;
+use App\Service\utils\JwtTokenManager;
 use App\Service\payment\PaymentService;
 use App\Entity\Utilisateur as UtilisateurEntity;
 use App\Repository\UtilisateurRepository;

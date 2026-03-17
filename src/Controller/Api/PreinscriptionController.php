@@ -2,33 +2,26 @@
 
 namespace App\Controller\Api;
 
+use App\Controller\Api\utils\BaseApiController;
 use App\Service\preinscription\PreinscriptionService;
 use App\Dto\PreinscriptionRequestDto;
 use App\Dto\EtudiantRequestDto;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Serializer\SerializerInterface;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Exception;
 use App\Annotation\TokenRequired;
 
 #[Route('/pre-inscription')]
-class PreinscriptionController extends AbstractController
+class PreinscriptionController extends BaseApiController
 {
     private PreinscriptionService $preinscriptionService;
-    private SerializerInterface $serializer;
-    private ValidatorInterface $validator;
+    
 
     public function __construct(
         PreinscriptionService $preinscriptionService,
-        SerializerInterface $serializer,
-        ValidatorInterface $validator
-    ) {
+     ) {
         $this->preinscriptionService = $preinscriptionService;
-        $this->serializer = $serializer;
-        $this->validator = $validator;
     }
 
     /**
@@ -40,41 +33,16 @@ class PreinscriptionController extends AbstractController
     public function save(Request $request): JsonResponse
     {
         try {
-            $data = json_decode($request->getContent(), true);
-
-            $dto = $this->serializer->deserialize(
-                $request->getContent(),
-                PreinscriptionRequestDto::class,
-                'json'
+             $dto = $this->deserializeAndValidate(
+                $request,
+                PreinscriptionRequestDto::class
             );
-
-            // Validation
-            $errors = $this->validator->validate($dto);
-            if (count($errors) > 0) {
-                $errorMessages = [];
-                foreach ($errors as $error) {
-                    $errorMessages[$error->getPropertyPath()] = $error->getMessage();
-                }
-                return $this->json([
-                    'status' => 'error',
-                    'message' => 'Erreurs de validation',
-                    'errors' => $errorMessages
-                ], 400);
-            }
-
+            
             $id = $this->preinscriptionService->savePreinscription($dto);
-
-            return $this->json([
-                'status' => 'success',
-                'message' => 'Préinscription enregistrée avec succès',
-                'id' => $id
-            ], 201);
+            return $this->jsonSuccess($id);
 
         } catch (Exception $e) {
-            return $this->json([
-                'status' => 'error',
-                'message' => $e->getMessage()
-            ], 400);
+            return $this->jsonError($e->getMessage(), 400);
         }
     }
 
@@ -91,16 +59,10 @@ class PreinscriptionController extends AbstractController
 
             $data = array_map(fn($p) => $p->toArray(), $preinscriptions);
 
-            return $this->json([
-                'status' => 'success',
-                'data' => $data
-            ]);
+            return $this->jsonSuccess($data);
 
         } catch (Exception $e) {
-            return $this->json([
-                'status' => 'error',
-                'message' => $e->getMessage()
-            ], 500);
+            return $this->jsonError($e->getMessage(), 500);
         }
     }
 
@@ -130,16 +92,10 @@ class PreinscriptionController extends AbstractController
 
             $result = array_map(fn($p) => $p->toArray(), $preinscriptions);
 
-            return $this->json([
-                'status' => 'success',
-                'data' => $result
-            ]);
+            return $this->jsonSuccess($result);
 
         } catch (Exception $e) {
-            return $this->json([
-                'status' => 'error',
-                'message' => $e->getMessage()
-            ], 500);
+            return $this->jsonError($e->getMessage(), 400);
         }
     }
 
@@ -161,17 +117,11 @@ class PreinscriptionController extends AbstractController
             $data = json_decode($request->getContent(), true);
 
             if (!isset($data['preInscriptionId'])) {
-                return $this->json([
-                    'status' => 'error',
-                    'message' => 'Le champ preInscriptionId est requis'
-                ], 400);
+                return $this->jsonError('Le champ preInscriptionId est requis', 400);
             }
 
             if (!isset($data['etudiantData'])) {
-                return $this->json([
-                    'status' => 'error',
-                    'message' => 'Le champ etudiantData est requis'
-                ], 400);
+                return $this->jsonError('Le champ etudiantData est requis', 400);
             }
 
             $preInscriptionId = (int) $data['preInscriptionId'];
@@ -193,10 +143,7 @@ class PreinscriptionController extends AbstractController
             ], 201);
 
         } catch (Exception $e) {
-            return $this->json([
-                'status' => 'error',
-                'message' => $e->getMessage()
-            ], 400);
+            return $this->jsonError($e->getMessage(), 400);
         }
     }
 }

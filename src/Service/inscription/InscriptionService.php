@@ -10,13 +10,13 @@ use App\Entity\Payments;
 use App\Repository\InscritsRepository;
 use App\Service\proposEtudiant\EtudiantsService;
 use App\Service\proposEtudiant\MentionsService;
-use App\Service\UtilisateurService;
+use App\Service\utilisateurs\UtilisateursService;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Service\payment\PaymentService;
 use App\Service\proposEtudiant\FormationEtudiantsService;
 use App\Service\proposEtudiant\NiveauEtudiantsService;
 use Exception;
-use Proxies\__CG__\App\Entity\Mentions;
+use App\Entity\Mentions;
 
 class InscriptionService
 {
@@ -35,7 +35,7 @@ class InscriptionService
         PaymentService $paymentService,
         NiveauEtudiantsService $niveauEtudiantsService,
         EtudiantsService $etudiantsService,
-        UtilisateurService $utilisateurService,
+        UtilisateursService $utilisateursService,
         EntityManagerInterface $em,
         FormationEtudiantsService $formationEtudiantsService,
         MentionsService $metionsService
@@ -45,7 +45,7 @@ class InscriptionService
         $this->paymentService = $paymentService;
         $this->niveauEtudiantsService = $niveauEtudiantsService;
         $this->etudiantsService = $etudiantsService;
-        $this->utilisateursService = $utilisateurService;
+        $this->utilisateursService = $utilisateursService;
         $this->em = $em;
         $this->formationEtudiantsService = $formationEtudiantsService;
         $this->mentionsService = $metionsService;
