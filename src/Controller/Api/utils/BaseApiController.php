@@ -17,23 +17,24 @@ use Symfony\Contracts\Service\Attribute\Required;
 abstract class BaseApiController extends AbstractController
 {
     public JwtTokenManager $jwtManager;
-    public UtilisateursService $utilisateursService;
+    public UtilisateursService $utilisateurService;
     public ValidationService $validatorService;
     public SerializerInterface $serializer;
-    
+
     public ValidatorInterface $validator;
     public ParameterBagInterface $params;
+
     #[Required]
     public function setDependencies(
         JwtTokenManager $jwtManager,
-        UtilisateursService $utilisateursService,
+        UtilisateursService $utilisateurService,
         ValidationService $validatorService,
         SerializerInterface $serializer,
         ValidatorInterface $validator,
         ParameterBagInterface $params
     ) {
         $this->jwtManager = $jwtManager;
-        $this->utilisateursService = $utilisateursService;
+        $this->utilisateurService = $utilisateurService;
         $this->validatorService = $validatorService;
         $this->serializer = $serializer;
         $this->validator = $validator;
@@ -56,7 +57,7 @@ abstract class BaseApiController extends AbstractController
         }
 
         $userId = (int) $claims['id'];
-        $user = $this->utilisateursService->getById($userId);
+        $user = $this->utilisateurService->getUtilisateurById($userId);
 
         $this->validatorService->throwIfNull($user, "Utilisateur introuvable pour l'ID $userId.");
 
