@@ -37,10 +37,17 @@ class Niveaux
     #[ORM\OneToMany(targetEntity: Payments::class, mappedBy: 'niveau')]
     private Collection $payments;
 
+    /**
+     * @var Collection<int, Parcours>
+     */
+    #[ORM\OneToMany(targetEntity: Parcours::class, mappedBy: 'niveau')]
+    private Collection $parcours;
+
     public function __construct()
     {
         $this->niveaux = new ArrayCollection();
         $this->payments = new ArrayCollection();
+        $this->parcours = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -127,6 +134,35 @@ class Niveaux
         if (!$this->payments->contains($payment)) {
             $this->payments->add($payment);
             $payment->setNiveau($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Parcours>
+     */
+    public function getParcours(): Collection
+    {
+        return $this->parcours;
+    }
+
+    public function addParcours(Parcours $parcours): static
+    {
+        if (!$this->parcours->contains($parcours)) {
+            $this->parcours->add($parcours);
+            $parcours->setNiveau($this);
+        }
+
+        return $this;
+    }
+
+    public function removeParcours(Parcours $parcours): static
+    {
+        if ($this->parcours->removeElement($parcours)) {
+            if ($parcours->getNiveau() === $this) {
+                $parcours->setNiveau(null);
+            }
         }
 
         return $this;

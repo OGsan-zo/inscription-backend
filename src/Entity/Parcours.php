@@ -2,17 +2,14 @@
 
 namespace App\Entity;
 
+use App\Entity\utils\BaseEntite;
 use App\Repository\ParcoursRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ParcoursRepository::class)]
-class Parcours
+#[ORM\HasLifecycleCallbacks]
+class Parcours extends BaseEntite
 {
-    #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column]
-    private ?int $id = null;
-
     #[ORM\Column(length: 100)]
     private ?string $nom = null;
 
@@ -20,10 +17,9 @@ class Parcours
     #[ORM\JoinColumn(nullable: false)]
     private ?Mentions $mention = null;
 
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
+    #[ORM\ManyToOne(inversedBy: 'parcours')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Niveaux $niveau = null;
 
     public function getNom(): ?string
     {
@@ -45,6 +41,18 @@ class Parcours
     public function setMention(?Mentions $mention): static
     {
         $this->mention = $mention;
+
+        return $this;
+    }
+
+    public function getNiveau(): ?Niveaux
+    {
+        return $this->niveau;
+    }
+
+    public function setNiveau(?Niveaux $niveau): static
+    {
+        $this->niveau = $niveau;
 
         return $this;
     }
