@@ -44,19 +44,6 @@ class ParcoursController extends BaseApiController
         }
     }
 
-    #[Route('/{id}', methods: ['GET'])]
-    #[TokenRequired]
-    public function show(int $id): JsonResponse
-    {
-        try {
-            $parcours = $this->parcoursService->getById($id);
-            $this->validatorService->throwIfNull($parcours, "Parcours introuvable pour l'ID $id.");
-            return $this->jsonSuccess($this->parcoursService->format($parcours));
-        } catch (\Throwable $e) {
-            return $this->jsonError($e->getMessage(), $e->getCode() ?: 400);
-        }
-    }
-
     #[Route('', methods: ['POST'])]
     #[TokenRequired(['Admin'])]
     public function create(Request $request): JsonResponse
@@ -88,8 +75,7 @@ class ParcoursController extends BaseApiController
     public function delete(int $id): JsonResponse
     {
         try {
-            $parcours = $this->parcoursService->getById($id);
-            $this->validatorService->throwIfNull($parcours, "Parcours introuvable pour l'ID $id.");
+            $parcours = $this->parcoursService->getVerifiedParcours($id);
             $this->parcoursService->delete($parcours);
             return $this->jsonSuccess(['message' => 'Parcours supprimé avec succès.']);
         } catch (\Throwable $e) {

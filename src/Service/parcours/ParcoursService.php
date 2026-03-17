@@ -47,7 +47,7 @@ class ParcoursService extends BaseService
         return $niveau;
     }
 
-    private function getVerifiedParcours(int $id): Parcours
+    public function getVerifiedParcours(int $id): Parcours
     {
         $parcours = $this->getById($id);
         $this->validationService->throwIfNull($parcours, "Parcours introuvable pour l'ID $id.");
