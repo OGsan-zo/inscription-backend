@@ -42,6 +42,7 @@ class FiltresController extends AbstractController
                 $etudiant = $e->getEtudiant();
                 $mention = $e->getMention();
                 $niveau = $e->getNiveau();
+                $parcours = $e->getParcours();
                 return [
                     'id' => $etudiant->getId(),
                     'nom' => $etudiant->getNom(),
@@ -53,6 +54,8 @@ class FiltresController extends AbstractController
                     'idNiveau' => $niveau->getId(),
                     'matricule' => $e->getMatricule() ?? '',
                     'dateInsertion' => $e->getDateInsertion()->format('Y-m-d H:i:s'),
+                    'idParcours' => $parcours?->getId(),
+                    'nomParcours' => $parcours?->getNom(),
                 ];
             }, array_values($niveauEtudiants));
 
