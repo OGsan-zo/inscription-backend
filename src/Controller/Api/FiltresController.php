@@ -33,9 +33,10 @@ class FiltresController extends AbstractController
             // 1. Récupération des critères de filtrage depuis l'URL
             $idMention = $request->query->get('idMention');
             $idNiveau = $request->query->get('idNiveau');
+            $idParcours = $request->query->get('idParcours');
 
             // 2. Récupération de tous les étudiants de l'année
-            $niveauEtudiants = $this->niveauEtudiantsService->getAllNiveauEtudiantAnnee($annee,$idMention,$idNiveau);
+            $niveauEtudiants = $this->niveauEtudiantsService->getAllNiveauEtudiantAnnee($annee, $idMention, $idNiveau, 50, $idParcours ? (int) $idParcours : null);
 
             $data = array_map(function ($e) {
                 $etudiant = $e->getEtudiant();
@@ -80,9 +81,10 @@ class FiltresController extends AbstractController
             $idMention = $request->query->get('idMention');
             $idNiveau = $request->query->get('idNiveau');
             $limit = (int) $request->query->get('limit', 10000);
+            $idParcours = $request->query->get('idParcours');
 
             // 2. Récupération de tous les étudiants de l'année
-            $niveauEtudiants = $this->niveauEtudiantsService->getAllNiveauEtudiantAnnee($annee,$idMention,$idNiveau,$limit);
+            $niveauEtudiants = $this->niveauEtudiantsService->getAllNiveauEtudiantAnnee($annee, $idMention, $idNiveau, $limit, $idParcours ? (int) $idParcours : null);
 
             $data = $this->etudiantsService->toArrayListeNiveauEtudiants($niveauEtudiants);
             return new JsonResponse([

@@ -106,8 +106,8 @@ class NiveauEtudiantsService
     {
         return $this->niveauService->getAllNiveaux();
     }
-    public function getAllNiveauEtudiantAnnee(int $annee, ?int $idMention = null, ?int $idNiveau = null, ?int $limit = 50): array{
-        $valiny = $this->niveauEtudiantsRepository->getAllNiveauEtudiantAnnee($annee, $idMention, $idNiveau, $limit);
+    public function getAllNiveauEtudiantAnnee(int $annee, ?int $idMention = null, ?int $idNiveau = null, ?int $limit = 50, ?int $idParcours = null): array{
+        $valiny = $this->niveauEtudiantsRepository->getAllNiveauEtudiantAnnee($annee, $idMention, $idNiveau, $limit, $idParcours);
         return $valiny;
     }
     public function getAllNiveauxParEtudiant(Etudiants $etudiant): array {

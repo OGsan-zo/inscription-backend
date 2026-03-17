@@ -4,6 +4,7 @@ namespace App\Controller\Api\parcours;
 
 use App\Annotation\TokenRequired;
 use App\Controller\Api\utils\BaseApiController;
+use App\Dto\parcours\AssignerParcoursDto;
 use App\Dto\parcours\ParcoursDto;
 use App\Dto\utils\OrderCriteria;
 use App\Service\parcours\ParcoursService;
@@ -25,6 +26,19 @@ class ParcoursController extends BaseApiController
         try {
             $parcours = $this->parcoursService->getAll(new OrderCriteria('createdAt', 'DESC'));
             return $this->jsonSuccess($this->parcoursService->formatAll($parcours));
+        } catch (\Throwable $e) {
+            return $this->jsonError($e->getMessage(), $e->getCode() ?: 400);
+        }
+    }
+
+    #[Route('/assigner', methods: ['POST'])]
+    #[TokenRequired(['Admin'])]
+    public function assigner(Request $request): JsonResponse
+    {
+        try {
+            $dto = $this->deserializeAndValidate($request, AssignerParcoursDto::class);
+            $result = $this->parcoursService->assignerParcours($dto);
+            return $this->jsonSuccess($result);
         } catch (\Throwable $e) {
             return $this->jsonError($e->getMessage(), $e->getCode() ?: 400);
         }
@@ -61,11 +75,9 @@ class ParcoursController extends BaseApiController
     public function update(int $id, Request $request): JsonResponse
     {
         try {
-        
             $dto = $this->deserializeAndValidate($request, ParcoursDto::class);
             $parcours = $this->parcoursService->updateFromDto($id, $dto);
             return $this->jsonSuccess($this->parcoursService->format($parcours));
-        
         } catch (\Throwable $e) {
             return $this->jsonError($e->getMessage(), $e->getCode() ?: 400);
         }
