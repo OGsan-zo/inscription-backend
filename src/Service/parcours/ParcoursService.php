@@ -9,6 +9,8 @@ use App\Entity\NiveauEtudiants;
 use App\Entity\Niveaux;
 use App\Entity\Parcours;
 use App\Repository\parcours\ParcoursRepository;
+use App\Service\proposEtudiant\EtudiantsService;
+use App\Service\proposEtudiant\NiveauEtudiantsService;
 use App\Service\utils\BaseService;
 use App\Service\utils\ValidationService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -18,7 +20,9 @@ class ParcoursService extends BaseService
     public function __construct(
         EntityManagerInterface $em,
         private readonly ParcoursRepository $parcoursRepository,
-        private readonly ValidationService $validationService
+        private readonly ValidationService $validationService,
+        private readonly NiveauEtudiantsService $niveauEtudiantsService,
+        private readonly EtudiantsService $etudiantsService
     ) {
         parent::__construct($em);
     }
@@ -54,11 +58,13 @@ class ParcoursService extends BaseService
         return $parcours;
     }
 
-    private function getVerifiedNiveauEtudiant(int $id): NiveauEtudiants
+    private function getVerifiedEtudiant(int $id): NiveauEtudiants
     {
-        $ne = $this->em->getRepository(NiveauEtudiants::class)->find($id);
-        $this->validationService->throwIfNull($ne, "NiveauEtudiant introuvable pour l'ID $id.");
-        return $ne;
+        $etudiant = $this->etudiantsService->getEtudiantById($id);
+        $this->validationService->throwIfNull($etudiant, "Etudiant introuvable pour l'ID $id.");
+        $dernierNiveaux = $this->niveauEtudiantsService->getDernierNiveauParEtudiant($etudiant);
+        $this->validationService->throwIfNull($dernierNiveaux, "NiveauEtudiant introuvable pour l'etudiant id $id.");
+        return $dernierNiveaux;
     }
 
     public function saveDto(ParcoursDto $dto , Mentions $mention, Niveaux $niveau): Parcours
@@ -127,8 +133,8 @@ class ParcoursService extends BaseService
             $parcours = $this->getVerifiedParcours($dto->idParcours);
             $assignes = [];
 
-            foreach ($dto->idNiveauEtudiants as $idNE) {
-                $ne = $this->getVerifiedNiveauEtudiant($idNE);
+            foreach ($dto->idEtudiants as $idEtudiant) {
+                $ne = $this->getVerifiedEtudiant($idEtudiant);
                 $assignes[] = $this->assignerUnEtudiant($ne, $parcours);
             }
 

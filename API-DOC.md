@@ -155,7 +155,7 @@ Assigne un parcours à une liste d'étudiants (par leur `idNiveauEtudiant`).
 ```json
 {
   "idParcours": 2,
-  "idNiveauEtudiants": [10, 11, 12, 15]
+  "idEtudiants": [10, 11, 12, 15]
 }
 ```
 
@@ -181,6 +181,28 @@ Créer un nouveau parcours.
   "nom": "Algorithmique",
   "idMention": 1,
   "idNiveau": 1
+}
+```
+Reponse
+
+```json
+{
+    "status": "success",
+    "data": {
+        "nom": "Algorithmique",
+        "id": 1,
+        "createdAt": "2026-03-17 20:30:39",
+        "mention": {
+            "id": 1,
+            "nom": "BATIMENT ET TRAVAUX PUBLICS",
+            "abr": "BTP"
+        },
+        "niveau": {
+            "id": 1,
+            "nom": "L1",
+            "grade": 1
+        }
+    }
 }
 ```
 

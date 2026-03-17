@@ -20,7 +20,6 @@ class ParcoursController extends BaseApiController
     }
 
     #[Route('', methods: ['GET'])]
-    #[TokenRequired]
     public function index(): JsonResponse
     {
         try {
@@ -32,7 +31,7 @@ class ParcoursController extends BaseApiController
     }
 
     #[Route('/assigner', methods: ['POST'])]
-    #[TokenRequired(['Admin'])]
+    #[TokenRequired]
     public function assigner(Request $request): JsonResponse
     {
         try {
@@ -45,7 +44,7 @@ class ParcoursController extends BaseApiController
     }
 
     #[Route('', methods: ['POST'])]
-    #[TokenRequired(['Admin'])]
+    #[TokenRequired]
     public function create(Request $request): JsonResponse
     {
         try {
@@ -58,7 +57,7 @@ class ParcoursController extends BaseApiController
     }
 
     #[Route('/{id}', methods: ['PUT'])]
-    #[TokenRequired(['Admin'])]
+    #[TokenRequired]
     public function update(int $id, Request $request): JsonResponse
     {
         try {
@@ -71,7 +70,7 @@ class ParcoursController extends BaseApiController
     }
 
     #[Route('/{id}', methods: ['DELETE'])]
-    #[TokenRequired(['Admin'])]
+    #[TokenRequired]
     public function delete(int $id): JsonResponse
     {
         try {

@@ -57,7 +57,7 @@ abstract class BaseApiController extends AbstractController
         }
 
         $userId = (int) $claims['id'];
-        $user = $this->utilisateurService->getUtilisateurById($userId);
+        $user = $this->utilisateurService->getById($userId);
 
         $this->validatorService->throwIfNull($user, "Utilisateur introuvable pour l'ID $userId.");
 

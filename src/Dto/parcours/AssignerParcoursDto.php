@@ -12,5 +12,5 @@ class AssignerParcoursDto
 
     #[Assert\NotNull(message: "La liste des étudiants est obligatoire.")]
     #[Assert\Count(min: 1, minMessage: "Au moins un étudiant est requis.")]
-    public ?array $idNiveauEtudiants = null;
+    public ?array $idEtudiants = null;
 }
