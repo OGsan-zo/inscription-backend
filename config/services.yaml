@@ -26,6 +26,10 @@ services:
     arguments:
       $secretKey: "%jwt_secret%"
 
+  App\Service\utils\JwtTokenManager:
+    arguments:
+      $secretKey: "%jwt_secret%"
+
   App\EventListener\TokenListener:
     tags:
       - {

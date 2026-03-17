@@ -2,8 +2,8 @@
 
 namespace App\Controller\Api\utils;
 
-use App\Entity\utilisateurs\Utilisateurs;
-use App\Service\utilisateurs\UtilisateursService;
+use App\Entity\Utilisateur;
+use App\Service\utilisateur\UtilisateurService;
 use App\Service\utils\JwtTokenManager;
 use App\Service\utils\ValidationService;
 use Exception;
@@ -18,23 +18,24 @@ use Symfony\Contracts\Service\Attribute\Required;
 abstract class BaseApiController extends AbstractController
 {
     public JwtTokenManager $jwtManager;
-    public UtilisateursService $utilisateursService;
+    public UtilisateurService $utilisateurService;
     public ValidationService $validatorService;
     public SerializerInterface $serializer;
-    
+
     public ValidatorInterface $validator;
     public ParameterBagInterface $params;
+
     #[Required]
     public function setDependencies(
         JwtTokenManager $jwtManager,
-        UtilisateursService $utilisateursService,
+        UtilisateurService $utilisateurService,
         ValidationService $validatorService,
         SerializerInterface $serializer,
         ValidatorInterface $validator,
         ParameterBagInterface $params
     ) {
         $this->jwtManager = $jwtManager;
-        $this->utilisateursService = $utilisateursService;
+        $this->utilisateurService = $utilisateurService;
         $this->validatorService = $validatorService;
         $this->serializer = $serializer;
         $this->validator = $validator;
@@ -44,7 +45,7 @@ abstract class BaseApiController extends AbstractController
     /**
      * Récupère l'utilisateur à partir du token JWT présent dans la requête
      */
-    protected function getUserFromRequest(Request $request): Utilisateurs
+    protected function getUserFromRequest(Request $request): Utilisateur
     {
         $token = $this->jwtManager->extractTokenFromRequest($request);
         if (!$token) {
@@ -57,7 +58,7 @@ abstract class BaseApiController extends AbstractController
         }
 
         $userId = (int) $claims['id'];
-        $user = $this->utilisateursService->getById($userId);
+        $user = $this->utilisateurService->getUtilisateurById($userId);
 
         $this->validatorService->throwIfNull($user, "Utilisateur introuvable pour l'ID $userId.");
 

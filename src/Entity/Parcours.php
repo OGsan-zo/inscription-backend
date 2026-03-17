@@ -3,7 +3,7 @@
 namespace App\Entity;
 
 use App\Entity\utils\BaseEntite;
-use App\Repository\ParcoursRepository;
+use App\Repository\parcours\ParcoursRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ParcoursRepository::class)]
