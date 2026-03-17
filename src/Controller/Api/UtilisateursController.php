@@ -5,7 +5,6 @@ namespace App\Controller\Api;
 
 use App\Controller\Api\utils\BaseApiController;
 use App\Entity\Utilisateur;
-use App\Service\utilisateurs\UtilisateursService;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -14,14 +13,7 @@ use App\Annotation\TokenRequired;
 #[Route('/utilisateur')]
 class UtilisateursController extends BaseApiController
 {
-    private UtilisateursService $utilisateurService;
 
-
-
-    public function __construct(UtilisateursService $utilisateurService)
-    {
-        $this->utilisateurService = $utilisateurService;
-    }
     #[Route('', name: 'user', methods: ['GET'])]
     #[TokenRequired(['Admin'])]
     public function getUtilisateur(Request $request): JsonResponse
