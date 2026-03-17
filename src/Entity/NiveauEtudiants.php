@@ -48,6 +48,10 @@ class NiveauEtudiants
     #[ORM\Column(length: 10, nullable: true)]
     private ?string $remarque = null;
 
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?Parcours $parcours = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -169,6 +173,18 @@ class NiveauEtudiants
     public function setRemarque(?string $remarque): static
     {
         $this->remarque = $remarque;
+
+        return $this;
+    }
+
+    public function getParcours(): ?Parcours
+    {
+        return $this->parcours;
+    }
+
+    public function setParcours(?Parcours $parcours): static
+    {
+        $this->parcours = $parcours;
 
         return $this;
     }

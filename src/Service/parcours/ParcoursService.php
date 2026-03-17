@@ -2,8 +2,10 @@
 
 namespace App\Service\parcours;
 
+use App\Dto\parcours\AssignerParcoursDto;
 use App\Dto\parcours\ParcoursDto;
 use App\Entity\Mentions;
+use App\Entity\NiveauEtudiants;
 use App\Entity\Niveaux;
 use App\Entity\Parcours;
 use App\Repository\parcours\ParcoursRepository;
@@ -26,6 +28,11 @@ class ParcoursService extends BaseService
         return $this->parcoursRepository;
     }
 
+    public function getByMentionAndNiveau(int $idMention, int $idNiveau): array
+    {
+        return $this->parcoursRepository->findByMentionAndNiveau($idMention, $idNiveau);
+    }
+
     private function getVerifiedMention(int $id): Mentions
     {
         $mention = $this->em->getRepository(Mentions::class)->find($id);
@@ -38,6 +45,20 @@ class ParcoursService extends BaseService
         $niveau = $this->em->getRepository(Niveaux::class)->find($id);
         $this->validationService->throwIfNull($niveau, "Niveau introuvable pour l'ID $id.");
         return $niveau;
+    }
+
+    public function getVerifiedParcours(int $id): Parcours
+    {
+        $parcours = $this->getById($id);
+        $this->validationService->throwIfNull($parcours, "Parcours introuvable pour l'ID $id.");
+        return $parcours;
+    }
+
+    private function getVerifiedNiveauEtudiant(int $id): NiveauEtudiants
+    {
+        $ne = $this->em->getRepository(NiveauEtudiants::class)->find($id);
+        $this->validationService->throwIfNull($ne, "NiveauEtudiant introuvable pour l'ID $id.");
+        return $ne;
     }
 
     public function saveDto(ParcoursDto $dto , Mentions $mention, Niveaux $niveau): Parcours
@@ -73,9 +94,7 @@ class ParcoursService extends BaseService
     {
         $this->em->getConnection()->beginTransaction();
         try {
-            $ancien = $this->getById($id);
-            $this->validationService->throwIfNull($ancien, "Parcours introuvable pour l'ID $id.");
-
+            $ancien = $this->getVerifiedParcours($id);
             $mention = $this->getVerifiedMention($dto->idMention);
             $niveau = $this->getVerifiedNiveau($dto->idNiveau);
 
@@ -95,9 +114,38 @@ class ParcoursService extends BaseService
         }
     }
 
+    private function assignerUnEtudiant(NiveauEtudiants $ne, Parcours $parcours): array
+    {
+        $ne->setParcours($parcours);
+        return $this->toArray($ne);
+    }
+
+    public function assignerParcours(AssignerParcoursDto $dto): array
+    {
+        $this->em->getConnection()->beginTransaction();
+        try {
+            $parcours = $this->getVerifiedParcours($dto->idParcours);
+            $assignes = [];
+
+            foreach ($dto->idNiveauEtudiants as $idNE) {
+                $ne = $this->getVerifiedNiveauEtudiant($idNE);
+                $assignes[] = $this->assignerUnEtudiant($ne, $parcours);
+            }
+
+            $this->em->flush();
+            $this->em->getConnection()->commit();
+
+            return $assignes;
+        } catch (\Throwable $e) {
+            $this->em->getConnection()->rollBack();
+            throw $e;
+        }
+    }
+
     public function format(Parcours $parcours): array
     {
         $data = $parcours->toArray(['deletedAt']);
+        
         $data['mention'] = [
             'id'  => $parcours->getMention()?->getId(),
             'nom' => $parcours->getMention()?->getNom(),
@@ -115,4 +163,13 @@ class ParcoursService extends BaseService
     {
         return array_map(fn(Parcours $p) => $this->format($p), $parcoursList);
     }
+
+    public function toArray(NiveauEtudiants $ne): array
+    {
+        return [
+            'idNiveauEtudiant' => $ne->getId(),
+            'idEtudiant'       => $ne->getEtudiant()?->getId(),
+        ];
+    }
+
 }

@@ -4,6 +4,7 @@ namespace App\Controller\Api\parcours;
 
 use App\Annotation\TokenRequired;
 use App\Controller\Api\utils\BaseApiController;
+use App\Dto\parcours\AssignerParcoursDto;
 use App\Dto\parcours\ParcoursDto;
 use App\Dto\utils\OrderCriteria;
 use App\Service\parcours\ParcoursService;
@@ -30,14 +31,14 @@ class ParcoursController extends BaseApiController
         }
     }
 
-    #[Route('/{id}', methods: ['GET'])]
-    #[TokenRequired]
-    public function show(int $id): JsonResponse
+    #[Route('/assigner', methods: ['POST'])]
+    #[TokenRequired(['Admin'])]
+    public function assigner(Request $request): JsonResponse
     {
         try {
-            $parcours = $this->parcoursService->getById($id);
-            $this->validatorService->throwIfNull($parcours, "Parcours introuvable pour l'ID $id.");
-            return $this->jsonSuccess($this->parcoursService->format($parcours));
+            $dto = $this->deserializeAndValidate($request, AssignerParcoursDto::class);
+            $result = $this->parcoursService->assignerParcours($dto);
+            return $this->jsonSuccess($result);
         } catch (\Throwable $e) {
             return $this->jsonError($e->getMessage(), $e->getCode() ?: 400);
         }
@@ -61,11 +62,9 @@ class ParcoursController extends BaseApiController
     public function update(int $id, Request $request): JsonResponse
     {
         try {
-        
             $dto = $this->deserializeAndValidate($request, ParcoursDto::class);
             $parcours = $this->parcoursService->updateFromDto($id, $dto);
             return $this->jsonSuccess($this->parcoursService->format($parcours));
-        
         } catch (\Throwable $e) {
             return $this->jsonError($e->getMessage(), $e->getCode() ?: 400);
         }
@@ -76,8 +75,7 @@ class ParcoursController extends BaseApiController
     public function delete(int $id): JsonResponse
     {
         try {
-            $parcours = $this->parcoursService->getById($id);
-            $this->validatorService->throwIfNull($parcours, "Parcours introuvable pour l'ID $id.");
+            $parcours = $this->parcoursService->getVerifiedParcours($id);
             $this->parcoursService->delete($parcours);
             return $this->jsonSuccess(['message' => 'Parcours supprimé avec succès.']);
         } catch (\Throwable $e) {

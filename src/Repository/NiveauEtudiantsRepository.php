@@ -56,7 +56,8 @@ class NiveauEtudiantsRepository extends ServiceEntityRepository
         int $annee,
         ?int $idMention = null,
         ?int $idNiveau = null,
-        int $limit = 50
+        int $limit = 50,
+        ?int $idParcours = null
     ): array {
         $qb = $this->createQueryBuilder('i')
             ->andWhere('i.annee = :annee')
@@ -74,6 +75,12 @@ class NiveauEtudiantsRepository extends ServiceEntityRepository
         if ($idNiveau !== null) {
             $qb->andWhere('i.niveau = :idNiveau')
             ->setParameter('idNiveau', $idNiveau);
+        }
+
+        // ✅ Filtre parcours si fourni
+        if ($idParcours !== null) {
+            $qb->andWhere('i.parcours = :idParcours')
+            ->setParameter('idParcours', $idParcours);
         }
 
         return $qb
