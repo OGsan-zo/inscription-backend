@@ -114,6 +114,34 @@ class ParcoursService extends BaseService
         }
     }
 
+    private function assignerUnEtudiant(NiveauEtudiants $ne, Parcours $parcours): array
+    {
+        $ne->setParcours($parcours);
+        return $this->toArray($ne);
+    }
+
+    public function assignerParcours(AssignerParcoursDto $dto): array
+    {
+        $this->em->getConnection()->beginTransaction();
+        try {
+            $parcours = $this->getVerifiedParcours($dto->idParcours);
+            $assignes = [];
+
+            foreach ($dto->idNiveauEtudiants as $idNE) {
+                $ne = $this->getVerifiedNiveauEtudiant($idNE);
+                $assignes[] = $this->assignerUnEtudiant($ne, $parcours);
+            }
+
+            $this->em->flush();
+            $this->em->getConnection()->commit();
+
+            return $assignes;
+        } catch (\Throwable $e) {
+            $this->em->getConnection()->rollBack();
+            throw $e;
+        }
+    }
+
     public function format(Parcours $parcours): array
     {
         $data = $parcours->toArray(['deletedAt']);
@@ -144,31 +172,4 @@ class ParcoursService extends BaseService
         ];
     }
 
-    private function assignerUnEtudiant(NiveauEtudiants $ne, Parcours $parcours): array
-    {
-        $ne->setParcours($parcours);
-        return $this->toArray($ne);
-    }
-
-    public function assignerParcours(AssignerParcoursDto $dto): array
-    {
-        $this->em->getConnection()->beginTransaction();
-        try {
-            $parcours = $this->getVerifiedParcours($dto->idParcours);
-            $assignes = [];
-
-            foreach ($dto->idNiveauEtudiants as $idNE) {
-                $ne = $this->getVerifiedNiveauEtudiant($idNE);
-                $assignes[] = $this->assignerUnEtudiant($ne, $parcours);
-            }
-
-            $this->em->flush();
-            $this->em->getConnection()->commit();
-
-            return $assignes;
-        } catch (\Throwable $e) {
-            $this->em->getConnection()->rollBack();
-            throw $e;
-        }
-    }
 }
