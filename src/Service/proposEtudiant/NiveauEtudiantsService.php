@@ -6,26 +6,30 @@ use App\Entity\NiveauEtudiants;
 use App\Entity\Etudiants;
 use App\Entity\Niveaux;
 use App\Entity\Mentions;
+use App\Service\utils\BaseService;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use App\Entity\StatusEtudiants;
 use App\Entity\Formations;
 use App\Service\payment\PaymentService;
 
-class NiveauEtudiantsService
+class NiveauEtudiantsService extends BaseService
 {   private NiveauEtudiantsRepository $niveauEtudiantsRepository;
     private NiveauService $niveauService;
-    private EntityManagerInterface $em;
     private FormationEtudiantsService $formationEtudiantsService ;
     private PaymentService $paymentService;
 
     public function __construct(NiveauEtudiantsRepository $niveauEtudiantsRepository,NiveauService $niveauService, EntityManagerInterface $em, FormationEtudiantsService $formationEtudiantsService, PaymentService $paymentService)
     {
+        parent::__construct($em);
         $this->niveauEtudiantsRepository = $niveauEtudiantsRepository;
         $this->niveauService = $niveauService;
-        $this->em = $em;
         $this->formationEtudiantsService = $formationEtudiantsService;
         $this->paymentService = $paymentService;
+    }
+    protected function getRepository()
+    {
+        return $this->niveauEtudiantsRepository;
     }
     
     public function toArrayNiveau(?Niveaux $niveau) : array

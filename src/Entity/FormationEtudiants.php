@@ -81,4 +81,5 @@ class FormationEtudiants
 
         return $this;
     }
+    
 }

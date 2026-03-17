@@ -1,8 +1,7 @@
 <?php
 
 namespace App\Controller\Api\utils;
-
-use App\Entity\utilisateurs\Utilisateurs;
+use App\Entity\Utilisateur;
 use App\Service\utilisateurs\UtilisateursService;
 use App\Service\utils\JwtTokenManager;
 use App\Service\utils\ValidationService;
@@ -44,7 +43,7 @@ abstract class BaseApiController extends AbstractController
     /**
      * Récupère l'utilisateur à partir du token JWT présent dans la requête
      */
-    protected function getUserFromRequest(Request $request): Utilisateurs
+    protected function getUserFromRequest(Request $request): Utilisateur
     {
         $token = $this->jwtManager->extractTokenFromRequest($request);
         if (!$token) {

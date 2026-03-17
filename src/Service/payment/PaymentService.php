@@ -7,8 +7,9 @@ use App\Entity\Niveaux;
 use App\Entity\Utilisateur;
 use App\Repository\PaymentsRepository;
 use App\Entity\Etudiants;
-use App\Repository\UtilisateurRepository;
-use App\Service\utilisateur\UtilisateurService;
+
+use App\Service\utilisateurs\UtilisateursService;
+use App\Service\UtilisateurService;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Service\droit\TypeDroitService as AppTypeDroitService;
 use App\Entity\Utilisateur as UtilisateurEntity;
@@ -26,7 +27,7 @@ class PaymentService
         private EntityManagerInterface $em,
         private EtudiantsRepository $etudiantsRepository,
         private NiveauEtudiantsRepository $niveauEtudiantsRepository,
-        private UtilisateurService $utilisateurService,
+        private UtilisateursService $utilisateurService,
     ) {
     }
     public function insertPayment(UtilisateurEntity $utilisateur, Etudiants $etudiant, Niveaux $niveau, Payments $payment, $typeDroit): Payments

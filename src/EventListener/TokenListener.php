@@ -2,7 +2,7 @@
 
 namespace App\EventListener;
 
-use App\Service\JwtTokenManager;
+use App\Service\utils\JwtTokenManager;
 use App\Annotation\TokenRequired;
 use Symfony\Component\HttpKernel\Event\ControllerEvent;
 use Symfony\Component\HttpFoundation\JsonResponse;

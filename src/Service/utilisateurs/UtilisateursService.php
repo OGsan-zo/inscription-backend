@@ -1,17 +1,17 @@
 <?php
 
-namespace App\Service;
+namespace App\Service\utilisateurs;
 
 use App\Entity\Utilisateur;
 use App\Repository\RoleRepository;
+use App\Service\utils\BaseService;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\UtilisateurRepository;
 use App\Repository\StatusRepository;
 use Exception;
 
-class UtilisateurService
+class UtilisateursService extends BaseService
 {
-    private EntityManagerInterface $em;
      
     private UtilisateurRepository $utilisateurRepository;
     private RoleRepository $roleRepository;
@@ -20,11 +20,15 @@ class UtilisateurService
 
     public function __construct(EntityManagerInterface $em, UtilisateurRepository $utilisateurRepository, RoleRepository $roleRepository, StatusRepository $statusRepository)
     {
-        $this->em = $em;
+        parent::__construct($em);
         $this->utilisateurRepository = $utilisateurRepository;
         $this->roleRepository = $roleRepository;
         $this->statusRepository = $statusRepository;
     }
+    protected function getRepository(): UtilisateurRepository
+    {
+        return $this->utilisateurRepository;
+    }   
 
     /**
      * @param Utilisateur $user L'utilisateur à créer

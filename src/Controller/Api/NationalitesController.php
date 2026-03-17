@@ -2,14 +2,14 @@
 
 namespace App\Controller\Api;
 
+use App\Controller\Api\utils\BaseApiController;
 use App\Service\proposEtudiant\NationaliteService;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[Route('/nationalites')]
-class NationalitesController extends AbstractController
+class NationalitesController extends BaseApiController
 {
     private NationaliteService $nationaliteService;
 
@@ -22,16 +22,10 @@ class NationalitesController extends AbstractController
         try {
    
             $data = $this->nationaliteService->getAllNationalitesArray();
-            return new JsonResponse([
-                'status' => 'success',
-                'data' => $data
-            ], 200);
+            return $this->jsonSuccess($data);
 
         } catch (\Exception $e) {
-            return new JsonResponse([
-                'status' => 'error',
-                'message' => $e->getMessage()
-            ], 400);
+             return $this->jsonError($e->getMessage(),  400);
         }
     }
 }
