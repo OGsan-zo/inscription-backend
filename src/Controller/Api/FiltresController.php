@@ -33,14 +33,16 @@ class FiltresController extends BaseApiController
             // 1. Récupération des critères de filtrage depuis l'URL
             $idMention = $request->query->get('idMention');
             $idNiveau = $request->query->get('idNiveau');
+            $idParcours = $request->query->get('idParcours');
 
             // 2. Récupération de tous les étudiants de l'année
-            $niveauEtudiants = $this->niveauEtudiantsService->getAllNiveauEtudiantAnnee($annee,$idMention,$idNiveau);
+            $niveauEtudiants = $this->niveauEtudiantsService->getAllNiveauEtudiantAnnee($annee,$idMention,$idNiveau,$idParcours ? (int) $idParcours : null);
 
             $data = array_map(function ($e) {
                 $etudiant = $e->getEtudiant();
                 $mention = $e->getMention();
                 $niveau = $e->getNiveau();
+                $parcours = $e->getParcours();
                 return [
                     'id' => $etudiant->getId(),
                     'nom' => $etudiant->getNom(),
@@ -52,6 +54,8 @@ class FiltresController extends BaseApiController
                     'idNiveau' => $niveau->getId(),
                     'matricule' => $e->getMatricule() ?? '',
                     'dateInsertion' => $e->getDateInsertion()->format('Y-m-d H:i:s'),
+                    'idParcours' => $parcours?->getId(),
+                    'nomParcours' => $parcours?->getNom(),
                 ];
             }, array_values($niveauEtudiants));
 
@@ -73,10 +77,11 @@ class FiltresController extends BaseApiController
             // 1. Récupération des critères de filtrage depuis l'URL
             $idMention = $request->query->get('idMention');
             $idNiveau = $request->query->get('idNiveau');
+            $idParcours = $request->query->get('idParcours');
             $limit = (int) $request->query->get('limit', 10000);
 
             // 2. Récupération de tous les étudiants de l'année
-            $niveauEtudiants = $this->niveauEtudiantsService->getAllNiveauEtudiantAnnee($annee,$idMention,$idNiveau,$limit);
+            $niveauEtudiants = $this->niveauEtudiantsService->getAllNiveauEtudiantAnnee($annee,$idMention,$idNiveau,$idParcours ? (int) $idParcours : null,$limit);
 
             $data = $this->etudiantsService->toArrayListeNiveauEtudiants($niveauEtudiants);
             return $this->jsonSuccess($data);
