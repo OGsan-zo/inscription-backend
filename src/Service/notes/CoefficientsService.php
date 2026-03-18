@@ -53,6 +53,15 @@ class CoefficientsService extends BaseService
         return $mention;
     }
 
+    private function buildCoefficient(\App\Entity\Matieres $matiere, Mentions $mention, int $coefficient): MatiereMentionCoefficient
+    {
+        $coeff = new MatiereMentionCoefficient();
+        $coeff->setMatiere($matiere);
+        $coeff->setMention($mention);
+        $coeff->setCoefficient($coefficient);
+        return $coeff;
+    }
+
     public function createCoefficient(MatiereMentionCoefficientDto $dto): MatiereMentionCoefficient
     {
         $this->em->getConnection()->beginTransaction();
@@ -71,10 +80,7 @@ class CoefficientsService extends BaseService
                 );
             }
 
-            $coeff = new MatiereMentionCoefficient();
-            $coeff->setMatiere($matiere);
-            $coeff->setMention($mention);
-            $coeff->setCoefficient($dto->coefficient);
+            $coeff = $this->buildCoefficient($matiere, $mention, $dto->coefficient);
 
             $this->em->persist($coeff);
             $this->em->flush();
@@ -90,11 +96,18 @@ class CoefficientsService extends BaseService
     {
         $this->em->getConnection()->beginTransaction();
         try {
-            $coeff = $this->getVerifiedCoefficient($id);
-            $coeff->setCoefficient($dto->coefficient);
+            $ancien = $this->getVerifiedCoefficient($id);
+
+            // Soft delete de l'ancien
+            $this->delete($ancien);
+
+            // Création du nouveau avec les mêmes matière + mention
+            $nouveau = $this->buildCoefficient($ancien->getMatiere(), $ancien->getMention(), $dto->coefficient);
+
+            $this->em->persist($nouveau);
             $this->em->flush();
             $this->em->getConnection()->commit();
-            return $coeff;
+            return $nouveau;
         } catch (\Throwable $e) {
             $this->em->getConnection()->rollBack();
             throw $e;
