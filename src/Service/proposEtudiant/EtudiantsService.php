@@ -23,23 +23,19 @@ use App\Service\proposEtudiant\mapper\EtudiantMapper;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use App\Service\proposEtudiant\mapper\InscriptionMapper;
 use App\Service\proposEtudiant\ProposService;
-use App\Dto\etudiant\NiveauEtudiantRequestDto;
+use App\Dto\proposEtudiant\NiveauEtudiantRequestDto;
 
 class EtudiantsService
 {
     private EtudiantsRepository $etudiantsRepository;
     private EntityManagerInterface $em;
-    private FormationEtudiantsRepository $formationEtudiantRepository;
-    private NiveauEtudiantsRepository $niveauEtudiantsRepository;
     private FormationEtudiantsService $formationEtudiantsService;
     private NiveauEtudiantsService $niveauEtudiantsService;
     private PaymentService $paymentService;
 
     private TypeDroitService $typeDroitService;
     private EcolageService $ecolageService;
-    private SexesRepository $sexesRepository;
     private FormationsRepository $formationsRepository;
-    private MentionsRepository $mentionsRepository;
     private EtudiantMapper $etudiantMapper;
 
     private ValidatorInterface $validator;
@@ -52,17 +48,12 @@ class EtudiantsService
 
     public function __construct(
         EtudiantsRepository $etudiantsRepository,
-        FormationEtudiantsRepository $formationEtudiantRepository,
-        NiveauEtudiantsRepository $niveauEtudiantsRepository,
         EntityManagerInterface $em,
         FormationEtudiantsService $formationEtudiantsService,
         NiveauEtudiantsService $niveauEtudiantsService,
         PaymentService $paymentService,
         TypeDroitService $typeDroitService,
         EcolageService $ecolageService,
-        SexesRepository $sexesRepository,
-        FormationsRepository $formationsRepository,
-        MentionsRepository $mentionsRepository,
         EtudiantMapper $etudiantMapper,
         ValidatorInterface $validator,
         InscriptionMapper $inscriptionMapper,
@@ -71,17 +62,12 @@ class EtudiantsService
         StatusEtudiantService $statusEtudiantService
     ) {
         $this->etudiantsRepository = $etudiantsRepository;
-        $this->formationEtudiantRepository = $formationEtudiantRepository;
-        $this->niveauEtudiantsRepository = $niveauEtudiantsRepository;
         $this->em = $em;
         $this->formationEtudiantsService = $formationEtudiantsService;
         $this->niveauEtudiantsService = $niveauEtudiantsService;
         $this->paymentService = $paymentService;
         $this->typeDroitService = $typeDroitService;
         $this->ecolageService = $ecolageService;
-        $this->sexesRepository = $sexesRepository;
-        $this->formationsRepository = $formationsRepository;
-        $this->mentionsRepository = $mentionsRepository;
         $this->etudiantMapper = $etudiantMapper;
         $this->validator = $validator;
         $this->inscriptionMapper = $inscriptionMapper;
@@ -182,7 +168,7 @@ class EtudiantsService
         }
 
         // 2. Récupérer la dernière formation de l'étudiant
-        $formationEtudiant = $this->formationEtudiantRepository->getDernierFormationEtudiant($etudiant);
+        $formationEtudiant = $this->formationEtudiantsService->getDernierFormationParEtudiant($etudiant);
         if (!$formationEtudiant) {
             return [
                 'status' => 'error',
@@ -191,7 +177,7 @@ class EtudiantsService
         }
 
         // 3. Récupérer le niveau actuel de l'étudiant
-        $niveauEtudiant = $this->niveauEtudiantsRepository->getDernierNiveauParEtudiant($etudiant);
+        $niveauEtudiant = $this->niveauEtudiantsService->getDernierNiveauParEtudiant($etudiant);
 
         if (!$niveauEtudiant || !$niveauEtudiant->getNiveau()) {
             return [
@@ -214,14 +200,6 @@ class EtudiantsService
                 'type' => $formation->getTypeFormation() ? $formation->getTypeFormation()->getNom() : null,
                 'niveau' => $niveau->getNom()
             ],
-            // 'paiements' => array_map(function($p) {
-            //     return [
-            //         'id' => $p->getId(),
-            //         'reference' => $p->getReference(),
-            //         'date' => $p->getDatePayements() ? $p->getDatePayements()->format('Y-m-d') : null,
-            //         'montant' => $p->getMontant(),
-            //     ];
-            // }, $paiements)
         ];
     }
     public function getAllFormationParEtudiantId(int $etudiantId): array
@@ -234,10 +212,7 @@ class EtudiantsService
     }
     public function getAllNiveauxParEtudiantId(int $etudiantId): array
     {
-        $etudiant = $this->etudiantsRepository->find($etudiantId);
-        if (!$etudiant) {
-            throw new Exception("Étudiant non trouvé pour l'ID: " . $etudiantId);
-        }
+        $etudiant = $this->getOrFailUtilisateur($etudiantId);
         return $this->niveauEtudiantsService->getAllNiveauxParEtudiant($etudiant);
     }
     public function getMontantResteParAnnee(Etudiants $etudiant, Ecolages $ecolage, int $annee): float
@@ -390,11 +365,7 @@ class EtudiantsService
 
     public function updateProposParents(int $idEtudiant, ?string $nomPere, ?string $nomMere): void
     {
-        $etudiant = $this->getEtudiantById($idEtudiant);
-
-        if (!$etudiant) {
-            throw new Exception("Etudiant non trouve");
-        }
+        $etudiant = $this->getOrFailUtilisateur($idEtudiant);
 
         $propos = $this->proposService->getDernierProposByEtudiant($etudiant);
         if (!$propos) {
@@ -468,49 +439,107 @@ class EtudiantsService
         ];
     }
     public function getInformationJsonId(int $id): array{
-        $etudiant = $this->etudiantsRepository->find($id);
-        if (!$etudiant) {
-            throw new Exception('Etudiant non trouve pour id ='.$id.'');
-        }
+        $etudiant = $this->getOrFailUtilisateur($id);
         return $this->getInformationJson($etudiant);
     }
-    public function changerNiveauEtudiantId(int $idEtudiant,?int $mentionId = null,?int $niveauId = null,?int $statusEtudiantId,?bool $nouvelleNiveau = false,?int $formationId = null,?string $remarque = null,?int $annee = null,?bool $isBoursier = null,?\DateTimeInterface $deleteAt = null)
+    function getEntityOrFail($service, $method, $id, string $message)
     {
-        
-        $etudiant = $this->etudiantsRepository->find($idEtudiant);
-        if (!$etudiant) {
-            throw new Exception('Etudiant non trouve pour id ='.$idEtudiant.'');
-        }
-        $mention = $this->mentionsService->getById($mentionId);
-        if (!$mention) {
-            throw new Exception('Mention non trouve pour id ='.$mentionId.'');
-        }
-        
-        $niveauEtudiant = null;
-        if ($niveauId) {
-            $niveauEtudiant = $this->niveauEtudiantsService->getNiveauxById($niveauId);
-            if (!$niveauEtudiant) {
-                throw new Exception('Niveau etudiant non trouve pour id ='.$niveauId.'');
-            }
-        }
-        $statusEtudiant = null;
-        if($statusEtudiantId)
-        {
-            $statusEtudiant = $this->statusEtudiantService->getById($statusEtudiantId);
-            if (!$statusEtudiant) {
-                throw new Exception('Status etudiant non trouve pour id ='.$statusEtudiantId.'');
-            }
-            
-        }
-        $formation = null;
-        if ($formationId) {
-            $formation = $this->formationEtudiantsService->getFormationById($formationId);
-            if (!$formation) {
-                throw new Exception('Formation non trouve pour id ='.$formationId.'');
-            }
+        if (!$id) {
+            return null;
         }
 
-        $this->niveauEtudiantsService->changerMention($etudiant,$mention,$niveauEtudiant,$statusEtudiant,$nouvelleNiveau,$formation,$remarque,$annee,$isBoursier,$deleteAt);
+        $entity = $service->$method($id);
+
+        if (!$entity) {
+            throw new Exception($message . $id);
+        }
+
+        return $entity;
+    }
+    function getOrFailUtilisateur($idEtudiant)
+    {
+        $result = $this->getEntityOrFail(
+            $this->etudiantsRepository,
+            'find',
+            $idEtudiant,
+            'Etudiant non trouve pour id = '
+        );
+        return $result;
+    }
+    function getOrFailMention($idMention)
+    {
+        $result = $this->getEntityOrFail(
+            $this->mentionsService,
+            'getById',
+            $idMention,
+            'Mention non trouve pour id = '
+        );
+        return $result;
+    }
+    function getOrFailNiveauEtudiant($idNiveauEtudiant)
+    {
+        $result = $this->getEntityOrFail(
+            $this->niveauEtudiantsService,
+            'getNiveauxById',
+            $idNiveauEtudiant,
+            'Niveau etudiant non trouve pour id = '
+        );
+        return $result;
+    }
+    function getOrFailStatusEtudiant($idStatusEtudiant)
+    {
+        $result = $this->getEntityOrFail(
+            $this->statusEtudiantService,
+            'getById',
+            $idStatusEtudiant,
+            'Status etudiant non trouve pour id = '
+        );
+        return $result;
+    }
+    function getOrFailFormation($idFormation)
+    {
+        $result = $this->getEntityOrFail(
+            $this->formationEtudiantsService,
+            'getFormationById',
+            $idFormation,
+            'Formation non trouve pour id = '
+        );
+        return $result;
+    }
+    public function changerNiveauEtudiantId(
+        int $idEtudiant,
+        ?int $mentionId = null,
+        ?int $niveauId = null,
+        ?int $statusEtudiantId = null,
+        ?bool $nouvelleNiveau = false,
+        ?int $formationId = null,
+        ?string $remarque = null,
+        ?int $annee = null,
+        ?bool $isBoursier = null,
+        ?\DateTimeInterface $deleteAt = null
+    ) {
+        $etudiant = $this->getOrFailUtilisateur($idEtudiant);
+
+        $mention = $this->getOrFailMention($mentionId);
+
+        $niveauEtudiant = $this->getOrFailNiveauEtudiant($niveauId);
+
+        $statusEtudiant = $this->getOrFailStatusEtudiant($statusEtudiantId);
+
+        $formation = $this->getOrFailFormation($formationId);
+
+        $this->niveauEtudiantsService->changerMention(
+            $etudiant,
+            $mention,
+            $niveauEtudiant,
+            $statusEtudiant,
+            $nouvelleNiveau,
+            $formation,
+            $remarque,
+            $annee,
+            $isBoursier,
+            $deleteAt
+        );
     }
     public function changerNiveauEtudiantDto(NiveauEtudiantRequestDto $dto)
     {

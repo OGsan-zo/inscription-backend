@@ -5,7 +5,7 @@ namespace App\Service\proposEtudiant\mapper;
 use App\Entity\proposEtudiant\FormationEtudiants;
 use App\Entity\proposEtudiant\NiveauEtudiants;
 use App\Entity\proposEtudiant\Etudiants;
-use App\Dto\EtudiantRequestDto;
+use App\Dto\proposEtudiant\EtudiantRequestDto;
 use App\Repository\proposEtudiant\FormationsRepository;
 use App\Repository\proposEtudiant\MentionsRepository;
 use App\Repository\proposEtudiant\NiveauxRepository;
