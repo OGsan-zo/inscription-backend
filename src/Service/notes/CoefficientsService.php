@@ -20,9 +20,9 @@ class CoefficientsService extends BaseService
         private readonly MatiereMentionCoefficientRepository $coefficientRepository,
         private readonly MatieresService $matieresService,
         private readonly MentionsService $mentionsService,
-        private readonly ValidationService $validationService,
+        ValidationService $validationService,
     ) {
-        parent::__construct($em);
+        parent::__construct($em, $validationService);
     }
 
     protected function getRepository(): MatiereMentionCoefficientRepository
@@ -39,13 +39,6 @@ class CoefficientsService extends BaseService
         return $this->coefficientRepository->getAll(new OrderCriteria('createdAt', 'ASC'));
     }
 
-    public function getVerifiedCoefficient(int $id): MatiereMentionCoefficient
-    {
-        $coeff = $this->coefficientRepository->find($id);
-        $this->validationService->throwIfNull($coeff, "Coefficient introuvable pour l'ID $id.");
-        return $coeff;
-    }
-
     private function buildCoefficient(\App\Entity\Matieres $matiere, Mentions $mention, int $coefficient): MatiereMentionCoefficient
     {
         $coeff = new MatiereMentionCoefficient();
@@ -59,8 +52,8 @@ class CoefficientsService extends BaseService
     {
         $this->em->getConnection()->beginTransaction();
         try {
-            $matiere = $this->matieresService->getVerifiedMatiere($dto->idMatiere);
-            $mention = $this->mentionsService->getVerifiedMention($dto->idMention);
+            $matiere = $this->matieresService->getVerifierById($dto->idMatiere);
+            $mention = $this->mentionsService->getVerifierById($dto->idMention);
 
             $doublon = $this->coefficientRepository->findByMatiereAndMention(
                 $matiere->getId(),
@@ -89,7 +82,7 @@ class CoefficientsService extends BaseService
     {
         $this->em->getConnection()->beginTransaction();
         try {
-            $ancien = $this->getVerifiedCoefficient($id);
+            $ancien = $this->getVerifierById($id);
 
             // Soft delete de l'ancien
             $this->delete($ancien);

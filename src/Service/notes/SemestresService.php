@@ -14,9 +14,9 @@ class SemestresService extends BaseService
     public function __construct(
         EntityManagerInterface $em,
         private readonly SemestresRepository $semestresRepository,
-        private readonly ValidationService $validationService,
+        ValidationService $validationService,
     ) {
-        parent::__construct($em);
+        parent::__construct($em, $validationService);
     }
 
     protected function getRepository(): SemestresRepository
@@ -27,13 +27,6 @@ class SemestresService extends BaseService
     public function getAllSemestres(): array
     {
         return $this->semestresRepository->getAll(new OrderCriteria('nom', 'ASC'));
-    }
-
-    public function getVerifiedSemestre(int $id): Semestres
-    {
-        $semestre = $this->semestresRepository->find($id);
-        $this->validationService->throwIfNull($semestre, "Semestre introuvable pour l'ID $id.");
-        return $semestre;
     }
 
     public function formatSemestre(Semestres $s): array

@@ -5,46 +5,39 @@ use App\Repository\NiveauxRepository;
 use App\Entity\Niveaux;
 use App\Service\utils\ValidationService;
 use Doctrine\ORM\EntityManagerInterface;
-use Exception;
+use App\Service\utils\BaseService;
 
-class NiveauService
-{   private $niveauxRepository;
-    private EntityManagerInterface $em;
-
+class NiveauService extends BaseService
+{
     public function __construct(
-        NiveauxRepository $niveauxRepository,
-        private readonly ValidationService $validationService,
+        private readonly NiveauxRepository $niveauxRepository,
+        EntityManagerInterface $em,
+        ValidationService $validationService,
     ) {
-        $this->niveauxRepository = $niveauxRepository;
+        parent::__construct($em, $validationService);
     }
-    
-    public function insertNiveau(Niveaux $niveau): Niveaux
+
+    protected function getRepository(): NiveauxRepository
     {
-        $this->em->persist($niveau);
-        $this->em->flush();
-        return $niveau;
+        return $this->niveauxRepository;
     }
-    public function getNiveauSuivant(Niveaux $niveauActuel): ?Niveaux
-    {
-        $niveauSuivant = $this->niveauxRepository->getNiveauSuivant($niveauActuel);
-        return $niveauSuivant;
-    }
-    public function getById($id): ?Niveaux
+
+    public function getById(int $id): ?Niveaux
     {
         return $this->niveauxRepository->find($id);
     }
 
-    public function getVerifiedNiveau(int $id): Niveaux
+    public function getNiveauSuivant(Niveaux $niveauActuel): ?Niveaux
     {
-        $niveau = $this->niveauxRepository->find($id);
-        $this->validationService->throwIfNull($niveau, "Niveau introuvable pour l'ID $id.");
-        return $niveau;
+        return $this->niveauxRepository->getNiveauSuivant($niveauActuel);
     }
+
     public function getAllNiveaux(): array
     {
         return $this->niveauxRepository->findAll();
     }
-    public function toArray(?Niveaux $niveau ): array
+
+    public function toArray(?Niveaux $niveau): array
     {
         if ($niveau === null) {
             return [];
@@ -56,5 +49,4 @@ class NiveauService
             'grade' => $niveau->getGrade(),
         ];
     }
-    
 }

@@ -28,7 +28,7 @@ class ParcoursService extends BaseService
         private readonly MentionsService $mentionsService,
         private readonly NiveauService $niveauService,
     ) {
-        parent::__construct($em);
+        parent::__construct($em, $validationService);
     }
 
     protected function getRepository(): ParcoursRepository
@@ -41,13 +41,6 @@ class ParcoursService extends BaseService
         return $this->parcoursRepository->findByMentionAndNiveau($idMention, $idNiveau);
     }
 
-    public function getVerifiedParcours(int $id): Parcours
-    {
-        $parcours = $this->getById($id);
-        $this->validationService->throwIfNull($parcours, "Parcours introuvable pour l'ID $id.");
-        return $parcours;
-    }
-
     private function getVerifiedEtudiant(int $id): NiveauEtudiants
     {
         $etudiant = $this->etudiantsService->getEtudiantById($id);
@@ -57,7 +50,7 @@ class ParcoursService extends BaseService
         return $dernierNiveaux;
     }
 
-    public function saveDto(ParcoursDto $dto , Mentions $mention, Niveaux $niveau): Parcours
+    public function saveDto(ParcoursDto $dto, Mentions $mention, Niveaux $niveau): Parcours
     {
         $parcours = new Parcours();
         $parcours->setNom($dto->nom);
@@ -71,8 +64,8 @@ class ParcoursService extends BaseService
     {
         $this->em->getConnection()->beginTransaction();
         try {
-            $mention = $this->mentionsService->getVerifiedMention($dto->idMention);
-            $niveau = $this->niveauService->getVerifiedNiveau($dto->idNiveau);
+            $mention = $this->mentionsService->getVerifierById($dto->idMention);
+            $niveau = $this->niveauService->getVerifierById($dto->idNiveau);
 
             $parcours = $this->saveDto($dto, $mention, $niveau);
 
@@ -90,9 +83,9 @@ class ParcoursService extends BaseService
     {
         $this->em->getConnection()->beginTransaction();
         try {
-            $ancien = $this->getVerifiedParcours($id);
-            $mention = $this->mentionsService->getVerifiedMention($dto->idMention);
-            $niveau = $this->niveauService->getVerifiedNiveau($dto->idNiveau);
+            $ancien = $this->getVerifierById($id);
+            $mention = $this->mentionsService->getVerifierById($dto->idMention);
+            $niveau = $this->niveauService->getVerifierById($dto->idNiveau);
 
             // Soft delete de l'ancien
             $this->delete($ancien);
@@ -120,7 +113,7 @@ class ParcoursService extends BaseService
     {
         $this->em->getConnection()->beginTransaction();
         try {
-            $parcours = $this->getVerifiedParcours($dto->idParcours);
+            $parcours = $this->getVerifierById($dto->idParcours);
             $assignes = [];
 
             foreach ($dto->idEtudiants as $idEtudiant) {
@@ -141,7 +134,7 @@ class ParcoursService extends BaseService
     public function format(Parcours $parcours): array
     {
         $data = $parcours->toArray(['deletedAt']);
-        
+
         $data['mention'] = [
             'id'  => $parcours->getMention()?->getId(),
             'nom' => $parcours->getMention()?->getNom(),
@@ -167,5 +160,4 @@ class ParcoursService extends BaseService
             'idEtudiant'       => $ne->getEtudiant()?->getId(),
         ];
     }
-
 }

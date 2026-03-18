@@ -17,9 +17,9 @@ class MatieresService extends BaseService
         EntityManagerInterface $em,
         private readonly MatieresRepository $matieresRepository,
         private readonly SemestresService $semestresService,
-        private readonly ValidationService $validationService,
+        ValidationService $validationService,
     ) {
-        parent::__construct($em);
+        parent::__construct($em, $validationService);
     }
 
     protected function getRepository(): MatieresRepository
@@ -34,13 +34,6 @@ class MatieresService extends BaseService
     public function getAllMatieres(): array
     {
         return $this->matieresRepository->getAll(new OrderCriteria('nom', 'ASC'));
-    }
-
-    public function getVerifiedMatiere(int $id): Matieres
-    {
-        $matiere = $this->getById($id);
-        $this->validationService->throwIfNull($matiere, "Matière introuvable pour l'ID $id.");
-        return $matiere;
     }
 
     public function createMatiere(MatiereDto $dto): Matieres
@@ -81,8 +74,8 @@ class MatieresService extends BaseService
     {
         $this->em->getConnection()->beginTransaction();
         try {
-            $matiere  = $this->getVerifiedMatiere($dto->idMatiere);
-            $semestre = $this->semestresService->getVerifiedSemestre($dto->idSemestre);
+            $matiere  = $this->getVerifierById($dto->idMatiere);
+            $semestre = $this->semestresService->getVerifierById($dto->idSemestre);
 
             if ($matiere->getSemestre() !== null) {
                 throw new \Exception(

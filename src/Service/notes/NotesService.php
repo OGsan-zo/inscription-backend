@@ -25,7 +25,7 @@ class NotesService extends BaseService
         private readonly NiveauEtudiantsService $niveauEtudiantsService,
         private readonly ValidationService $validationService,
     ) {
-        parent::__construct($em);
+        parent::__construct($em, $validationService);
     }
 
     protected function getRepository(): NotesRepository
@@ -86,24 +86,17 @@ class NotesService extends BaseService
         return [
             'etudiant' => $this->formatEtudiantPourNotes($etudiant, $ne),
             'semestre' => $this->semestresService->formatSemestre(
-                $this->semestresService->getVerifiedSemestre($idSemestre)
+                $this->semestresService->getVerifierById($idSemestre)
             ),
             'notes'    => $notes,
         ];
-    }
-
-    public function getVerifiedNote(int $id): Notes
-    {
-        $note = $this->notesRepository->find($id);
-        $this->validationService->throwIfNull($note, "Note introuvable pour l'ID $id.");
-        return $note;
     }
 
     public function updateNote(int $id, NoteUpdateDto $dto): Notes
     {
         $this->em->getConnection()->beginTransaction();
         try {
-            $note = $this->getVerifiedNote($id);
+            $note = $this->getVerifierById($id);
             $note->setValeur((string) $dto->valeur);
             $this->em->flush();
             $this->em->getConnection()->commit();
