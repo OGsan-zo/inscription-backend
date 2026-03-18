@@ -7,7 +7,7 @@ use App\Dto\utils\PaginationCriteria;
 // use App\Entity\utils\BaseEntite;
 use App\Service\utils\ValidationService;
 use Doctrine\ORM\EntityManagerInterface;
-
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 abstract class BaseService
 {
     /**
@@ -16,8 +16,7 @@ abstract class BaseService
     protected EntityManagerInterface $em;
 
     public function __construct(
-        EntityManagerInterface $em,
-        private readonly ValidationService $validationService,
+        EntityManagerInterface $em
     )
     {
         $this->em = $em;
@@ -32,6 +31,13 @@ abstract class BaseService
     {
         return $this->getRepository()->getById($id);
     }
+    public function throwIfNull(mixed $data, string $message): void
+    {
+        if ($data === null) {
+            throw new NotFoundHttpException($message);
+        }
+    }
+
 
     public function getVerifierById(int $id): object
     {

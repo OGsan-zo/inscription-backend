@@ -2,8 +2,8 @@
 
 namespace App\Service\proposEtudiant;
 
-use App\Dto\parcours\AssignerParcoursDto;
-use App\Dto\parcours\ParcoursDto;
+use App\Dto\proposEtudiant\AssignerParcoursDto;
+use App\Dto\proposEtudiant\ParcoursDto;
 use App\Entity\proposEtudiant\Mentions;
 use App\Entity\proposEtudiant\NiveauEtudiants;
 use App\Entity\proposEtudiant\Niveaux;
@@ -28,7 +28,7 @@ class ParcoursService extends BaseService
         private readonly MentionsService $mentionsService,
         private readonly NiveauService $niveauService,
     ) {
-        parent::__construct($em, $validationService);
+        parent::__construct($em);
     }
 
     protected function getRepository(): ParcoursRepository
