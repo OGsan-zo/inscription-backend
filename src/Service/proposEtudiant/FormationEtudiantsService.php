@@ -1,11 +1,11 @@
 <?php
 
 namespace App\Service\proposEtudiant;
-use App\Repository\FormationEtudiantsRepository;
-use App\Entity\FormationEtudiants;
-use App\Entity\Etudiants;
-use App\Entity\Formations;
-use App\Repository\FormationsRepository;
+use App\Repository\proposEtudiant\FormationEtudiantsRepository;
+use App\Entity\proposEtudiant\FormationEtudiants;
+use App\Entity\proposEtudiant\Etudiants;
+use App\Entity\proposEtudiant\Formations;
+use App\Repository\proposEtudiant\FormationsRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 

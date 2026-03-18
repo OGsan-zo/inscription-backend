@@ -1,36 +1,34 @@
 <?php
 
 namespace App\Service\payment;
-use App\Dto\PaymentRequestDto;
-use App\Entity\Payments;
-use App\Entity\Niveaux;
-use App\Entity\Utilisateur;
-use App\Repository\PaymentsRepository;
-use App\Entity\Etudiants;
+use App\Dto\payment\PaymentRequestDto;
+use App\Entity\payment\Payments;
+use App\Entity\proposEtudiant\Niveaux;
+use App\Entity\utilisateurs\Utilisateur;
+use App\Repository\payment\PaymentsRepository;
+use App\Entity\proposEtudiant\Etudiants;
 
+use App\Service\payment\TypeDroitService;
 use App\Service\utilisateurs\UtilisateursService;
-use App\Service\UtilisateurService;
 use Doctrine\ORM\EntityManagerInterface;
-use App\Service\droit\TypeDroitService as AppTypeDroitService;
-use App\Entity\Utilisateur as UtilisateurEntity;
-use App\Entity\TypeDroits;
+use App\Entity\payment\TypeDroits;
 use Exception;
-use App\Repository\EtudiantsRepository;
-use App\Repository\NiveauEtudiantsRepository;
+use App\Repository\proposEtudiant\EtudiantsRepository;
+use App\Repository\proposEtudiant\NiveauEtudiantsRepository;
 use DateTimeImmutable;
 
 class PaymentService
 {
     public function __construct(
         private PaymentsRepository $paymentsRepository,
-        private AppTypeDroitService $typeDroitsService,
+        private TypeDroitService $typeDroitsService,
         private EntityManagerInterface $em,
         private EtudiantsRepository $etudiantsRepository,
         private NiveauEtudiantsRepository $niveauEtudiantsRepository,
         private UtilisateursService $utilisateurService,
     ) {
     }
-    public function insertPayment(UtilisateurEntity $utilisateur, Etudiants $etudiant, Niveaux $niveau, Payments $payment, $typeDroit): Payments
+    public function insertPayment(Utilisateur $utilisateur, Etudiants $etudiant, Niveaux $niveau, Payments $payment, $typeDroit): Payments
     {
         if ($payment->getMontant() == 0) {
             return $payment;
@@ -48,7 +46,7 @@ class PaymentService
         return $payment;
     }
 
-    public function processEcolagePayment(array $data, UtilisateurEntity $agent): Payments
+    public function processEcolagePayment(array $data, Utilisateur $agent): Payments
     {
         $etudiantId = $data['etudiant_id'] ?? null;
         $anneeScolaire = $data['annee_scolaire'] ?? null;

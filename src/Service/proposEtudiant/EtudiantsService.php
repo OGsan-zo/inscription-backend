@@ -1,31 +1,25 @@
 <?php
 
 namespace App\Service\proposEtudiant;
-use App\Entity\TypeDroits;
 
-use App\Repository\EtudiantsRepository;
-use App\Repository\FormationEtudiantsRepository;
-use App\Repository\NiveauEtudiantsRepository;
-use App\Repository\SexesRepository;
-use App\Repository\FormationsRepository;
-use App\Repository\MentionsRepository;
-use App\Repository\NiveauxRepository;
-use App\Entity\Etudiants;
-use App\Service\droit\TypeDroitService;
+use App\Repository\proposEtudiant\EtudiantsRepository;
+use App\Repository\proposEtudiant\FormationEtudiantsRepository;
+use App\Repository\proposEtudiant\NiveauEtudiantsRepository;
+use App\Repository\proposEtudiant\SexesRepository;
+use App\Repository\proposEtudiant\FormationsRepository;
+use App\Repository\proposEtudiant\MentionsRepository;
+use App\Entity\proposEtudiant\Etudiants;
+use App\Service\payment\TypeDroitService;
 use App\Service\payment\EcolageService;
 use App\Service\payment\PaymentService;
-use App\Entity\Cin;
-use App\Entity\Bacc;
-use App\Entity\Propos;
-use App\Dto\EtudiantRequestDto;
-use App\Dto\EtudiantResponseDto;
+use App\Entity\proposEtudiant\Propos;
+use App\Dto\proposEtudiant\EtudiantRequestDto;
+use App\Dto\proposEtudiant\EtudiantResponseDto;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
-use App\Entity\Ecolages;
-use App\Entity\FormationEtudiants;
+use App\Entity\payment\Ecolages;
 use App\Service\proposEtudiant\mapper\EtudiantMapper;
-use App\Entity\NiveauEtudiants;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use App\Service\proposEtudiant\mapper\InscriptionMapper;
 use App\Service\proposEtudiant\ProposService;
@@ -46,7 +40,6 @@ class EtudiantsService
     private SexesRepository $sexesRepository;
     private FormationsRepository $formationsRepository;
     private MentionsRepository $mentionsRepository;
-    private NiveauxRepository $niveauxRepository;
     private EtudiantMapper $etudiantMapper;
 
     private ValidatorInterface $validator;

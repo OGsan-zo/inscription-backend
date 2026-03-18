@@ -1,8 +1,8 @@
 <?php
 
 namespace App\Service\proposEtudiant;
-use App\Repository\NiveauxRepository;
-use App\Entity\Niveaux;
+use App\Repository\proposEtudiant\NiveauxRepository;
+use App\Entity\proposEtudiant\Niveaux;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 

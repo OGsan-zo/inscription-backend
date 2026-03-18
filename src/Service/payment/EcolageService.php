@@ -2,15 +2,15 @@
 
 namespace App\Service\payment;
 
-use App\Entity\Etudiants;
-use App\Entity\Formations;
-use App\Repository\EtudiantsRepository;
-use App\Repository\FormationEtudiantsRepository;
-use App\Repository\NiveauEtudiantsRepository;
-use App\Repository\EcolagesRepository;
-use App\Repository\PaymentsRepository;
-use App\Repository\TypeDroitsRepository;
-use App\Dto\EcolageHistoryResponseDto;
+use App\Entity\proposEtudiant\Etudiants;
+use App\Entity\proposEtudiant\Formations;
+use App\Repository\proposEtudiant\EtudiantsRepository;
+use App\Repository\proposEtudiant\FormationEtudiantsRepository;
+use App\Repository\proposEtudiant\NiveauEtudiantsRepository;
+use App\Repository\payment\EcolagesRepository;
+use App\Repository\payment\PaymentsRepository;
+use App\Repository\payment\TypeDroitsRepository;
+use App\Dto\payment\EcolageHistoryResponseDto;
 use App\Service\payment\mapper\EcolageMapper;
 use Exception;
 

@@ -2,32 +2,23 @@
 
 namespace App\Controller\Api;
 
+use App\Controller\Api\utils\BaseApiController;
 use App\Service\payment\EcolageService;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Exception;
 use Symfony\Component\HttpFoundation\Request;
-use App\Service\utils\JwtTokenManager;
 use App\Service\payment\PaymentService;
-use App\Entity\Utilisateur as UtilisateurEntity;
-use App\Repository\UtilisateurRepository;
 use App\Annotation\TokenRequired;
-use Symfony\Component\Serializer\SerializerInterface;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
-use Symfony\Component\HttpFoundation\Response;
-use App\Dto\PaymentRequestDto;
+use App\Dto\payment\PaymentRequestDto;
 
 #[Route('/ecolage')]
-class EcolageController extends AbstractController
+class EcolageController extends BaseApiController
 {
     public function __construct(
         private EcolageService $ecolageService,
-        private PaymentService $paymentService,
-        private UtilisateurRepository $utilisateurRepository,
-        private JwtTokenManager $jwtTokenManager,
-        private SerializerInterface $serializer,
-        private ValidatorInterface $validator
+        private PaymentService $paymentService
     ) {
     }
 
@@ -36,18 +27,12 @@ class EcolageController extends AbstractController
     public function getEtudiantDetails(int $id): JsonResponse
     {
         try {
-            $details = $this->ecolageService->getStudentEcolageDetails($id);
+            $data = $this->ecolageService->getStudentEcolageDetails($id);
+            return $this->jsonSuccess($data);
 
-            return new JsonResponse([
-                'status' => 'success',
-                'data' => $details
-            ], 200);
 
         } catch (Exception $e) {
-            return new JsonResponse([
-                'status' => 'error',
-                'message' => $e->getMessage()
-            ], 400);
+            return $this->jsonError($e->getMessage(), 400);
         }
     }
 
@@ -58,35 +43,20 @@ class EcolageController extends AbstractController
         try {
             $data = $this->ecolageService->getPaymentsHistory($id);
 
-            return new JsonResponse([
-                'status' => 'success',
-                'data' => $data->toArray()
-            ], 200);
+            return $this->jsonSuccess($data->toArray());
 
         } catch (Exception $e) {
-            return new JsonResponse([
-                'status' => 'error',
-                'message' => $e->getMessage()
-            ], 400);
+            return $this->jsonError($e->getMessage(), 400);
         }
     }
+     
 
     #[Route('/payment/save', name: 'api_ecolage_payment_save', methods: ['POST'])]
     #[TokenRequired]
     public function savePayment(Request $request): JsonResponse
     {
         try {
-            // 1. Extraction du Token JWT depuis le Header Authorization
-            $token = $this->jwtTokenManager->extractTokenFromRequest($request);
-            $claims = $this->jwtTokenManager->extractClaimsFromToken($token);
-
-
-            // 3. Recherche de l'entité Utilisateur (l'agent)
-            $agent = $this->utilisateurRepository->find($claims['id']);
-            if (!$agent instanceof UtilisateurEntity) {
-                return new JsonResponse(['status' => 'error', 'message' => 'Agent non identifié ou introuvable'], 401);
-            }
-
+            $utilisateur = $this->getUserFromRequest($request);
             $data = json_decode($request->getContent(), true);
             $requiredFields = ['etudiant_id', 'annee_scolaire', 'montant','ref_bordereau','date_paiement'];
 
@@ -107,23 +77,16 @@ class EcolageController extends AbstractController
             }
 
 
-            $payment = $this->paymentService->processEcolagePayment($data, $agent);
-
-            return new JsonResponse([
-                'status' => 'success',
-                'data' => [
-                    'id_paiement' => $payment->getId(),
-                    'reference' => $payment->getReference(),
-                    'montant' => $payment->getMontant()
-                ],
-                'message' => 'Paiement enregistré'
-            ], 201);
+            $payment = $this->paymentService->processEcolagePayment($data, $utilisateur);
+            $data =     [
+                'id_paiement' => $payment->getId(),
+                'reference' => $payment->getReference(),
+                'montant' => $payment->getMontant()
+            ];
+            return $this->jsonSuccess($data);
 
         } catch (Exception $e) {
-            return new JsonResponse([
-                'status' => 'error',
-                'message' => $e->getMessage()
-            ], 400);
+             return $this->jsonError($e->getMessage(), 400);
         }
     }
 
@@ -133,16 +96,12 @@ class EcolageController extends AbstractController
         try {
             $this->paymentService->annulerPaiement($id);
 
-            return new JsonResponse([
-                'status' => 'success',
+            return $this->jsonSuccess([
                 'message' => 'Paiement annulé avec succès'
-            ], 200);
+            ]);
 
         } catch (Exception $e) {
-            return new JsonResponse([
-                'status' => 'error',
-                'message' => $e->getMessage()   
-            ], 400);
+            return $this->jsonError($e->getMessage(), 400);
         }
     }
 
@@ -151,69 +110,24 @@ class EcolageController extends AbstractController
     public function modifierPaiement(Request $request): JsonResponse
     {
         try {
-            $token = $this->jwtTokenManager->extractTokenFromRequest($request);
-            $arrayToken = $this->jwtTokenManager->extractClaimsFromToken($token);
-            $idUser = $arrayToken['id'];
-            $utilisateur = $this->utilisateurRepository->find($idUser);
-
-            if (!$utilisateur) {
-                return new JsonResponse([
-                    'status' => 'error',
-                    'message' => 'Utilisateur non trouvé pour l\'ID: ' . $idUser
-                ], 401);
-            }
-            $dto = $this->serializer->deserialize(
-                $request->getContent(),
+            $utilisateur = $this->getUserFromRequest($request);
+            $dto = $this->deserializeAndValidate(
+                $request,
                 PaymentRequestDto::class,
-                'json'
             );
-
-            // Valider le DTO
-            $errors = $this->validator->validate($dto);
-
-            if (count($errors) > 0) {
-                $errorMessages = [];
-                $messages = [];
-
-                foreach ($errors as $error) {
-                    $property = $error->getPropertyPath();
-                    $message = $error->getMessage();
-
-                    // erreurs par champ
-                    $errorMessages[$property][] = $message;
-
-                    // message global
-                    $messages[] = sprintf('%s : %s', $property, $message);
-                }
-
-                return $this->json([
-                    'status' => 'error',
-                    'message' => 'Erreur de validation : ' . implode(' | ', $messages),
-                    'errors' => $errorMessages
-                ], Response::HTTP_BAD_REQUEST);
-            }
-
             
-
             $newPayment = $this->paymentService->modifierPayment($utilisateur, $dto);
-
-            return new JsonResponse([
-                'status' => 'success',
-                'message' => 'Paiement modifié avec succès (Annulé et Remplacé)',
-                'data' => [
+            $data = [
                     'id' => $newPayment->getId(),
                     'montant' => $newPayment->getMontant(),
                     'reference' => $newPayment->getReference(),
                     'datePaiement' => $newPayment->getDatePayment()->format('Y-m-d'),
                     'typeDroit' => $newPayment->getType() ? $newPayment->getType()->getNom() : null
-                ]
-            ], 200);
+                ];
+            return $this->jsonSuccess($data);
 
         } catch (Exception $e) {
-            return new JsonResponse([
-                'status' => 'error',
-                'message' => $e->getMessage()
-            ], 400);
+            return $this->jsonError($e->getMessage(), 400);
         }
     }
     #[Route('/etudiant/{id}/all-detail', name: 'api_ecolage_etudiant_all_detail', methods: ['GET'])]
@@ -226,16 +140,10 @@ class EcolageController extends AbstractController
             $details = $this->ecolageService->getStudentEcolageDetails($id);
             $valiny = $data->toArray();
             $valiny['details'] = $details;
-            return new JsonResponse([
-                'status' => 'success',
-                'data' => $valiny,
-            ], 200);
+            return $this->jsonSuccess($valiny);
 
         } catch (Exception $e) {
-            return new JsonResponse([
-                'status' => 'error',
-                'message' => $e->getMessage()
-            ], 400);
+            return $this->jsonError($e->getMessage(), 400);
         }
     }
 
