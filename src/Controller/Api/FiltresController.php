@@ -4,7 +4,6 @@ namespace App\Controller\Api;
 
 use App\Controller\Api\utils\BaseApiController;
 use App\Service\proposEtudiant\EtudiantsService;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -37,7 +36,7 @@ class FiltresController extends BaseApiController
             $idParcours = $request->query->get('idParcours');
 
             // 2. Récupération de tous les étudiants de l'année
-            $niveauEtudiants = $this->niveauEtudiantsService->getAllNiveauEtudiantAnnee($annee, $idMention, $idNiveau, 50, $idParcours ? (int) $idParcours : null);
+            $niveauEtudiants = $this->niveauEtudiantsService->getAllNiveauEtudiantAnnee($annee,$idMention,$idNiveau,$idParcours ? (int) $idParcours : null);
 
             $data = array_map(function ($e) {
                 $etudiant = $e->getEtudiant();
@@ -78,11 +77,11 @@ class FiltresController extends BaseApiController
             // 1. Récupération des critères de filtrage depuis l'URL
             $idMention = $request->query->get('idMention');
             $idNiveau = $request->query->get('idNiveau');
-            $limit = (int) $request->query->get('limit', 10000);
             $idParcours = $request->query->get('idParcours');
+            $limit = (int) $request->query->get('limit', 10000);
 
             // 2. Récupération de tous les étudiants de l'année
-            $niveauEtudiants = $this->niveauEtudiantsService->getAllNiveauEtudiantAnnee($annee, $idMention, $idNiveau, $limit, $idParcours ? (int) $idParcours : null);
+            $niveauEtudiants = $this->niveauEtudiantsService->getAllNiveauEtudiantAnnee($annee,$idMention,$idNiveau,$idParcours ? (int) $idParcours : null,$limit);
 
             $data = $this->etudiantsService->toArrayListeNiveauEtudiants($niveauEtudiants);
             return $this->jsonSuccess($data);
