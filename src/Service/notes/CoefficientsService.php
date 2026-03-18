@@ -46,13 +46,6 @@ class CoefficientsService extends BaseService
         return $coeff;
     }
 
-    public function getVerifiedMention(int $id): Mentions
-    {
-        $mention = $this->mentionsService->getById($id);
-        $this->validationService->throwIfNull($mention, "Mention introuvable pour l'ID $id.");
-        return $mention;
-    }
-
     private function buildCoefficient(\App\Entity\Matieres $matiere, Mentions $mention, int $coefficient): MatiereMentionCoefficient
     {
         $coeff = new MatiereMentionCoefficient();
@@ -67,7 +60,7 @@ class CoefficientsService extends BaseService
         $this->em->getConnection()->beginTransaction();
         try {
             $matiere = $this->matieresService->getVerifiedMatiere($dto->idMatiere);
-            $mention = $this->getVerifiedMention($dto->idMention);
+            $mention = $this->mentionsService->getVerifiedMention($dto->idMention);
 
             $doublon = $this->coefficientRepository->findByMatiereAndMention(
                 $matiere->getId(),
