@@ -293,7 +293,7 @@ class InscriptionService
         $details['niveau'] = $this->niveauEtudiantsService->toArrayNiveau($niveau);
         $details['mention'] = $this->mentionsService->toArray($mention);
         $details['parcours'] = [
-            'nom' => $parcours->getNom(),
+            'nom' => $parcours?->getNom() ?? null,
         ];
         //Payments pour cette année
         $details['payments'] = $this->paymentService->getPaymentParAnnee($etudiant, $annee);
