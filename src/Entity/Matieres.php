@@ -16,7 +16,7 @@ class Matieres extends BaseEntite
     private ?string $nom = null;
 
     #[ORM\ManyToOne(inversedBy: 'matieres')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true)]
     private ?Semestres $semestre = null;
 
     /**
