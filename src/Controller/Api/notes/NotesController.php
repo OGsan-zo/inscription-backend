@@ -5,6 +5,7 @@ namespace App\Controller\Api\notes;
 use App\Annotation\TokenRequired;
 use App\Controller\Api\utils\BaseApiController;
 use App\Dto\notes\MatiereDto;
+use App\Dto\notes\MatiereSemestreDto;
 use App\Service\notes\NotesService;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -61,4 +62,33 @@ class NotesController extends BaseApiController
         }
     }
 
+    // -------------------------------------------------------
+    // GET /notes/matiere-semestres
+    // -------------------------------------------------------
+    #[Route('/matiere-semestres', methods: ['GET'])]
+    public function matiereSemestres(): JsonResponse
+    {
+        try {
+            $matieres = $this->notesService->getAllMatiereSemestres();
+            return $this->jsonSuccess($this->notesService->formatAllMatiereSemestres($matieres));
+        } catch (\Throwable $e) {
+            return $this->jsonError($e->getMessage(), $e->getCode() ?: 400);
+        }
+    }
+
+    // -------------------------------------------------------
+    // POST /notes/matiere-semestres
+    // -------------------------------------------------------
+    #[Route('/matiere-semestres', methods: ['POST'])]
+    #[TokenRequired]
+    public function assignerSemestre(Request $request): JsonResponse
+    {
+        try {
+            $dto = $this->deserializeAndValidate($request, MatiereSemestreDto::class);
+            $matiere = $this->notesService->assignerSemestre($dto);
+            return $this->jsonSuccess($this->notesService->formatMatiereSemestre($matiere), 201);
+        } catch (\Throwable $e) {
+            return $this->jsonError($e->getMessage(), $e->getCode() ?: 400);
+        }
+    }
 }

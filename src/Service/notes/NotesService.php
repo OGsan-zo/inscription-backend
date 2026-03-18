@@ -3,6 +3,7 @@
 namespace App\Service\notes;
 
 use App\Dto\notes\MatiereDto;
+use App\Dto\notes\MatiereSemestreDto;
 use App\Dto\utils\OrderCriteria;
 use App\Entity\Matieres;
 use App\Entity\Mentions;
@@ -112,4 +113,67 @@ class NotesService extends BaseService
         return $mention;
     }
 
+    public function formatMention(Mentions $m): array
+    {
+        return [
+            'id'  => $m->getId(),
+            'nom' => $m->getNom(),
+            'abr' => $m->getAbr(),
+        ];
+    }
+
+    public function formatAllMentions(array $mentions): array
+    {
+        return array_map(fn(Mentions $m) => $this->formatMention($m), $mentions);
+    }
+
+    // -------------------------------------------------------
+    // Matiere-Semestres (liaison)
+    // -------------------------------------------------------
+
+    public function getAllMatiereSemestres(): array
+    {
+        return $this->matieresRepository->findAvecSemestre();
+    }
+
+    public function assignerSemestre(MatiereSemestreDto $dto): Matieres
+    {
+        $this->em->getConnection()->beginTransaction();
+        try {
+            $matiere  = $this->getVerifiedMatiere($dto->idMatiere);
+            $semestre = $this->getVerifiedSemestre($dto->idSemestre);
+
+            if ($matiere->getSemestre() !== null) {
+                throw new \Exception(
+                    "La matière \"{$matiere->getNom()}\" est déjà associée à un semestre.",
+                    400
+                );
+            }
+
+            $matiere->setSemestre($semestre);
+            $this->save($matiere);
+            $this->em->getConnection()->commit();
+            return $matiere;
+        } catch (\Throwable $e) {
+            $this->em->getConnection()->rollBack();
+            throw $e;
+        }
+    }
+
+    public function formatMatiereSemestre(Matieres $m): array
+    {
+        return [
+            'id'       => $m->getId(),
+            'matiere'  => ['id' => $m->getId(), 'nom' => $m->getNom()],
+            'semestre' => [
+                            'id'  => $m->getSemestre()?->getId(),
+                            'nom' => $m->getSemestre()?->getNom(),
+                            ],
+        ];
+    }
+
+    public function formatAllMatiereSemestres(array $matieres): array
+    {
+        return array_map(fn(Matieres $m) => $this->formatMatiereSemestre($m), $matieres);
+    }
 }

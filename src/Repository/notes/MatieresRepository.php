@@ -23,4 +23,14 @@ class MatieresRepository extends BaseRepository
             ->getQuery()
             ->getResult();
     }
+
+    public function findAvecSemestre(): array
+    {
+        return $this->createQueryBuilder('m')
+            ->andWhere('m.semestre IS NOT NULL')
+            ->andWhere('m.deletedAt IS NULL')
+            ->orderBy('m.nom', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
 }
