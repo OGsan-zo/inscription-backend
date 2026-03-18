@@ -110,8 +110,8 @@ class NiveauEtudiantsService extends BaseService
     {
         return $this->niveauService->getAllNiveaux();
     }
-    public function getAllNiveauEtudiantAnnee(int $annee, ?int $idMention = null, ?int $idNiveau = null, ?int $limit = 50, ?int $idParcours = null): array{
-        $valiny = $this->niveauEtudiantsRepository->getAllNiveauEtudiantAnnee($annee, $idMention, $idNiveau, $limit, $idParcours);
+    public function getAllNiveauEtudiantAnnee(int $annee, ?int $idMention = null, ?int $idNiveau = null,?int $idParcours = null, ?int $limit = 50): array{
+        $valiny = $this->niveauEtudiantsRepository->getAllNiveauEtudiantAnnee($annee, $idMention, $idNiveau,$idParcours, $limit );
         return $valiny;
     }
     public function getAllNiveauxParEtudiant(Etudiants $etudiant): array {
@@ -204,6 +204,8 @@ class NiveauEtudiantsService extends BaseService
             'annee' => $niveauEtudiant->getAnnee(),
             'remarque' => $niveauEtudiant->getRemarque(),
             'isBoursier' => $niveauEtudiant->getIsBoursier(),
+            'parcours' => $niveauEtudiant->getParcours()?->getNom(),
+            
             
         ];
 
