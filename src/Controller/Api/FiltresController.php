@@ -44,16 +44,16 @@ class FiltresController extends BaseApiController
                 $niveau = $e->getNiveau();
                 $parcours = $e->getParcours();
                 return [
-                    'id' => $etudiant->getId(),
-                    'nom' => $etudiant->getNom(),
-                    'prenom' => $etudiant->getPrenom(),
-                    'mention' => $mention->getNom(),
-                    'mentionAbr' => $mention->getAbr(),
-                    'idMention' => $mention->getId(),
-                    'niveau' => $niveau->getNom(),
-                    'idNiveau' => $niveau->getId(),
+                    'id' => $etudiant?->getId(),
+                    'nom' => $etudiant?->getNom(),
+                    'prenom' => $etudiant?->getPrenom(),
+                    'mention' => $mention?->getNom(),
+                    'mentionAbr' => $mention?->getAbr(),
+                    'idMention' => $mention?->getId(),
+                    'niveau' => $niveau?->getNom(),
+                    'idNiveau' => $niveau?->getId(),
                     'matricule' => $e->getMatricule() ?? '',
-                    'dateInsertion' => $e->getDateInsertion()->format('Y-m-d H:i:s'),
+                    'dateInsertion' => $e->getDateInsertion()?->format('Y-m-d H:i:s'),
                     'idParcours' => $parcours?->getId(),
                     'nomParcours' => $parcours?->getNom(),
                 ];

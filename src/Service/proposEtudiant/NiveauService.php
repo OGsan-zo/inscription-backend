@@ -3,39 +3,40 @@
 namespace App\Service\proposEtudiant;
 use App\Repository\proposEtudiant\NiveauxRepository;
 use App\Entity\proposEtudiant\Niveaux;
+
 use Doctrine\ORM\EntityManagerInterface;
-use Exception;
+use App\Service\utils\BaseService;
 
-class NiveauService
-{   private $niveauxRepository;
-    private EntityManagerInterface $em;
+class NiveauService extends BaseService
+{
+    public function __construct(
+        private readonly NiveauxRepository $niveauxRepository,
+        EntityManagerInterface $em,
+    ) {
+        parent::__construct($em);
+    }
 
-    public function __construct(NiveauxRepository $niveauxRepository)
+    protected function getRepository(): NiveauxRepository
     {
-        $this->niveauxRepository = $niveauxRepository;
+        return $this->niveauxRepository;
+    }
 
-    }
-    
-    public function insertNiveau(Niveaux $niveau): Niveaux
-    {
-        $this->em->persist($niveau);
-        $this->em->flush();
-        return $niveau;
-    }
-    public function getNiveauSuivant(Niveaux $niveauActuel): ?Niveaux
-    {
-        $niveauSuivant = $this->niveauxRepository->getNiveauSuivant($niveauActuel);
-        return $niveauSuivant;
-    }
-    public function getById($id): ?Niveaux
+    public function getById(int $id): ?Niveaux
     {
         return $this->niveauxRepository->find($id);
     }
+
+    public function getNiveauSuivant(Niveaux $niveauActuel): ?Niveaux
+    {
+        return $this->niveauxRepository->getNiveauSuivant($niveauActuel);
+    }
+
     public function getAllNiveaux(): array
     {
         return $this->niveauxRepository->findAll();
     }
-    public function toArray(?Niveaux $niveau ): array
+
+    public function toArray(?Niveaux $niveau): array
     {
         if ($niveau === null) {
             return [];
@@ -47,5 +48,4 @@ class NiveauService
             'grade' => $niveau->getGrade(),
         ];
     }
-    
 }

@@ -5,6 +5,7 @@ namespace App\Service\utils;
 use App\Dto\utils\OrderCriteria;
 use App\Dto\utils\PaginationCriteria;
 // use App\Entity\utils\BaseEntite;
+use App\Service\utils\ValidationService;
 use Doctrine\ORM\EntityManagerInterface;
 
 abstract class BaseService
@@ -14,7 +15,10 @@ abstract class BaseService
      */
     protected EntityManagerInterface $em;
 
-    public function __construct(EntityManagerInterface $em)
+    public function __construct(
+        EntityManagerInterface $em,
+        private readonly ValidationService $validationService,
+    )
     {
         $this->em = $em;
     }
@@ -28,6 +32,15 @@ abstract class BaseService
     {
         return $this->getRepository()->getById($id);
     }
+
+    public function getVerifierById(int $id): object
+    {
+        $entity = $this->getById($id);
+        $shortName = (new \ReflectionClass($this->getRepository()->getClassName()))->getShortName();
+        $this->validationService->throwIfNull($entity, "$shortName introuvable pour l'ID $id.");
+        return $entity;
+    }
+
     public function getAll(OrderCriteria $orderCriteria): array
     {
         return $this->getRepository()->getAll($orderCriteria);

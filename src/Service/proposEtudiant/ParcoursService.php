@@ -10,7 +10,9 @@ use App\Entity\proposEtudiant\Niveaux;
 use App\Entity\proposEtudiant\Parcours;
 use App\Repository\proposEtudiant\ParcoursRepository;
 use App\Service\proposEtudiant\EtudiantsService;
+use App\Service\proposEtudiant\MentionsService;
 use App\Service\proposEtudiant\NiveauEtudiantsService;
+use App\Service\proposEtudiant\NiveauService;
 use App\Service\utils\BaseService;
 use App\Service\utils\ValidationService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -22,9 +24,11 @@ class ParcoursService extends BaseService
         private readonly ParcoursRepository $parcoursRepository,
         private readonly ValidationService $validationService,
         private readonly NiveauEtudiantsService $niveauEtudiantsService,
-        private readonly EtudiantsService $etudiantsService
+        private readonly EtudiantsService $etudiantsService,
+        private readonly MentionsService $mentionsService,
+        private readonly NiveauService $niveauService,
     ) {
-        parent::__construct($em);
+        parent::__construct($em, $validationService);
     }
 
     protected function getRepository(): ParcoursRepository
@@ -37,27 +41,6 @@ class ParcoursService extends BaseService
         return $this->parcoursRepository->findByMentionAndNiveau($idMention, $idNiveau);
     }
 
-    private function getVerifiedMention(int $id): Mentions
-    {
-        $mention = $this->em->getRepository(Mentions::class)->find($id);
-        $this->validationService->throwIfNull($mention, "Mention introuvable pour l'ID $id.");
-        return $mention;
-    }
-
-    private function getVerifiedNiveau(int $id): Niveaux
-    {
-        $niveau = $this->em->getRepository(Niveaux::class)->find($id);
-        $this->validationService->throwIfNull($niveau, "Niveau introuvable pour l'ID $id.");
-        return $niveau;
-    }
-
-    public function getVerifiedParcours(int $id): Parcours
-    {
-        $parcours = $this->getById($id);
-        $this->validationService->throwIfNull($parcours, "Parcours introuvable pour l'ID $id.");
-        return $parcours;
-    }
-
     private function getVerifiedEtudiant(int $id): NiveauEtudiants
     {
         $etudiant = $this->etudiantsService->getEtudiantById($id);
@@ -67,7 +50,7 @@ class ParcoursService extends BaseService
         return $dernierNiveaux;
     }
 
-    public function saveDto(ParcoursDto $dto , Mentions $mention, Niveaux $niveau): Parcours
+    public function saveDto(ParcoursDto $dto, Mentions $mention, Niveaux $niveau): Parcours
     {
         $parcours = new Parcours();
         $parcours->setNom($dto->nom);
@@ -81,8 +64,8 @@ class ParcoursService extends BaseService
     {
         $this->em->getConnection()->beginTransaction();
         try {
-            $mention = $this->getVerifiedMention($dto->idMention);
-            $niveau = $this->getVerifiedNiveau($dto->idNiveau);
+            $mention = $this->mentionsService->getVerifierById($dto->idMention);
+            $niveau = $this->niveauService->getVerifierById($dto->idNiveau);
 
             $parcours = $this->saveDto($dto, $mention, $niveau);
 
@@ -100,9 +83,9 @@ class ParcoursService extends BaseService
     {
         $this->em->getConnection()->beginTransaction();
         try {
-            $ancien = $this->getVerifiedParcours($id);
-            $mention = $this->getVerifiedMention($dto->idMention);
-            $niveau = $this->getVerifiedNiveau($dto->idNiveau);
+            $ancien = $this->getVerifierById($id);
+            $mention = $this->mentionsService->getVerifierById($dto->idMention);
+            $niveau = $this->niveauService->getVerifierById($dto->idNiveau);
 
             // Soft delete de l'ancien
             $this->delete($ancien);
@@ -130,7 +113,7 @@ class ParcoursService extends BaseService
     {
         $this->em->getConnection()->beginTransaction();
         try {
-            $parcours = $this->getVerifiedParcours($dto->idParcours);
+            $parcours = $this->getVerifierById($dto->idParcours);
             $assignes = [];
 
             foreach ($dto->idEtudiants as $idEtudiant) {
@@ -151,7 +134,7 @@ class ParcoursService extends BaseService
     public function format(Parcours $parcours): array
     {
         $data = $parcours->toArray(['deletedAt']);
-        
+
         $data['mention'] = [
             'id'  => $parcours->getMention()?->getId(),
             'nom' => $parcours->getMention()?->getNom(),
@@ -177,5 +160,4 @@ class ParcoursService extends BaseService
             'idEtudiant'       => $ne->getEtudiant()?->getId(),
         ];
     }
-
 }
