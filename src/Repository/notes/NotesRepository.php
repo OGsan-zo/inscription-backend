@@ -34,6 +34,18 @@ class NotesRepository extends BaseRepository
             ->getResult();
     }
 
+    public function findByEtudiantAndMMC(int $idEtudiant, int $idMMC): ?Notes
+    {
+        return $this->createQueryBuilder('n')
+            ->andWhere('n.etudiant = :idEtudiant')
+            ->andWhere('n.matiereMentionCoefficient = :idMMC')
+            ->andWhere('n.deletedAt IS NULL')
+            ->setParameter('idEtudiant', $idEtudiant)
+            ->setParameter('idMMC', $idMMC)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
     /**
      * Retourne toutes les notes d'un étudiant
      */
