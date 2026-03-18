@@ -2,12 +2,16 @@
 
 namespace App\Service\notes;
 
+use App\Dto\notes\CoefficientUpdateDto;
 use App\Dto\notes\MatiereDto;
+use App\Dto\notes\MatiereMentionCoefficientDto;
 use App\Dto\notes\MatiereSemestreDto;
 use App\Dto\utils\OrderCriteria;
+use App\Entity\MatiereMentionCoefficient;
 use App\Entity\Matieres;
 use App\Entity\Mentions;
 use App\Entity\Semestres;
+use App\Repository\notes\MatiereMentionCoefficientRepository;
 use App\Repository\notes\MatieresRepository;
 use App\Repository\notes\SemestresRepository;
 use App\Service\utils\BaseService;
@@ -20,6 +24,7 @@ class NotesService extends BaseService
         EntityManagerInterface $em,
         private readonly MatieresRepository $matieresRepository,
         private readonly SemestresRepository $semestresRepository,
+        private readonly MatiereMentionCoefficientRepository $coefficientRepository,
         private readonly ValidationService $validationService,
     ) {
         parent::__construct($em);
@@ -166,14 +171,98 @@ class NotesService extends BaseService
             'id'       => $m->getId(),
             'matiere'  => ['id' => $m->getId(), 'nom' => $m->getNom()],
             'semestre' => [
-                            'id'  => $m->getSemestre()?->getId(),
-                            'nom' => $m->getSemestre()?->getNom(),
-                            ],
+                'id'  => $m->getSemestre()?->getId(),
+                'nom' => $m->getSemestre()?->getNom(),
+            ],
         ];
     }
 
     public function formatAllMatiereSemestres(array $matieres): array
     {
         return array_map(fn(Matieres $m) => $this->formatMatiereSemestre($m), $matieres);
+    }
+
+    // -------------------------------------------------------
+    // Coefficients (MatiereMentionCoefficient)
+    // -------------------------------------------------------
+
+    public function getAllCoefficients(): array
+    {
+        return $this->coefficientRepository->getAll(new OrderCriteria('createdAt', 'ASC'));
+    }
+
+    public function getVerifiedCoefficient(int $id): MatiereMentionCoefficient
+    {
+        $coeff = $this->coefficientRepository->find($id);
+        $this->validationService->throwIfNull($coeff, "Coefficient introuvable pour l'ID $id.");
+        return $coeff;
+    }
+
+    public function createCoefficient(MatiereMentionCoefficientDto $dto): MatiereMentionCoefficient
+    {
+        $this->em->getConnection()->beginTransaction();
+        try {
+            $matiere = $this->getVerifiedMatiere($dto->idMatiere);
+            $mention = $this->getVerifiedMention($dto->idMention);
+
+            $doublon = $this->coefficientRepository->findByMatiereAndMention(
+                $matiere->getId(),
+                $mention->getId()
+            );
+            if ($doublon !== null) {
+                throw new \Exception(
+                    "Un coefficient existe déjà pour la matière \"{$matiere->getNom()}\" et la mention \"{$mention->getNom()}\".",
+                    400
+                );
+            }
+
+            $coeff = new MatiereMentionCoefficient();
+            $coeff->setMatiere($matiere);
+            $coeff->setMention($mention);
+            $coeff->setCoefficient($dto->coefficient);
+
+            $this->em->persist($coeff);
+            $this->em->flush();
+            $this->em->getConnection()->commit();
+            return $coeff;
+        } catch (\Throwable $e) {
+            $this->em->getConnection()->rollBack();
+            throw $e;
+        }
+    }
+
+    public function updateCoefficient(int $id, CoefficientUpdateDto $dto): MatiereMentionCoefficient
+    {
+        $this->em->getConnection()->beginTransaction();
+        try {
+            $coeff = $this->getVerifiedCoefficient($id);
+            $coeff->setCoefficient($dto->coefficient);
+            $this->em->flush();
+            $this->em->getConnection()->commit();
+            return $coeff;
+        } catch (\Throwable $e) {
+            $this->em->getConnection()->rollBack();
+            throw $e;
+        }
+    }
+
+    public function formatCoefficient(MatiereMentionCoefficient $c): array
+    {
+        $matiere = $c->getMatiere();
+        return [
+            'id'          => $c->getId(),
+            'matiere'     => ['id' => $matiere?->getId(), 'nom' => $matiere?->getNom()],
+            'semestre'    => [
+                'id'  => $matiere?->getSemestre()?->getId(),
+                'nom' => $matiere?->getSemestre()?->getNom(),
+            ],
+            'mention'     => $this->formatMention($c->getMention()),
+            'coefficient' => $c->getCoefficient(),
+        ];
+    }
+
+    public function formatAllCoefficients(array $coefficients): array
+    {
+        return array_map(fn(MatiereMentionCoefficient $c) => $this->formatCoefficient($c), $coefficients);
     }
 }
