@@ -17,6 +17,7 @@ use App\Service\proposEtudiant\FormationEtudiantsService;
 use App\Service\proposEtudiant\NiveauEtudiantsService;
 use Exception;
 use App\Entity\Mentions;
+use Proxies\__CG__\App\Entity\Parcours;
 
 class InscriptionService
 {
@@ -284,15 +285,16 @@ class InscriptionService
         $niveauEtudiant = $this->niveauEtudiantsService->getDernierNiveauParEtudiant($etudiant);
         $niveau = $niveauEtudiant->getNiveau();
         $mention = $niveauEtudiant->getMention();
-
+        $parcours = $niveauEtudiant->getParcours();
         $details = $this->etudiantsService->toArray($etudiant);
         $details['matricule'] = $niveauEtudiant->getMatricule();
         $details['estBoursier'] = $niveauEtudiant->getIsBoursier();
         $details['formation'] = $this->formationEtudiantsService->toArray($formationEtudiant);
         $details['niveau'] = $this->niveauEtudiantsService->toArrayNiveau($niveau);
         $details['mention'] = $this->mentionsService->toArray($mention);
-
-
+        $details['parcours'] = [
+            'nom' => $parcours->getNom(),
+        ];
         //Payments pour cette année
         $details['payments'] = $this->paymentService->getPaymentParAnnee($etudiant, $annee);
 
