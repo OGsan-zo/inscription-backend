@@ -46,6 +46,9 @@ class NotesRepository extends BaseRepository
             ->getOneOrNullResult();
     }
 
+
+
+    
     /**
      * Retourne toutes les notes d'un étudiant
      */

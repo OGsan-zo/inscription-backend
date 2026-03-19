@@ -5,7 +5,7 @@ namespace App\Entity\utils;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\MappedSuperclass]
-abstract class BaseNomValidation extends BaseNom
+abstract class BaseNameValidation extends BaseName
 {
     #[ORM\Column(type: "datetime_immutable", nullable: true)]
     protected ?\DateTimeImmutable $dateValidation = null;

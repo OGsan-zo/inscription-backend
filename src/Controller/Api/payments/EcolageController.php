@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller\Api;
+namespace App\Controller\Api\payments;
 
 use App\Controller\Api\utils\BaseApiController;
 use App\Service\payment\EcolageService;

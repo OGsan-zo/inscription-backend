@@ -2,7 +2,7 @@
 
 namespace App\Entity\note;
 
-use App\Entity\utils\BaseEntite;
+use App\Entity\utils\BaseName;
 use App\Repository\notes\MatieresRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -10,14 +10,15 @@ use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: MatieresRepository::class)]
 #[ORM\HasLifecycleCallbacks]
-class Matieres extends BaseEntite
+class Matieres extends BaseName
 {
-    #[ORM\Column(length: 150)]
-    private ?string $nom = null;
-
     #[ORM\ManyToOne(inversedBy: 'matieres')]
-    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\JoinColumn(nullable: false)]
     private ?Semestres $semestre = null;
+    
+    #[ORM\ManyToOne(inversedBy: 'matieres')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?UE $ue = null;
 
     /**
      * @var Collection<int, MatiereMentionCoefficient>
@@ -29,18 +30,6 @@ class Matieres extends BaseEntite
     {
         $this->matiereMentionCoefficients = new ArrayCollection();
     }
-
-    public function getNom(): ?string
-    {
-        return $this->nom;
-    }
-
-    public function setNom(string $nom): static
-    {
-        $this->nom = $nom;
-        return $this;
-    }
-
     public function getSemestre(): ?Semestres
     {
         return $this->semestre;
@@ -49,6 +38,17 @@ class Matieres extends BaseEntite
     public function setSemestre(?Semestres $semestre): static
     {
         $this->semestre = $semestre;
+        return $this;
+    }
+
+    public function getUe(): ?UE
+    {
+        return $this->ue;
+    }
+
+    public function setUe(?UE $ue): static
+    {
+        $this->ue = $ue;
         return $this;
     }
 

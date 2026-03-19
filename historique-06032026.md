@@ -1,3 +1,0 @@
-RAMANANTSOA Tokiniaina Mickaia 
-- 10021 MP1 
-- 5856 LP1L - MP1 GMI 

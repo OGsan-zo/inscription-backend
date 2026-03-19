@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller\Api\parcours;
+namespace App\Controller\Api\proposEtudiant;
 
 use App\Annotation\TokenRequired;
 use App\Controller\Api\utils\BaseApiController;
@@ -74,7 +74,7 @@ class ParcoursController extends BaseApiController
     public function delete(int $id): JsonResponse
     {
         try {
-            $parcours = $this->parcoursService->getVerifiedParcours($id);
+            $parcours = $this->parcoursService->getVerifierById($id);
             $this->parcoursService->delete($parcours);
             return $this->jsonSuccess(['message' => 'Parcours supprimé avec succès.']);
         } catch (\Throwable $e) {

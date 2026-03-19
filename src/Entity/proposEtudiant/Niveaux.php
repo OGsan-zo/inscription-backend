@@ -2,6 +2,7 @@
 
 namespace App\Entity\proposEtudiant;
 
+use App\Entity\note\MatiereMentionCoefficient;
 use App\Entity\payment\Payments;
 use App\Repository\proposEtudiant\NiveauxRepository;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -44,11 +45,18 @@ class Niveaux
     #[ORM\OneToMany(targetEntity: Parcours::class, mappedBy: 'niveau')]
     private Collection $parcours;
 
+    /**
+     * @var Collection<int, MatiereMentionCoefficient>
+     */
+    #[ORM\OneToMany(targetEntity: MatiereMentionCoefficient::class, mappedBy: 'niveau')]
+    private Collection $matiereMentionCoefficients;
+
     public function __construct()
     {
         $this->niveaux = new ArrayCollection();
         $this->payments = new ArrayCollection();
         $this->parcours = new ArrayCollection();
+        $this->matiereMentionCoefficients = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -176,6 +184,19 @@ class Niveaux
             if ($payment->getNiveau() === $this) {
                 $payment->setNiveau(null);
             }
+        }
+
+        return $this;
+    }
+    public function getMatiereMentionCoefficients(): Collection
+    {
+        return $this->matiereMentionCoefficients;
+    }
+    public function addMatiereMentionCoefficient(MatiereMentionCoefficient $matiereMentionCoefficient): static
+    {
+        if (!$this->matiereMentionCoefficients->contains($matiereMentionCoefficient)) {
+            $this->matiereMentionCoefficients->add($matiereMentionCoefficient);
+            $matiereMentionCoefficient->setNiveau($this);
         }
 
         return $this;

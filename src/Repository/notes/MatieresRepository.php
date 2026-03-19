@@ -2,7 +2,8 @@
 
 namespace App\Repository\notes;
 
-use App\Entity\Matieres;
+
+use App\Entity\note\Matieres;
 use App\Repository\utils\BaseRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -19,7 +20,7 @@ class MatieresRepository extends BaseRepository
             ->andWhere('m.semestre = :idSemestre')
             ->andWhere('m.deletedAt IS NULL')
             ->setParameter('idSemestre', $idSemestre)
-            ->orderBy('m.nom', 'ASC')
+            ->orderBy('m.name', 'ASC')
             ->getQuery()
             ->getResult();
     }
@@ -29,7 +30,7 @@ class MatieresRepository extends BaseRepository
         return $this->createQueryBuilder('m')
             ->andWhere('m.semestre IS NOT NULL')
             ->andWhere('m.deletedAt IS NULL')
-            ->orderBy('m.nom', 'ASC')
+            ->orderBy('m.name', 'ASC')
             ->getQuery()
             ->getResult();
     }

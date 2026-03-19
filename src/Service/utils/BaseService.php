@@ -46,7 +46,7 @@ abstract class BaseService
         return $entity;
     }
 
-    public function getAll(OrderCriteria $orderCriteria): array
+    public function getAll(?OrderCriteria $orderCriteria = new OrderCriteria()): array
     {
         return $this->getRepository()->getAll($orderCriteria);
     }
