@@ -63,7 +63,9 @@ class NotesController extends BaseApiController
     {
         try {
             $semestres = $this->semestresService->getAllSemestres();
-            return $this->jsonSuccess($this->semestresService->formatAllSemestres($semestres));
+            $excludedFields = ['createdAt', 'deletedAt'];
+            $data = $this->semestresService->transformerArray($semestres, $excludedFields);
+            return $this->jsonSuccess($data);
         } catch (\Throwable $e) {
             return $this->jsonError($e->getMessage(), $e->getCode() ?: 400);
         }

@@ -2,7 +2,6 @@
 
 namespace App\Entity\note;
 
-use App\Entity\proposEtudiant\Niveaux;
 use App\Entity\utils\BaseName;
 use App\Repository\notes\SemestresRepository;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -13,9 +12,8 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\HasLifecycleCallbacks]
 class Semestres extends BaseName
 {
-    #[ORM\Column(length: 50, nullable: true)]
-    private ?string $grade = null;
-
+    #[ORM\Column(type: "integer", nullable: false)]
+    private ?int $grade = null;
 
     /**
      * @var Collection<int, Matieres>
@@ -28,16 +26,17 @@ class Semestres extends BaseName
         $this->matieres = new ArrayCollection();
     }
 
-    public function getGrade(): ?string
+    public function getGrade(): ?int
     {
         return $this->grade;
     }
 
-    public function setGrade(?string $grade): static
+    public function setGrade(?int $grade): static
     {
         $this->grade = $grade;
         return $this;
     }
+
     /**
      * @return Collection<int, Matieres>
      */
