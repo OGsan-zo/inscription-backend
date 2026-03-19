@@ -23,6 +23,10 @@ class Notes extends BaseValidation
     #[ORM\JoinColumn(nullable: false)]
     private ?MatiereMentionCoefficient $matiereMentionCoefficient = null;
 
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?TypeNotes $typeNote = null;
+
     public function getValeur(): ?string
     {
         return $this->valeur;
@@ -53,6 +57,17 @@ class Notes extends BaseValidation
     public function setMatiereMentionCoefficient(?MatiereMentionCoefficient $matiereMentionCoefficient): static
     {
         $this->matiereMentionCoefficient = $matiereMentionCoefficient;
+        return $this;
+    }
+
+    public function getTypeNote(): ?TypeNotes
+    {
+        return $this->typeNote;
+    }
+
+    public function setTypeNote(?TypeNotes $typeNote): static
+    {
+        $this->typeNote = $typeNote;
         return $this;
     }
 }

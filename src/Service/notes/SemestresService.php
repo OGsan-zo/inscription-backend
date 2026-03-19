@@ -27,13 +27,4 @@ class SemestresService extends BaseService
         return $this->semestresRepository->getAll(new OrderCriteria('nom', 'ASC'));
     }
 
-    public function formatSemestre(Semestres $s): array
-    {
-        return $s->toArray(['deletedAt', 'createdAt', 'grade']);
-    }
-
-    public function formatAllSemestres(array $semestres): array
-    {
-        return array_map(fn(Semestres $s) => $this->formatSemestre($s), $semestres);
-    }
 }

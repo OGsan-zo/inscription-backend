@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller\Api\parcours;
+namespace App\Controller\Api\proposEtudiant;
 
 use App\Annotation\TokenRequired;
 use App\Controller\Api\utils\BaseApiController;

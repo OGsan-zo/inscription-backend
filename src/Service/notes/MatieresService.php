@@ -3,10 +3,11 @@
 namespace App\Service\notes;
 
 use App\Dto\notes\MatiereDto;
-use App\Dto\notes\MatiereSemestreDto;
 use App\Dto\utils\OrderCriteria;
 use App\Entity\note\Matieres;
 use App\Repository\notes\MatieresRepository;
+use App\Service\notes\SemestresService;
+use App\Service\notes\UEService;
 use App\Service\utils\BaseService;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -16,6 +17,7 @@ class MatieresService extends BaseService
         EntityManagerInterface $em,
         private readonly MatieresRepository $matieresRepository,
         private readonly SemestresService $semestresService,
+        private readonly UEService $ueService,
     ) {
         parent::__construct($em);
     }
@@ -36,15 +38,14 @@ class MatieresService extends BaseService
 
     public function createMatiere(MatiereDto $dto): Matieres
     {
-        $this->em->getConnection()->beginTransaction();
         try {
             $matiere = new Matieres();
-            $matiere->setNom($dto->nom);
+            $matiere->setName($dto->name);
+            $matiere->setSemestre($this->semestresService->getVerifierById($dto->semestreId));
+            $matiere->setUe($this->ueService->getVerifierById($dto->ueId));
             $this->save($matiere);
-            $this->em->getConnection()->commit();
             return $matiere;
         } catch (\Throwable $e) {
-            $this->em->getConnection()->rollBack();
             throw $e;
         }
     }
@@ -66,30 +67,6 @@ class MatieresService extends BaseService
     public function getAllMatiereSemestres(): array
     {
         return $this->matieresRepository->findAvecSemestre();
-    }
-
-    public function assignerSemestre(MatiereSemestreDto $dto): Matieres
-    {
-        $this->em->getConnection()->beginTransaction();
-        try {
-            $matiere  = $this->getVerifierById($dto->idMatiere);
-            $semestre = $this->semestresService->getVerifierById($dto->idSemestre);
-
-            if ($matiere->getSemestre() !== null) {
-                throw new \Exception(
-                    "La matière \"{$matiere->getNom()}\" est déjà associée à un semestre.",
-                    400
-                );
-            }
-
-            $matiere->setSemestre($semestre);
-            $this->save($matiere);
-            $this->em->getConnection()->commit();
-            return $matiere;
-        } catch (\Throwable $e) {
-            $this->em->getConnection()->rollBack();
-            throw $e;
-        }
     }
 
     public function formatMatiereSemestre(Matieres $m): array

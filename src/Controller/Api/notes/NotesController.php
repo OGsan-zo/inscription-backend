@@ -9,10 +9,12 @@ use App\Dto\notes\MatiereDto;
 use App\Dto\notes\MatiereMentionCoefficientDto;
 use App\Dto\notes\MatiereSemestreDto;
 use App\Dto\notes\NoteUpdateDto;
+use App\Dto\notes\UEDto;
 use App\Service\notes\CoefficientsService;
 use App\Service\notes\MatieresService;
 use App\Service\notes\NotesService;
 use App\Service\notes\SemestresService;
+use App\Service\notes\UEService;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
@@ -25,26 +27,50 @@ class NotesController extends BaseApiController
         private readonly MatieresService $matieresService,
         private readonly CoefficientsService $coefficientsService,
         private readonly NotesService $notesService,
+        private readonly UEService $ueService,
     ) {
     }
 
-    // -------------------------------------------------------
-    // GET /notes/semestres
-    // -------------------------------------------------------
-    #[Route('/semestres', methods: ['GET'])]
-    public function semestres(): JsonResponse
+    #[Route('/ue', methods: ['GET'])]
+    public function ue(): JsonResponse
     {
         try {
-            $semestres = $this->semestresService->getAllSemestres();
-            return $this->jsonSuccess($this->semestresService->formatAllSemestres($semestres));
+            $ues = $this->ueService->getAll();
+            $excludedFields = ['createdAt', 'deletedAt'];
+            $data = $this->ueService->transformerArray($ues, $excludedFields);
+            return $this->jsonSuccess($data);
         } catch (\Throwable $e) {
             return $this->jsonError($e->getMessage(), $e->getCode() ?: 400);
         }
     }
 
-    // -------------------------------------------------------
-    // GET /notes/matieres
-    // -------------------------------------------------------
+    #[Route('/ue', methods: ['POST'])]
+    #[TokenRequired(['Admin'])]
+    public function createUE(Request $request): JsonResponse
+    {
+        try {
+            $dto= $this->deserializeAndValidate($request, UEDto::class);
+            $ue = $this->ueService->saveDto($dto);
+            $excludedFields = ['createdAt', 'deletedAt'];
+            return $this->jsonSuccess($ue->toArray($excludedFields));
+        } catch (\Throwable $e) {
+            return $this->jsonError($e->getMessage(), $e->getCode() ?: 400);
+        }
+    }
+
+    #[Route('/semestres', methods: ['GET'])]
+    public function semestres(): JsonResponse
+    {
+        try {
+            $semestres = $this->semestresService->getAllSemestres();
+            $excludedFields = ['createdAt', 'deletedAt'];
+            $data = $this->semestresService->transformerArray($semestres, $excludedFields);
+            return $this->jsonSuccess($data);
+        } catch (\Throwable $e) {
+            return $this->jsonError($e->getMessage(), $e->getCode() ?: 400);
+        }
+    }
+
     #[Route('/matieres', methods: ['GET'])]
     public function matieres(): JsonResponse
     {
@@ -56,15 +82,13 @@ class NotesController extends BaseApiController
         }
     }
 
-    // -------------------------------------------------------
-    // POST /notes/matieres
-    // -------------------------------------------------------
+    
     #[Route('/matieres', methods: ['POST'])]
-    #[TokenRequired]
+    // #[TokenRequired(['Admin'])]
     public function createMatiere(Request $request): JsonResponse
     {
         try {
-            $dto     = $this->deserializeAndValidate($request, MatiereDto::class);
+            $dto= $this->deserializeAndValidate($request, MatiereDto::class);
             $matiere = $this->matieresService->createMatiere($dto);
             return $this->jsonSuccess($this->matieresService->format($matiere), 201);
         } catch (\Throwable $e) {
@@ -85,26 +109,6 @@ class NotesController extends BaseApiController
             return $this->jsonError($e->getMessage(), $e->getCode() ?: 400);
         }
     }
-
-    // -------------------------------------------------------
-    // POST /notes/matiere-semestres
-    // -------------------------------------------------------
-    #[Route('/matiere-semestres', methods: ['POST'])]
-    #[TokenRequired]
-    public function assignerSemestre(Request $request): JsonResponse
-    {
-        try {
-            $dto     = $this->deserializeAndValidate($request, MatiereSemestreDto::class);
-            $matiere = $this->matieresService->assignerSemestre($dto);
-            return $this->jsonSuccess($this->matieresService->formatMatiereSemestre($matiere), 201);
-        } catch (\Throwable $e) {
-            return $this->jsonError($e->getMessage(), $e->getCode() ?: 400);
-        }
-    }
-
-    // -------------------------------------------------------
-    // GET /notes/matieres-coeff
-    // -------------------------------------------------------
     #[Route('/matieres-coeff', methods: ['GET'])]
     public function coefficients(): JsonResponse
     {

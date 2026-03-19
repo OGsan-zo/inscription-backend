@@ -2,8 +2,7 @@
 
 namespace App\Entity\note;
 
-use App\Entity\proposEtudiant\Niveaux;
-use App\Entity\utils\BaseEntite;
+use App\Entity\utils\BaseName;
 use App\Repository\notes\SemestresRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -11,17 +10,10 @@ use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: SemestresRepository::class)]
 #[ORM\HasLifecycleCallbacks]
-class Semestres extends BaseEntite
+class Semestres extends BaseName
 {
-    #[ORM\Column(length: 100)]
-    private ?string $nom = null;
-
-    #[ORM\Column(length: 50, nullable: true)]
-    private ?string $grade = null;
-
-    #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?Niveaux $niveau = null;
+    #[ORM\Column(type: "integer", nullable: false)]
+    private ?int $grade = null;
 
     /**
      * @var Collection<int, Matieres>
@@ -34,36 +26,14 @@ class Semestres extends BaseEntite
         $this->matieres = new ArrayCollection();
     }
 
-    public function getNom(): ?string
-    {
-        return $this->nom;
-    }
-
-    public function setNom(string $nom): static
-    {
-        $this->nom = $nom;
-        return $this;
-    }
-
-    public function getGrade(): ?string
+    public function getGrade(): ?int
     {
         return $this->grade;
     }
 
-    public function setGrade(?string $grade): static
+    public function setGrade(?int $grade): static
     {
         $this->grade = $grade;
-        return $this;
-    }
-
-    public function getNiveau(): ?Niveaux
-    {
-        return $this->niveau;
-    }
-
-    public function setNiveau(?Niveaux $niveau): static
-    {
-        $this->niveau = $niveau;
         return $this;
     }
 

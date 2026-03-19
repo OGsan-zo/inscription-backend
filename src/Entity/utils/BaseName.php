@@ -5,7 +5,7 @@ namespace App\Entity\utils;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\MappedSuperclass]
-abstract class BaseNom extends BaseEntite
+abstract class BaseName extends BaseEntite
 {
     #[ORM\Column(type: "string", length: 255)]
     protected ?string $name = null;

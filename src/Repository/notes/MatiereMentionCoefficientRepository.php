@@ -2,7 +2,7 @@
 
 namespace App\Repository\notes;
 
-use App\Entity\MatiereMentionCoefficient;
+use App\Entity\note\MatiereMentionCoefficient;
 use App\Repository\utils\BaseRepository;
 use Doctrine\Persistence\ManagerRegistry;
 

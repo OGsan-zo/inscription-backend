@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller\Api;
+namespace App\Controller\Api\proposEtudiant;
 
 use App\Controller\Api\utils\BaseApiController;
 use App\Service\inscription\PreinscriptionService;
