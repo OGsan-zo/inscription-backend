@@ -66,7 +66,7 @@ class NotesService extends BaseService
     // Résultats
     // -------------------------------------------------------
 
-    public function getResultatsEtudiant(int $idEtudiant, ?int $idSemestre): array
+    public function getResultatsEtudiant(int $idEtudiant, int $idSemestre): array
     {
         $etudiant     = $this->getVerifiedEtudiant($idEtudiant);
         $ne           = $this->getDernierNiveauEtudiant($etudiant);

@@ -2,7 +2,7 @@
 
 namespace App\Repository\notes;
 
-use App\Entity\Notes;
+use App\Entity\note\Notes;
 use App\Repository\utils\BaseRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -16,23 +16,23 @@ class NotesRepository extends BaseRepository
     /**
      * Retourne les notes d'un étudiant filtrées par mention et semestre
      */
-    public function findByEtudiantMentionSemestre(int $idEtudiant, int $idMention, int $idSemestre): array
-    {
-        return $this->createQueryBuilder('n')
-            ->join('n.matiereMentionCoefficient', 'mmc')
-            ->join('mmc.matiere', 'mat')
-            ->join('mat.semestre', 's')
-            ->andWhere('n.etudiant = :idEtudiant')
-            ->andWhere('mmc.mention = :idMention')
-            ->andWhere('s.id = :idSemestre')
-            ->andWhere('n.deletedAt IS NULL')
-            ->setParameter('idEtudiant', $idEtudiant)
-            ->setParameter('idMention', $idMention)
-            ->setParameter('idSemestre', $idSemestre)
-            ->orderBy('mat.nom', 'ASC')
-            ->getQuery()
-            ->getResult();
-    }
+    // public function findByEtudiantMentionSemestre(int $idEtudiant, int $idMention, int $idSemestre): array
+    // {
+    //     return $this->createQueryBuilder('n')
+    //         ->join('n.matiereMentionCoefficient', 'mmc')
+    //         ->join('mmc.matiere', 'mat')
+    //         ->join('mat.semestre', 's')
+    //         ->andWhere('n.etudiant = :idEtudiant')
+    //         ->andWhere('mmc.mention = :idMention')
+    //         ->andWhere('s.id = :idSemestre')
+    //         ->andWhere('n.deletedAt IS NULL')
+    //         ->setParameter('idEtudiant', $idEtudiant)
+    //         ->setParameter('idMention', $idMention)
+    //         ->setParameter('idSemestre', $idSemestre)
+    //         ->orderBy('mat.nom', 'ASC')
+    //         ->getQuery()
+    //         ->getResult();
+    // }
 
     public function findByEtudiantAndMMC(int $idEtudiant, int $idMMC): ?Notes
     {
