@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Entity\proposEtudiant\Mentions;
 use App\Entity\utils\BaseEntite;
 use App\Repository\notes\MatiereMentionCoefficientRepository;
 use Doctrine\Common\Collections\ArrayCollection;

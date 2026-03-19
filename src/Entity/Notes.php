@@ -2,14 +2,15 @@
 
 namespace App\Entity;
 
-use App\Entity\utils\BaseEntite;
+use App\Entity\proposEtudiant\Etudiants;
+use App\Entity\utils\BaseValidation;
 use App\Repository\notes\NotesRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: NotesRepository::class)]
 #[ORM\HasLifecycleCallbacks]
-class Notes extends BaseEntite
+class Notes extends BaseValidation
 {
     #[ORM\Column(type: Types::DECIMAL, precision: 5, scale: 2, nullable: true)]
     private ?string $valeur = null;

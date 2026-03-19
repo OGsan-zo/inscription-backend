@@ -5,7 +5,6 @@ namespace App\Service\utils;
 use App\Dto\utils\OrderCriteria;
 use App\Dto\utils\PaginationCriteria;
 // use App\Entity\utils\BaseEntite;
-use App\Service\utils\ValidationService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 abstract class BaseService
@@ -43,7 +42,7 @@ abstract class BaseService
     {
         $entity = $this->getById($id);
         $shortName = (new \ReflectionClass($this->getRepository()->getClassName()))->getShortName();
-        $this->validationService->throwIfNull($entity, "$shortName introuvable pour l'ID $id.");
+        $this->throwIfNull($entity, "$shortName introuvable pour l'ID $id.");
         return $entity;
     }
 

@@ -8,7 +8,6 @@ use App\Dto\utils\OrderCriteria;
 use App\Entity\Matieres;
 use App\Repository\notes\MatieresRepository;
 use App\Service\utils\BaseService;
-use App\Service\utils\ValidationService;
 use Doctrine\ORM\EntityManagerInterface;
 
 class MatieresService extends BaseService
@@ -17,9 +16,8 @@ class MatieresService extends BaseService
         EntityManagerInterface $em,
         private readonly MatieresRepository $matieresRepository,
         private readonly SemestresService $semestresService,
-        ValidationService $validationService,
     ) {
-        parent::__construct($em, $validationService);
+        parent::__construct($em);
     }
 
     protected function getRepository(): MatieresRepository
