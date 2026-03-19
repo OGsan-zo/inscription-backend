@@ -1,12 +1,12 @@
 <?php
 
 namespace App\Service\proposEtudiant;
-use App\Repository\ProposRepository;
-use App\Entity\Propos;
-use App\Entity\Etudiants;
+use App\Repository\proposEtudiant\ProposRepository;
+use App\Entity\proposEtudiant\Propos;
+use App\Entity\proposEtudiant\Etudiants;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
-use App\Dto\EtudiantRequestDto;
+use App\Dto\proposEtudiant\EtudiantRequestDto;
 class ProposService
 {   private $proposRepository;
     private EntityManagerInterface $em;

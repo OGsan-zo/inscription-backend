@@ -2,16 +2,14 @@
 
 namespace App\Service\proposEtudiant\mapper;
 
-use App\Entity\Cin;
-use App\Entity\Bacc;
-use App\Entity\Propos;
-use App\Entity\Etudiants;
-use App\Dto\EtudiantRequestDto;
-use App\Repository\SexesRepository;
-use App\Entity\Nationalites;
-use App\Repository\EtudiantsRepository;
+use App\Entity\proposEtudiant\Cin;
+use App\Entity\proposEtudiant\Bacc;
+use App\Entity\proposEtudiant\Etudiants;
+use App\Dto\proposEtudiant\EtudiantRequestDto;
+use App\Repository\proposEtudiant\SexesRepository;
+use App\Repository\proposEtudiant\EtudiantsRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use App\Repository\NationalitesRepository;
+use App\Repository\proposEtudiant\NationalitesRepository;
 
 class EtudiantMapper
 {

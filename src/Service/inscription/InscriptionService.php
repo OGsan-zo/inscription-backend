@@ -1,13 +1,13 @@
 <?php
 
 namespace App\Service\inscription;
-use App\Entity\Inscrits;
-use App\Entity\Utilisateur;
-use App\Entity\Etudiants;
-use App\Entity\Formations;
-use App\Entity\Niveaux;
-use App\Entity\Payments;
-use App\Repository\InscritsRepository;
+use App\Entity\inscription\Inscrits;
+use App\Entity\utilisateurs\Utilisateur;
+use App\Entity\proposEtudiant\Etudiants;
+use App\Entity\proposEtudiant\Formations;
+use App\Entity\proposEtudiant\Niveaux;
+use App\Entity\payment\Payments;
+use App\Repository\inscription\InscritsRepository;
 use App\Service\proposEtudiant\EtudiantsService;
 use App\Service\proposEtudiant\MentionsService;
 use App\Service\utilisateurs\UtilisateursService;
@@ -16,8 +16,8 @@ use App\Service\payment\PaymentService;
 use App\Service\proposEtudiant\FormationEtudiantsService;
 use App\Service\proposEtudiant\NiveauEtudiantsService;
 use Exception;
-use App\Entity\Mentions;
-use Proxies\__CG__\App\Entity\Parcours;
+use App\Entity\proposEtudiant\Mentions;
+
 
 class InscriptionService
 {
@@ -293,7 +293,7 @@ class InscriptionService
         $details['niveau'] = $this->niveauEtudiantsService->toArrayNiveau($niveau);
         $details['mention'] = $this->mentionsService->toArray($mention);
         $details['parcours'] = [
-            'nom' => $parcours->getNom(),
+            'nom' => $parcours?->getNom() ?? null,
         ];
         //Payments pour cette année
         $details['payments'] = $this->paymentService->getPaymentParAnnee($etudiant, $annee);

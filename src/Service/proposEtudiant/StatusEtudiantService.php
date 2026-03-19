@@ -1,12 +1,10 @@
 <?php
 
 namespace App\Service\proposEtudiant;
-use App\Entity\StatusEtudiants;
+use App\Entity\proposEtudiant\StatusEtudiants;
 
-use App\Repository\StatusEtudiantsRepository;
-use App\Entity\Niveaux;
+use App\Repository\proposEtudiant\StatusEtudiantsRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Exception;
 
 class StatusEtudiantService
 {   private $statusEtudiantRepository;

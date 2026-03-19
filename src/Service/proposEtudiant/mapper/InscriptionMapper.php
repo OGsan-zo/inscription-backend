@@ -2,17 +2,17 @@
 
 namespace App\Service\proposEtudiant\mapper;
 
-use App\Entity\FormationEtudiants;
-use App\Entity\NiveauEtudiants;
-use App\Entity\Etudiants;
-use App\Dto\EtudiantRequestDto;
-use App\Repository\FormationsRepository;
-use App\Repository\MentionsRepository;
-use App\Repository\NiveauxRepository;
+use App\Entity\proposEtudiant\FormationEtudiants;
+use App\Entity\proposEtudiant\NiveauEtudiants;
+use App\Entity\proposEtudiant\Etudiants;
+use App\Dto\proposEtudiant\EtudiantRequestDto;
+use App\Repository\proposEtudiant\FormationsRepository;
+use App\Repository\proposEtudiant\MentionsRepository;
+use App\Repository\proposEtudiant\NiveauxRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use App\Entity\Formations;
-use App\Entity\Mentions;
-use App\Entity\Niveaux;
+use App\Entity\proposEtudiant\Formations;
+use App\Entity\proposEtudiant\Mentions;
+use App\Entity\proposEtudiant\Niveaux;
 use Exception;
 
 class InscriptionMapper

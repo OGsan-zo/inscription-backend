@@ -1,10 +1,9 @@
 <?php
 
 namespace App\Service\proposEtudiant;
-use App\Repository\NationalitesRepository;
-use App\Entity\Nationalites;
+use App\Repository\proposEtudiant\NationalitesRepository;
+use App\Entity\proposEtudiant\Nationalites;
 use Doctrine\ORM\EntityManagerInterface;
-use Exception;
 
 class NationaliteService
 {   private NationalitesRepository $nationalitesRepository;

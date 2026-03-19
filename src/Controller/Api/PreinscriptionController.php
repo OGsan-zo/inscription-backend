@@ -3,9 +3,9 @@
 namespace App\Controller\Api;
 
 use App\Controller\Api\utils\BaseApiController;
-use App\Service\preinscription\PreinscriptionService;
-use App\Dto\PreinscriptionRequestDto;
-use App\Dto\EtudiantRequestDto;
+use App\Service\inscription\PreinscriptionService;
+use App\Dto\inscription\PreinscriptionRequestDto;
+use App\Dto\proposEtudiant\EtudiantRequestDto;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;

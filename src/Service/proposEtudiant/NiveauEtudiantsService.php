@@ -1,16 +1,16 @@
 <?php
 
 namespace App\Service\proposEtudiant;
-use App\Repository\NiveauEtudiantsRepository;
-use App\Entity\NiveauEtudiants;
-use App\Entity\Etudiants;
-use App\Entity\Niveaux;
-use App\Entity\Mentions;
+use App\Repository\proposEtudiant\NiveauEtudiantsRepository;
+use App\Entity\proposEtudiant\NiveauEtudiants;
+use App\Entity\proposEtudiant\Etudiants;
+use App\Entity\proposEtudiant\Niveaux;
+use App\Entity\proposEtudiant\Mentions;
 use App\Service\utils\BaseService;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
-use App\Entity\StatusEtudiants;
-use App\Entity\Formations;
+use App\Entity\proposEtudiant\StatusEtudiants;
+use App\Entity\proposEtudiant\Formations;
 use App\Service\payment\PaymentService;
 
 class NiveauEtudiantsService extends BaseService

@@ -2,9 +2,9 @@
 
 namespace App\Service\payment\mapper;
 
-use App\Entity\Etudiants;
-use App\Entity\Payments;
-use App\Dto\EcolageHistoryResponseDto;
+use App\Entity\proposEtudiant\Etudiants;
+use App\Entity\payment\Payments;
+use App\Dto\payment\EcolageHistoryResponseDto;
 use App\Service\payment\EcolageService;
 
 class EcolageMapper

@@ -1,8 +1,8 @@
 <?php
 
 namespace App\Service\proposEtudiant;
-use App\Repository\MentionsRepository;
-use App\Entity\Mentions;
+use App\Repository\proposEtudiant\MentionsRepository;
+use App\Entity\proposEtudiant\Mentions;
 use App\Service\utils\BaseService;
 use App\Service\utils\ValidationService;
 use Doctrine\ORM\EntityManagerInterface;

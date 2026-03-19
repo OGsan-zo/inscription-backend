@@ -2,12 +2,12 @@
 
 namespace App\Service\utilisateurs;
 
-use App\Entity\Utilisateur;
-use App\Repository\RoleRepository;
+use App\Entity\utilisateurs\Utilisateur;
+use App\Repository\utilisateurs\RoleRepository;
 use App\Service\utils\BaseService;
 use Doctrine\ORM\EntityManagerInterface;
-use App\Repository\UtilisateurRepository;
-use App\Repository\StatusRepository;
+use App\Repository\utilisateurs\UtilisateurRepository;
+use App\Repository\utilisateurs\StatusRepository;
 use Exception;
 
 class UtilisateursService extends BaseService
@@ -116,5 +116,42 @@ class UtilisateursService extends BaseService
 
         return $user; 
     }
+    public function toArray(?Utilisateur $utilisateur ): array
+    {
+        if ($utilisateur === null) {
+            return [];
+        }
+        return [
+            'id'    => $utilisateur->getId(),
+            'nom'   => $utilisateur->getNom(),
+            'prenom' => $utilisateur->getPrenom(),
+            'email'  => $utilisateur->getEmail(),    
 
+        ];
+    }
+    function getNomEtPrenom(Utilisateur $utilisateur): string
+    {
+        return $utilisateur->getNom() . ' ' . $utilisateur->getPrenom();
+    }
+    function isUtilisateurIdentique(Utilisateur $u1, Utilisateur $u2): bool
+    {
+        return $u1->getId() === $u2->getId();
+    }
+    public function isValidModificationPayment(Utilisateur $nouveau,Utilisateur $ancien): bool
+    {
+        if ($nouveau->getRole()->getId()==1) {
+            return true;
+        }
+        if ($this->isUtilisateurIdentique($nouveau, $ancien)) {
+            return true;
+        }
+      throw new Exception(
+            sprintf(
+                "Vous n'êtes pas autorisé à modifier ce paiement. Seul l'utilisateur concerné (%s) peut effectuer cette action.",
+                $this->getNomEtPrenom($ancien)
+            )
+        );
+        
+    }   
 }
+

@@ -3,21 +3,20 @@
 namespace App\Controller\Api;
 
 use App\Controller\Api\utils\BaseApiController;
-use App\Entity\Etudiants;
-use App\Entity\Payments;
+use App\Entity\proposEtudiant\Etudiants;
+use App\Entity\payment\Payments;
 use App\Service\inscription\InscriptionService;
 use App\Service\proposEtudiant\EtudiantsService;
 use App\Service\proposEtudiant\FormationEtudiantsService;
 use App\Service\proposEtudiant\NiveauEtudiantsService;
 use App\Service\proposEtudiant\MentionsService;
 use App\Annotation\TokenRequired;
-use App\Dto\EtudiantRequestDto;
+use App\Dto\proposEtudiant\EtudiantRequestDto;
 use App\Service\payment\PaymentService;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use App\Dto\etudiant\NiveauEtudiantRequestDto;
+use App\Dto\proposEtudiant\NiveauEtudiantRequestDto;
 
 #[Route('/etudiants')]
 class EtudiantsController extends BaseApiController

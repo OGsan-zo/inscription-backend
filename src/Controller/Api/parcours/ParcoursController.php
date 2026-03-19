@@ -4,10 +4,10 @@ namespace App\Controller\Api\parcours;
 
 use App\Annotation\TokenRequired;
 use App\Controller\Api\utils\BaseApiController;
-use App\Dto\parcours\AssignerParcoursDto;
-use App\Dto\parcours\ParcoursDto;
+use App\Dto\proposEtudiant\AssignerParcoursDto;
+use App\Dto\proposEtudiant\ParcoursDto;
 use App\Dto\utils\OrderCriteria;
-use App\Service\parcours\ParcoursService;
+use App\Service\proposEtudiant\ParcoursService;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
