@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Entity;
+namespace App\Entity\note;
 
 use App\Entity\proposEtudiant\Etudiants;
 use App\Entity\utils\BaseValidation;

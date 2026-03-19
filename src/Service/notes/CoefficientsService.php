@@ -5,12 +5,12 @@ namespace App\Service\notes;
 use App\Dto\notes\CoefficientUpdateDto;
 use App\Dto\notes\MatiereMentionCoefficientDto;
 use App\Dto\utils\OrderCriteria;
-use App\Entity\MatiereMentionCoefficient;
-use App\Entity\Mentions;
+use App\Entity\note\MatiereMentionCoefficient;
+use App\Entity\note\Matieres;
+use App\Entity\proposEtudiant\Mentions;
 use App\Repository\notes\MatiereMentionCoefficientRepository;
 use App\Service\proposEtudiant\MentionsService;
 use App\Service\utils\BaseService;
-use App\Service\utils\ValidationService;
 use Doctrine\ORM\EntityManagerInterface;
 
 class CoefficientsService extends BaseService
@@ -20,9 +20,8 @@ class CoefficientsService extends BaseService
         private readonly MatiereMentionCoefficientRepository $coefficientRepository,
         private readonly MatieresService $matieresService,
         private readonly MentionsService $mentionsService,
-        ValidationService $validationService,
     ) {
-        parent::__construct($em, $validationService);
+        parent::__construct($em);
     }
 
     protected function getRepository(): MatiereMentionCoefficientRepository
@@ -39,7 +38,7 @@ class CoefficientsService extends BaseService
         return $this->coefficientRepository->getAll(new OrderCriteria('createdAt', 'ASC'));
     }
 
-    private function buildCoefficient(\App\Entity\Matieres $matiere, Mentions $mention, int $coefficient): MatiereMentionCoefficient
+    private function buildCoefficient(Matieres $matiere, Mentions $mention, int $coefficient): MatiereMentionCoefficient
     {
         $coeff = new MatiereMentionCoefficient();
         $coeff->setMatiere($matiere);

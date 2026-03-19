@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Entity;
+namespace App\Entity\note;
 
 use App\Entity\proposEtudiant\Mentions;
 use App\Entity\utils\BaseEntite;

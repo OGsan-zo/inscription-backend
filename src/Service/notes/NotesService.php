@@ -3,10 +3,10 @@
 namespace App\Service\notes;
 
 use App\Dto\notes\NoteUpdateDto;
-use App\Entity\Etudiants;
-use App\Entity\MatiereMentionCoefficient;
-use App\Entity\NiveauEtudiants;
-use App\Entity\Notes;
+use App\Entity\proposEtudiant\Etudiants;
+use App\Entity\note\MatiereMentionCoefficient;
+use App\Entity\proposEtudiant\NiveauEtudiants;
+use App\Entity\note\Notes;
 use App\Repository\notes\NotesRepository;
 use App\Service\proposEtudiant\EtudiantsService;
 use App\Service\proposEtudiant\NiveauEtudiantsService;
@@ -25,7 +25,7 @@ class NotesService extends BaseService
         private readonly NiveauEtudiantsService $niveauEtudiantsService,
         private readonly ValidationService $validationService,
     ) {
-        parent::__construct($em, $validationService);
+        parent::__construct($em);
     }
 
     protected function getRepository(): NotesRepository

@@ -5,7 +5,7 @@ namespace App\Service\notes;
 use App\Dto\notes\MatiereDto;
 use App\Dto\notes\MatiereSemestreDto;
 use App\Dto\utils\OrderCriteria;
-use App\Entity\Matieres;
+use App\Entity\note\Matieres;
 use App\Repository\notes\MatieresRepository;
 use App\Service\utils\BaseService;
 use Doctrine\ORM\EntityManagerInterface;

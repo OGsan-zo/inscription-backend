@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Entity;
+namespace App\Entity\note;
 
+use App\Entity\proposEtudiant\Niveaux;
 use App\Entity\utils\BaseEntite;
 use App\Repository\notes\SemestresRepository;
 use Doctrine\Common\Collections\ArrayCollection;
