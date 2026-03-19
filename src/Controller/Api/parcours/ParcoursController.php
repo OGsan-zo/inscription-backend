@@ -74,7 +74,7 @@ class ParcoursController extends BaseApiController
     public function delete(int $id): JsonResponse
     {
         try {
-            $parcours = $this->parcoursService->getVerifiedParcours($id);
+            $parcours = $this->parcoursService->getVerifierById($id);
             $this->parcoursService->delete($parcours);
             return $this->jsonSuccess(['message' => 'Parcours supprimé avec succès.']);
         } catch (\Throwable $e) {
