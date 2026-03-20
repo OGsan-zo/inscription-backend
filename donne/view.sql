@@ -1,3 +1,4 @@
+drop view if exists vue_notes_etudiants;
 CREATE OR REPLACE VIEW vue_notes_etudiants AS
 SELECT 
     n.id ,
@@ -7,7 +8,7 @@ SELECT
     n.matiere_mention_coefficient_id,
     n.annee,
 
-    e.id AS id_etudiant,
+    e.id AS etudiant_id,
     e.nom,
     e.prenom,
     n.date_validation,
@@ -73,3 +74,9 @@ JOIN utilisateur u
     ON mmc.professeur_id = u.id;
 
 --- SELECT * FROM vue_matiere_coeff_detail;
+
+SELECT * 
+
+from niveau_etudiants ne
+join vue_notes_etudiants vne
+    on ne.etudiant_id = vne.etudiant_id
