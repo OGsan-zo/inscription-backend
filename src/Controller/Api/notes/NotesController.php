@@ -7,7 +7,6 @@ use App\Controller\Api\utils\BaseApiController;
 use App\Dto\notes\CoefficientUpdateDto;
 use App\Dto\notes\MatiereDto;
 use App\Dto\notes\MatiereMentionCoefficientDto;
-use App\Dto\notes\MatiereSemestreDto;
 use App\Dto\notes\NoteUpdateDto;
 use App\Dto\notes\UEDto;
 use App\Service\notes\CoefficientsService;
@@ -15,6 +14,7 @@ use App\Service\notes\MatieresService;
 use App\Service\notes\NotesService;
 use App\Service\notes\SemestresService;
 use App\Service\notes\UEService;
+use App\Service\notes\VueCoefficientDetailService;
 use App\Service\notes\VueNotesService;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -29,7 +29,8 @@ class NotesController extends BaseApiController
         private readonly CoefficientsService $coefficientsService,
         private readonly NotesService $notesService,
         private readonly UEService $ueService,
-        private readonly VueNotesService $vueNotesService
+        private readonly VueNotesService $vueNotesService,
+        private readonly VueCoefficientDetailService $vueCoefficientDetailService
     ) {
     }
 
@@ -115,14 +116,15 @@ class NotesController extends BaseApiController
     public function coefficients(): JsonResponse
     {
         try {
-            $coefficients = $this->coefficientsService->getAllCoefficients();
-            return $this->jsonSuccess($this->coefficientsService->formatAllCoefficients($coefficients));
+            $coefficients = $this->vueCoefficientDetailService->getAll();
+            $exludesFields = ['createdAt','deletedAt'];
+            return $this->jsonSuccess($this->vueCoefficientDetailService->transformerArray($coefficients, $exludesFields));
         } catch (\Throwable $e) {
             return $this->jsonError($e->getMessage(), 400);
         }
     }
     #[Route('/matieres-coeff/etudiant/{idMatiereCoeff}', methods: ['GET'])]
-    // #[TokenRequired(['ChefMention','Admin'])]
+    #[TokenRequired(['ChefMention','Admin'])]
     public function coefficientsEtudiant(Request $request, int $idMatiereCoeff): JsonResponse
     {
         $annee = $request->query->get('annee');
@@ -225,8 +227,10 @@ class NotesController extends BaseApiController
     {
         try {
             $user = $this->getUserFromRequest($request);
-            $coefficients = $this->coefficientsService->getByProfesseur($user);
-            return $this->jsonSuccess($this->coefficientsService->formatAllCoefficients($coefficients));
+            $coefficients = $this->vueCoefficientDetailService->getByProfesseur($user);
+            $exludesFields = ['createdAt','deletedAt'];
+            $data = $this->vueCoefficientDetailService->transformerArray($coefficients, $exludesFields);
+            return $this->jsonSuccess($data);
         } catch (\Throwable $e) {
             return $this->jsonError($e->getMessage(), 400);
         }
