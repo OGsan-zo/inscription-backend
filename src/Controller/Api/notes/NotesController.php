@@ -14,8 +14,8 @@ use App\Service\notes\MatieresService;
 use App\Service\notes\NotesService;
 use App\Service\notes\SemestresService;
 use App\Service\notes\UEService;
-use App\Service\notes\VueCoefficientDetailService;
-use App\Service\notes\VueNotesService;
+use App\Service\notes\view\VueCoefficientDetailsService;
+use App\Service\notes\view\VueNotesService;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
@@ -30,7 +30,7 @@ class NotesController extends BaseApiController
         private readonly NotesService $notesService,
         private readonly UEService $ueService,
         private readonly VueNotesService $vueNotesService,
-        private readonly VueCoefficientDetailService $vueCoefficientDetailService
+        private readonly VueCoefficientDetailsService $vueCoefficientDetailService
     ) {
     }
 

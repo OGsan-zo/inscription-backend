@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Service\notes;
+namespace App\Service\notes\view;
 
 
 
