@@ -31,6 +31,22 @@ class UtilisateursController extends BaseApiController
         }
 
     }
+    #[Route('/professeurChefMention', name: 'professeur_chef_mention', methods: ['GET'])]
+    public function getProfesseurChefMention(Request $request): JsonResponse
+    {
+        try {
+
+            $users = $this->utilisateurService->getAllProfesseurChefMention();
+
+            $data = $this->utilisateurService->transformerArray($users);
+            return $this->jsonSuccess($data);
+
+        } catch (\Exception $e) {
+                return $this->jsonError($e->getMessage());
+
+        }
+
+    }
 
     #[Route('', name: 'api_utilisateur_create', methods: ['POST'])]
     #[TokenRequired(['Admin'])]

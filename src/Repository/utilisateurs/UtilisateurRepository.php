@@ -51,14 +51,29 @@ class UtilisateurRepository extends ServiceEntityRepository
         return null; 
     }
     public function getAllParOrdre(): array
-       {
+    {
            return $this->createQueryBuilder('u')
                
                ->orderBy('u.dateCreation', 'ASC')
                ->getQuery()
                ->getResult()
            ;
-       }
+    }
+    public function findAllIdsParRole(array $ids): array
+    {
+        $qb = $this->createQueryBuilder('u')
+            ->join('u.role', 'r');
+
+        if (!empty($ids)) {
+            $qb->andWhere($qb->expr()->in('r.id', ':ids'))
+            ->setParameter('ids', $ids);
+        }
+
+        return $qb->orderBy('u.id', 'ASC')
+                ->getQuery()
+                ->getResult();
+    }
+    
     
 
 }

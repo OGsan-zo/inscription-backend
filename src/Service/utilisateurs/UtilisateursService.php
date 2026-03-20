@@ -157,5 +157,10 @@ class UtilisateursService extends BaseService
         );
         
     }   
+    public function getAllProfesseurChefMention(): array
+    {
+        $roleIds = [4,5]; // IDs des rôles Admin et Professeur
+        return $this->utilisateurRepository->findAllIdsParRole($roleIds);
+    }
 }
 

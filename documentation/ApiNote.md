@@ -384,3 +384,27 @@
     ]
 }
 ```
+
+# Pour avoir les professeur et chef de mention
+
+**Url:** `GET /utilisateur/professeurChefMention`
+
+**Header:** `Content-Type: application/json`
+    
+
+**Response:**
+```json
+{
+    "status": "success",
+    "data": [
+        {
+            "id": 1,
+            "nom": "admin",
+            "prenom": "admin",
+            "email": "admin@gmail.com",
+            "role": "Admin",
+            "status": "Actif"
+        }
+    ]
+}
+```
