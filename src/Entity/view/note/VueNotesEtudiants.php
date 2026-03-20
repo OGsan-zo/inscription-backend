@@ -23,7 +23,7 @@ class VueNotesEtudiants extends BaseValidation
     private int $matiereMentionCoefficientId;
 
     #[ORM\Column(type: "integer")]
-    private int $idEtudiant;
+    private int $etudiantId;
 
     #[ORM\Column(type: "string", nullable: true)]
     private ?string $nom = null;
@@ -41,7 +41,7 @@ class VueNotesEtudiants extends BaseValidation
     public function getTypeNoteId(): int { return $this->typeNoteId; }
     public function getTypeNoteName(): ?string { return $this->typeNoteName; }
     public function getMatiereMentionCoefficientId(): int { return $this->matiereMentionCoefficientId; }
-    public function getIdEtudiant(): int { return $this->idEtudiant; }
+    public function getEtudiantId(): int { return $this->etudiantId; }
     public function getNom(): ?string { return $this->nom; }
     public function getPrenom(): ?string { return $this->prenom; }
     public function getAnnee(): int { return $this->annee; }
