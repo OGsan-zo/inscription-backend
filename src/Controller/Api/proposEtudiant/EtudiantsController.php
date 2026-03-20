@@ -81,11 +81,7 @@ class EtudiantsController extends BaseApiController
             $idEtudiant = $request->query->get('idEtudiant');
 
             if (!$idEtudiant) {
-                return new JsonResponse([
-                    'status' => 'error',
-                    'message' => 'Paramètre idEtudiant requis'
-
-                ], 400);
+                return $this->jsonError('Paramètre idEtudiant requis', 400);
             }
             $token = $this->jwtManager->extractTokenFromRequest($request);
             $arrayToken = $this->jwtManager->extractClaimsFromToken($token);

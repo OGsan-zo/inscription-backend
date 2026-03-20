@@ -1,30 +1,5 @@
-# Pour creer une nouvelle UE
 
-**Url:** `POST /notes/ue`
 
-**Header:** `Content-Type: application/json`
-
-**Authorization:** `eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJ5b3VyLWFwcCIsImF1ZCI6InlvdXItY2xpZW50IiwiaWF0IjoxNzczMjk4MTg2LjE2NjQ4OSwiZXhwIjoxNzczMzAxNzg2LjE2NjQ4OSwiZW1haWwiOiJhZG1pbkBnbWFpbC5jb20iLCJub20iOiJBZG1pbiIsInByZW5vbSI6IkFkbWluIiwiYWRyZXNzZSI6IkFua2F0c28gLCBwb3J0ZSAxMDQiLCJpZCI6MSwicm9sZSI6IkFkbWluIn0.qaMEC_5W3hgEU5fnavlRuzfZFViP22dZ-CPppZRvDjE`
-
-**Role:**`Admin`
-
-**Body:**
-
-```json
-{
-    "name":"Mathematique de l'ingenieur"
-}
-```
-**Response:**
-```json
-{
-    "status": "success",
-    "data": {
-        "name": "Mathematique de l'ingenieur",
-        "id": 1
-    }
-}
-```
 # Pour avoir les UE
 
 **Url:** `GET /notes/ue`
@@ -320,3 +295,70 @@
 ```
 
 
+# Pour avoir les matieres coefficient
+
+**Url:** `GET /notes/matieres-coeff/etudiant/1`
+
+**Header:** `Content-Type: application/json`
+    
+**Authorization:** `eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJ5b3VyLWFwcCIsImF1ZCI6InlvdXItY2xpZW50IiwiaWF0IjoxNzczMjk4MTg2LjE2NjQ4OSwiZXhwIjoxNzczMzAxNzg2LjE2NjQ4OSwiZW1haWwiOiJhZG1pbkBnbWFpbC5jb20iLCJub20iOiJBZG1pbiIsInByZW5vbSI6IkFkbWluIiwiYWRyZXNzZSI6IkFua2F0c28gLCBwb3J0ZSAxMDQiLCJpZCI6MSwicm9sZSI6IkFkbWluIn0.qaMEC_5W3hgEU5fnavlRuzfZFViP22dZ-CPppZRvDjE`
+
+**Role:**`ChefMention , Admin`
+
+**Response:**
+```json
+{
+    "status": "success",
+    "data": [
+        {
+            "valeur": "15.50",
+            "typeNoteId": 1,
+            "typeNoteName": "Normal",
+            "matiereMentionCoefficientId": 1,
+            "idEtudiant": 1,
+            "nom": "MENJANIAINA",
+            "prenom": "Aurelia",
+            "dateValidation": "2026-03-20 10:00:00",
+            "id": 1,
+            "createdAt": "2026-03-20 10:15:34"
+        },
+        {
+            "valeur": "12.00",
+            "typeNoteId": 2,
+            "typeNoteName": "Rattrapage",
+            "matiereMentionCoefficientId": 1,
+            "idEtudiant": 2,
+            "nom": "RASOAMAMPIONINA",
+            "prenom": "Stalone",
+            "dateValidation": "2026-03-20 11:00:00",
+            "id": 2,
+            "createdAt": "2026-03-20 10:15:34"
+        }
+    ]
+}
+```
+
+# Pour valider une note
+
+**Url:** `PUT /notes/valider/1`
+
+**Header:** `Content-Type: application/json`
+
+**Authorization:** `eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJ5b3VyLWFwcCIsImF1ZCI6InlvdXItY2xpZW50IiwiaWF0IjoxNzczMjk4MTg2LjE2NjQ4OSwiZXhwIjoxNzczMzAxNzg2LjE2NjQ4OSwiZW1haWwiOiJhZG1pbkBnbWFpbC5jb20iLCJub20iOiJBZG1pbiIsInByZW5vbSI6IkFkbWluIiwiYWRyZXNzZSI6IkFua2F0c28gLCBwb3J0ZSAxMDQiLCJpZCI6MSwicm9sZSI6IkFkbWluIn0.qaMEC_5W3hgEU5fnavlRuzfZFViP22dZ-CPppZRvDjE`
+
+**Role:**`Admin,ChefMention`
+
+**Body:**
+
+
+**Response:**
+```json
+{
+    "status": "success",
+    "data": {
+        "valeur": "15.50",
+        "dateValidation": "2026-03-20 10:48:33",
+        "id": 1
+    }
+}
+```

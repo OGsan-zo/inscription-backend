@@ -9,12 +9,12 @@ use App\Entity\proposEtudiant\NiveauEtudiants;
 use App\Entity\note\Notes;
 use App\Repository\notes\NotesRepository;
 use App\Service\proposEtudiant\EtudiantsService;
-use App\Service\proposEtudiant\NiveauEtudiantsService;
-use App\Service\utils\BaseService;
+use App\Service\proposEtudiant\NiveauEtudiantsService; 
+use App\Service\utils\BaseValidationService;
 use App\Service\utils\ValidationService;
 use Doctrine\ORM\EntityManagerInterface;
 
-class NotesService extends BaseService
+class NotesService extends BaseValidationService
 {
     public function __construct(
         EntityManagerInterface $em,
