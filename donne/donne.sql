@@ -52,8 +52,8 @@ VALUES (
 
 
 -- mots de passe : test 
-INSERT INTO public.utilisateur ( role_id, status_id, email, mdp, nom, prenom, date_creation) VALUES( 5, 1, 'prof@gmail.com', '$2y$10$AXA4N6J.1iq9KpRTKwy.2eCMYmjJN7HzQGKD7mYrxl0/MdE.ofxF.', 'Mr', 'Prof', NULL);
-INSERT INTO public.utilisateur ( role_id, status_id, email, mdp, nom, prenom, date_creation) VALUES( 4, 1, 'chef@gmail.com', '$2y$10$RvemsPB/l6.nqalcDKoXpuY/07mGioL65B3hBdX6d4dJPcrXJ2Td.', 'Chef', 'Mention', NULL); 
+INSERT INTO Utilisateur ( role_id, status_id, email, mdp, nom, prenom, date_creation) VALUES( 5, 1, 'prof@gmail.com', '$2y$10$AXA4N6J.1iq9KpRTKwy.2eCMYmjJN7HzQGKD7mYrxl0/MdE.ofxF.', 'Mr', 'Prof', NULL);
+INSERT INTO Utilisateur ( role_id, status_id, email, mdp, nom, prenom, date_creation) VALUES( 4, 1, 'chef@gmail.com', '$2y$10$RvemsPB/l6.nqalcDKoXpuY/07mGioL65B3hBdX6d4dJPcrXJ2Td.', 'Chef', 'Mention', NULL); 
 
 
 -- UPDATE utilisateur SET status_id = 2;
@@ -288,3 +288,15 @@ INSERT INTO status_etudiants (id, name) VALUES
 (3, 'SUSPENDU'),
 (4, 'INSCRIPTION ANNULEE');
 
+
+-- Semestre
+INSERT INTO Semestres (created_at, deleted_at, grade, name) VALUES
+(NOW(), NULL, 1, 'S1'),
+(NOW(), NULL, 2, 'S2'),
+(NOW(), NULL, 3, 'S3'),
+(NOW(), NULL, 4, 'S4'),
+(NOW(), NULL, 5, 'S5'),
+(NOW(), NULL, 6, 'S6'),
+(NOW(), NULL, 7, 'S7'),
+(NOW(), NULL, 8, 'S8'),
+(NOW(), NULL, 9, 'S9');
