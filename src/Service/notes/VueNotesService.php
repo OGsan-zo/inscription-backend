@@ -23,10 +23,11 @@ class VueNotesService extends BaseService
     {
         return $this->vueNotesEtudiantsRepository;
     }
-    public function getByMatiereCoefficientId(int $matiereMentionCoefficientId): array
+    public function getByMatiereCoefficientId(int $matiereMentionCoefficientId,int $annee): array
     {
         $conditions = [
             new ConditionCriteria('matiereMentionCoefficientId', $matiereMentionCoefficientId, '='),
+            new ConditionCriteria('annee', $annee, '='),
         ];
         $orderCriteria = new OrderCriteria('createdAt', 'DESC');
 
