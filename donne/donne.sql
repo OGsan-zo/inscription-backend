@@ -287,16 +287,3 @@ INSERT INTO status_etudiants (id, name) VALUES
 (2, 'REDOUBLANT'),
 (3, 'SUSPENDU'),
 (4, 'INSCRIPTION ANNULEE');
-
-
--- Semestre
-INSERT INTO Semestres (created_at, deleted_at, grade, name) VALUES
-(NOW(), NULL, 1, 'S1'),
-(NOW(), NULL, 2, 'S2'),
-(NOW(), NULL, 3, 'S3'),
-(NOW(), NULL, 4, 'S4'),
-(NOW(), NULL, 5, 'S5'),
-(NOW(), NULL, 6, 'S6'),
-(NOW(), NULL, 7, 'S7'),
-(NOW(), NULL, 8, 'S8'),
-(NOW(), NULL, 9, 'S9');
