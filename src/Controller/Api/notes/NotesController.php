@@ -15,6 +15,7 @@ use App\Service\notes\MatieresService;
 use App\Service\notes\NotesService;
 use App\Service\notes\SemestresService;
 use App\Service\notes\UEService;
+use App\Service\notes\VueNotesService;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
@@ -28,6 +29,7 @@ class NotesController extends BaseApiController
         private readonly CoefficientsService $coefficientsService,
         private readonly NotesService $notesService,
         private readonly UEService $ueService,
+        private readonly VueNotesService $vueNotesService
     ) {
     }
 
@@ -119,12 +121,25 @@ class NotesController extends BaseApiController
             return $this->jsonError($e->getMessage(), 400);
         }
     }
+    #[Route('/matieres-coeff/etudiant/{idMatiereCoeff}', methods: ['GET'])]
+    #[TokenRequired(['ChefMention','Admin'])]
+    public function coefficientsEtudiant(int $idMatiereCoeff): JsonResponse
+    {
+        try {
+            $listeEtudiant = $this->vueNotesService->getByMatiereCoefficientId($idMatiereCoeff);
+            $excludesFields = ['deletedAt'];
+            $data = $this->vueNotesService->transformerArray($listeEtudiant, $excludesFields);
+            return $this->jsonSuccess($data);
+        } catch (\Throwable $e) {
+            return $this->jsonError($e->getMessage(), 400);
+        }
+    }
 
     // -------------------------------------------------------
     // POST /notes/matieres-coeff
     // -------------------------------------------------------
     #[Route('/matieres-coeff', methods: ['POST'])]
-    // #[TokenRequired(['ChefMention'])]
+    #[TokenRequired(['ChefMention'])]
     public function createCoefficient(Request $request): JsonResponse
     {
         try {

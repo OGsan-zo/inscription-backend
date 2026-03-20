@@ -10,3 +10,9 @@ INSERT INTO semestres (id, name, grade,created_at) VALUES
 (8, 'Semestre 8', 8, NOW()),
 (9, 'Semestre 9', 9, NOW()),
 (10, 'Semestre 10', 10, NOW());
+
+
+-- insertion type note
+INSERT INTO type_notes (id, name, created_at) VALUES
+(1, 'Normal', NOW()),
+(2, 'Rattrapage', NOW());
