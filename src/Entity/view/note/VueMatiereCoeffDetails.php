@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
 #[ORM\Table(name: "vue_matiere_coeff_detail")]
-class VueMatiereCoeffDetail extends BaseEntite
+class VueMatiereCoeffDetails extends BaseEntite
 {
 
     #[ORM\Column(type: "integer")]

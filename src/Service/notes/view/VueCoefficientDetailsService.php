@@ -1,27 +1,27 @@
 <?php
 
-namespace App\Service\notes;
+namespace App\Service\notes\view;
 
 
 
 use App\Dto\utils\ConditionCriteria;
 use App\Dto\utils\OrderCriteria;
-use App\Repository\view\note\VueMatiereCoeffDetailRepository;
+use App\Repository\view\note\VueMatiereCoeffDetailsRepository;
 use App\Service\utils\BaseService;
 use Doctrine\ORM\EntityManagerInterface;
 
-class VueCoefficientDetailService extends BaseService
+class VueCoefficientDetailsService extends BaseService
 {
     public function __construct(
         EntityManagerInterface $em,
-        private readonly VueMatiereCoeffDetailRepository $vueMatiereCoeffDetailRepository,
+        private readonly VueMatiereCoeffDetailsRepository $vueMatiereCoeffDetailsRepository,
     ) {
         parent::__construct($em);
     }
 
-    protected function getRepository(): VueMatiereCoeffDetailRepository
+    protected function getRepository(): VueMatiereCoeffDetailsRepository
     {
-        return $this->vueMatiereCoeffDetailRepository;
+        return $this->vueMatiereCoeffDetailsRepository;
     }
     public function getByMentionId(int $mentionId): array
     {
