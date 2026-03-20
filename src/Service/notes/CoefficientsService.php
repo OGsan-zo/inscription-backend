@@ -8,8 +8,12 @@ use App\Dto\utils\OrderCriteria;
 use App\Entity\note\MatiereMentionCoefficient;
 use App\Entity\note\Matieres;
 use App\Entity\proposEtudiant\Mentions;
+use App\Entity\proposEtudiant\Niveaux;
+use App\Entity\utilisateurs\Utilisateur;
 use App\Repository\notes\MatiereMentionCoefficientRepository;
 use App\Service\proposEtudiant\MentionsService;
+use App\Service\proposEtudiant\NiveauService;
+use App\Service\utilisateurs\UtilisateursService;
 use App\Service\utils\BaseService;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -20,6 +24,8 @@ class CoefficientsService extends BaseService
         private readonly MatiereMentionCoefficientRepository $coefficientRepository,
         private readonly MatieresService $matieresService,
         private readonly MentionsService $mentionsService,
+        private readonly NiveauService $niveauService,
+        private readonly UtilisateursService $utilisateursService,
     ) {
         parent::__construct($em);
     }
@@ -38,12 +44,14 @@ class CoefficientsService extends BaseService
         return $this->coefficientRepository->getAll(new OrderCriteria('createdAt', 'ASC'));
     }
 
-    private function buildCoefficient(Matieres $matiere, Mentions $mention, int $coefficient): MatiereMentionCoefficient
+    private function buildCoefficient(Matieres $matiere, Mentions $mention, Niveaux $niveau,Utilisateur $professeur, int $coefficient): MatiereMentionCoefficient
     {
         $coeff = new MatiereMentionCoefficient();
         $coeff->setMatiere($matiere);
         $coeff->setMention($mention);
         $coeff->setCoefficient($coefficient);
+        $coeff->setProfesseur($professeur);
+        $coeff->setNiveau($niveau);
         return $coeff;
     }
 
@@ -53,10 +61,13 @@ class CoefficientsService extends BaseService
         try {
             $matiere = $this->matieresService->getVerifierById($dto->idMatiere);
             $mention = $this->mentionsService->getVerifierById($dto->idMention);
-
+            $niveau = $this->niveauService->getVerifierById($dto->idNiveau);
+            $professeur = $this->utilisateursService->getVerifierById($dto->idProfesseur);
+            
             $doublon = $this->coefficientRepository->findByMatiereAndMention(
                 $matiere->getId(),
-                $mention->getId()
+                $mention->getId(),
+                $niveau->getId()
             );
             if ($doublon !== null) {
                 throw new \Exception(
@@ -65,7 +76,7 @@ class CoefficientsService extends BaseService
                 );
             }
 
-            $coeff = $this->buildCoefficient($matiere, $mention, $dto->coefficient);
+            $coeff = $this->buildCoefficient($matiere, $mention, $niveau, $professeur, $dto->coefficient);
 
             $this->em->persist($coeff);
             $this->em->flush();
@@ -87,7 +98,7 @@ class CoefficientsService extends BaseService
             $this->delete($ancien);
 
             // Création du nouveau avec les mêmes matière + mention
-            $nouveau = $this->buildCoefficient($ancien->getMatiere(), $ancien->getMention(), $dto->coefficient);
+            $nouveau = $this->buildCoefficient($ancien->getMatiere(), $ancien->getMention(), $ancien->getNiveau(), $ancien->getProfesseur(), $dto->coefficient);
 
             $this->em->persist($nouveau);
             $this->em->flush();
@@ -108,15 +119,21 @@ class CoefficientsService extends BaseService
     {
         $matiere = $c->getMatiere();
         $mention = $c->getMention();
+        $niveau = $c->getNiveau();
+        $niveauData = $this->niveauService->toArray($niveau);
+        $professeur = $c->getProfesseur();
+        $professeurData = $this->utilisateursService->toArray($professeur);
         return [
             'id'          => $c->getId(),
-            'matiere'     => ['id' => $matiere?->getId(), 'nom' => $matiere?->getNom()],
+            'matiere'     => ['id' => $matiere?->getId(), 'name' => $matiere?->getName()],
             'semestre'    => [
                 'id'  => $matiere?->getSemestre()?->getId(),
-                'nom' => $matiere?->getSemestre()?->getNom(),
+                'name' => $matiere?->getSemestre()?->getName(),
             ],
             'mention'     => $this->mentionsService->toArray($mention),
             'coefficient' => $c->getCoefficient(),
+            'niveau'      => $niveauData,
+            'professeur'  => $professeurData,
         ];
     }
 
