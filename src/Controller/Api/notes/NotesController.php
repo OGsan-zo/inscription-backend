@@ -122,11 +122,16 @@ class NotesController extends BaseApiController
         }
     }
     #[Route('/matieres-coeff/etudiant/{idMatiereCoeff}', methods: ['GET'])]
-    #[TokenRequired(['ChefMention','Admin'])]
-    public function coefficientsEtudiant(int $idMatiereCoeff): JsonResponse
+    // #[TokenRequired(['ChefMention','Admin'])]
+    public function coefficientsEtudiant(Request $request, int $idMatiereCoeff): JsonResponse
     {
+        $annee = $request->query->get('annee');
+
+        if (!$annee) {
+            return $this->jsonError('Paramètre annee requis', 400);
+        }
         try {
-            $listeEtudiant = $this->vueNotesService->getByMatiereCoefficientId($idMatiereCoeff);
+            $listeEtudiant = $this->vueNotesService->getByMatiereCoefficientId($idMatiereCoeff,$annee);
             $excludesFields = ['deletedAt'];
             $data = $this->vueNotesService->transformerArray($listeEtudiant, $excludesFields);
             return $this->jsonSuccess($data);
@@ -200,6 +205,30 @@ class NotesController extends BaseApiController
             return $this->jsonSuccess($this->notesService->formatLigneResultat($mmc, $note));
         } catch (\Throwable $e) {
             return $this->jsonError($e->getMessage(), $e->getCode() ?: 400);
+        }
+    }
+    #[Route('/valider/{idNote}', methods: ['PUT'])]
+    #[TokenRequired(['Admin', 'ChefMention'])]
+    public function validerNote(int $idNote): JsonResponse
+    {
+        try {
+            $note = $this->notesService->validerById($idNote);
+            $exludesFields = ['createdAt','deletedAt'];
+            return $this->jsonSuccess($note->toArray($exludesFields));
+        } catch (\Throwable $e) {
+            return $this->jsonError($e->getMessage(), $e->getCode() ?: 400);
+        }
+    }
+    #[Route('/matieres-coeff/professeur', methods: ['GET'])]
+    #[TokenRequired(['Admin', 'Professeur'])]
+    public function getMatiereCoeffProf(Request $request): JsonResponse
+    {
+        try {
+            $user = $this->getUserFromRequest($request);
+            $coefficients = $this->coefficientsService->getByProfesseur($user);
+            return $this->jsonSuccess($this->coefficientsService->formatAllCoefficients($coefficients));
+        } catch (\Throwable $e) {
+            return $this->jsonError($e->getMessage(), 400);
         }
     }
 }

@@ -5,6 +5,7 @@ SELECT
     n.type_note_id,
     tn.name AS type_note_name,
     n.matiere_mention_coefficient_id,
+    n.annee,
 
     e.id AS id_etudiant,
     e.nom,
@@ -12,7 +13,7 @@ SELECT
     n.date_validation,
     n.created_at,
     n.deleted_at
-
+    
 
 FROM notes n
 JOIN etudiants e 

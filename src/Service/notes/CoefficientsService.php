@@ -4,6 +4,7 @@ namespace App\Service\notes;
 
 use App\Dto\notes\CoefficientUpdateDto;
 use App\Dto\notes\MatiereMentionCoefficientDto;
+use App\Dto\utils\ConditionCriteria;
 use App\Dto\utils\OrderCriteria;
 use App\Entity\note\MatiereMentionCoefficient;
 use App\Entity\note\Matieres;
@@ -140,5 +141,17 @@ class CoefficientsService extends BaseService
     public function formatAllCoefficients(array $coefficients): array
     {
         return array_map(fn(MatiereMentionCoefficient $c) => $this->formatCoefficient($c), $coefficients);
+    }
+    public function getByProfesseur(Utilisateur $professeur): array
+    {
+        $conditions = [
+            new ConditionCriteria('professeur', $professeur->getId(), '='),
+        ];
+        $orderCriteria = new OrderCriteria('createdAt', 'DESC');
+
+        
+        $result = $this->search($conditions, $orderCriteria);
+        return $result;
+        
     }
 }

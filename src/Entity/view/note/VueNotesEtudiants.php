@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Entity\view;
+namespace App\Entity\view\note;
 
 use Doctrine\ORM\Mapping as ORM;
 use App\Entity\utils\BaseValidation;
@@ -30,6 +30,9 @@ class VueNotesEtudiants extends BaseValidation
 
     #[ORM\Column(type: "string", nullable: true)]
     private ?string $prenom = null;
+    
+    #[ORM\Column(type: "integer")]
+    private int $annee;
 
     // 👉 getters seulement (important pour une VIEW)
 
@@ -41,5 +44,7 @@ class VueNotesEtudiants extends BaseValidation
     public function getIdEtudiant(): int { return $this->idEtudiant; }
     public function getNom(): ?string { return $this->nom; }
     public function getPrenom(): ?string { return $this->prenom; }
+    public function getAnnee(): int { return $this->annee; }
 }
+
 

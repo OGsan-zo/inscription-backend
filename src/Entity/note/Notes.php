@@ -27,6 +27,10 @@ class Notes extends BaseValidation
     #[ORM\JoinColumn(nullable: false)]
     private ?TypeNotes $typeNote = null;
 
+    #[ORM\Column(type: "integer")]
+    private ?int $annee = null;
+
+
     public function getValeur(): ?string
     {
         return $this->valeur;
@@ -68,6 +72,15 @@ class Notes extends BaseValidation
     public function setTypeNote(?TypeNotes $typeNote): static
     {
         $this->typeNote = $typeNote;
+        return $this;
+    }
+    public function getAnnee(): ?int
+    {
+        return $this->annee;
+    }
+    public function setAnnee(?int $annee): static
+    {
+        $this->annee = $annee;
         return $this;
     }
 }

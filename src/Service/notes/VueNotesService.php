@@ -6,7 +6,7 @@ namespace App\Service\notes;
 
 use App\Dto\utils\ConditionCriteria;
 use App\Dto\utils\OrderCriteria;
-use App\Repository\view\VueNotesEtudiantsRepository;
+use App\Repository\view\note\VueNotesEtudiantsRepository;
 use App\Service\utils\BaseService;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -23,10 +23,11 @@ class VueNotesService extends BaseService
     {
         return $this->vueNotesEtudiantsRepository;
     }
-    public function getByMatiereCoefficientId(int $matiereMentionCoefficientId): array
+    public function getByMatiereCoefficientId(int $matiereMentionCoefficientId,int $annee): array
     {
         $conditions = [
             new ConditionCriteria('matiereMentionCoefficientId', $matiereMentionCoefficientId, '='),
+            new ConditionCriteria('annee', $annee, '='),
         ];
         $orderCriteria = new OrderCriteria('createdAt', 'DESC');
 

@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Repository\view;
+namespace App\Repository\view\note;
 
-use App\Entity\view\VueNotesEtudiants;
+use App\Entity\view\note\VueNotesEtudiants;
 use App\Repository\utils\BaseRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
