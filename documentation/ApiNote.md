@@ -158,6 +158,165 @@
 }
 ```
 
+# Pour creer une nouvelle UE
 
+**Url:** `POST /notes/ue`
+
+**Header:** `Content-Type: application/json`
+
+**Authorization:** `eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJ5b3VyLWFwcCIsImF1ZCI6InlvdXItY2xpZW50IiwiaWF0IjoxNzczMjk4MTg2LjE2NjQ4OSwiZXhwIjoxNzczMzAxNzg2LjE2NjQ4OSwiZW1haWwiOiJhZG1pbkBnbWFpbC5jb20iLCJub20iOiJBZG1pbiIsInByZW5vbSI6IkFkbWluIiwiYWRyZXNzZSI6IkFua2F0c28gLCBwb3J0ZSAxMDQiLCJpZCI6MSwicm9sZSI6IkFkbWluIn0.qaMEC_5W3hgEU5fnavlRuzfZFViP22dZ-CPppZRvDjE`
+
+**Role:**`Admin`
+
+**Body:**
+
+```json
+{
+    "name":"Algebre",
+    "semestreId":1,
+    "ueId":1
+}
+```
+**Response:**
+```json
+{
+    "status": "success",
+    "data": {
+            "name": "Algebre",
+            "id": 1
+    }
+}
+```
+
+# Pour avoir les matieres
+
+**Url:** `GET /notes/semestres`
+
+**Header:** `Content-Type: application/json`
+    
+
+**Response:**
+```json
+{
+    "status": "success",
+    "data": [
+        {
+            "name": "Algebre",
+            "id": 1,
+            "ue": {
+                "name": "Mathematique de l'ingenieur",
+                "id": 1
+            },
+            "semestre": {
+                "grade": 1,
+                "name": "Semestre 1",
+                "id": 1
+            }
+        }
+    ]
+}
+```
+
+# Pour avoir les matieres coefficient
+
+**Url:** `GET /notes/matieres-coeff`
+
+**Header:** `Content-Type: application/json`
+    
+
+**Response:**
+```json
+{
+    "status": "success",
+    "data": [
+        {
+            "id": 1,
+            "matiere": {
+                "id": 1,
+                "name": "Algebre"
+            },
+            "semestre": {
+                "id": 1,
+                "name": "Semestre 1"
+            },
+            "mention": {
+                "id": 1,
+                "nom": "BATIMENT ET TRAVAUX PUBLICS",
+                "abr": "BTP"
+            },
+            "coefficient": 3,
+            "niveau": {
+                "id": 1,
+                "nom": "L1",
+                "type": 1,
+                "grade": 1
+            },
+            "professeur": {
+                "id": 1,
+                "nom": "admin",
+                "prenom": "admin",
+                "email": "admin@gmail.com"
+            }
+        }
+    ]
+}
+```
+
+# Pour creer une nouvelle matiere coefficient
+
+**Url:** `POST /notes/matiere-coeff`
+
+**Header:** `Content-Type: application/json`
+
+**Authorization:** `eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJ5b3VyLWFwcCIsImF1ZCI6InlvdXItY2xpZW50IiwiaWF0IjoxNzczMjk4MTg2LjE2NjQ4OSwiZXhwIjoxNzczMzAxNzg2LjE2NjQ4OSwiZW1haWwiOiJhZG1pbkBnbWFpbC5jb20iLCJub20iOiJBZG1pbiIsInByZW5vbSI6IkFkbWluIiwiYWRyZXNzZSI6IkFua2F0c28gLCBwb3J0ZSAxMDQiLCJpZCI6MSwicm9sZSI6IkFkbWluIn0.qaMEC_5W3hgEU5fnavlRuzfZFViP22dZ-CPppZRvDjE`
+
+**Role:**`ChefMention`
+
+**Body:**
+
+```json
+{
+    "idMatiere":1,
+    "idMention":1,
+    "idNiveau":1,
+    "idProfesseur":1,
+    "coefficient":3
+}
+```
+**Response:**
+```json
+{
+    "status": "success",
+    "data": {
+        "id": 1,
+        "matiere": {
+            "id": 1,
+            "name": "Algebre"
+        },
+        "semestre": {
+            "id": 1,
+            "name": "Semestre 1"
+        },
+        "mention": {
+            "id": 1,
+            "nom": "BATIMENT ET TRAVAUX PUBLICS",
+            "abr": "BTP"
+        },
+        "coefficient": 3,
+        "niveau": {
+            "id": 1,
+            "nom": "L1",
+            "type": 1,
+            "grade": 1
+        },
+        "professeur": {
+            "id": 1,
+            "nom": "admin",
+            "prenom": "admin",
+            "email": "admin@gmail.com"
+        }
+    }
+}
+```
 
 

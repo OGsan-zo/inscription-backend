@@ -53,7 +53,11 @@ class UtilisateursService extends BaseService
     }
     public function getUserById(int $id): ?Utilisateur
     {
-        return $this->em->getRepository(Utilisateur::class)->find($id);
+        return $this->utilisateurRepository->find($id);
+    }
+    public function getById(int $id): ?Utilisateur
+    {
+        return $this->utilisateurRepository->find($id);
     }
     public function updateUser($idUser, array $data): Utilisateur
     {

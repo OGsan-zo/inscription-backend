@@ -84,7 +84,7 @@ class NotesController extends BaseApiController
 
     
     #[Route('/matieres', methods: ['POST'])]
-    // #[TokenRequired(['Admin'])]
+    #[TokenRequired(['Admin'])]
     public function createMatiere(Request $request): JsonResponse
     {
         try {
@@ -116,7 +116,7 @@ class NotesController extends BaseApiController
             $coefficients = $this->coefficientsService->getAllCoefficients();
             return $this->jsonSuccess($this->coefficientsService->formatAllCoefficients($coefficients));
         } catch (\Throwable $e) {
-            return $this->jsonError($e->getMessage(), $e->getCode() ?: 400);
+            return $this->jsonError($e->getMessage(), 400);
         }
     }
 
@@ -124,7 +124,7 @@ class NotesController extends BaseApiController
     // POST /notes/matieres-coeff
     // -------------------------------------------------------
     #[Route('/matieres-coeff', methods: ['POST'])]
-    #[TokenRequired]
+    // #[TokenRequired(['ChefMention'])]
     public function createCoefficient(Request $request): JsonResponse
     {
         try {

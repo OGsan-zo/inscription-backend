@@ -13,14 +13,16 @@ class MatiereMentionCoefficientRepository extends BaseRepository
         parent::__construct($registry, MatiereMentionCoefficient::class);
     }
 
-    public function findByMatiereAndMention(int $idMatiere, int $idMention): ?MatiereMentionCoefficient
+    public function findByMatiereAndMention(int $idMatiere, int $idMention,int $idNiveau): ?MatiereMentionCoefficient
     {
         return $this->createQueryBuilder('mmc')
             ->andWhere('mmc.matiere = :idMatiere')
             ->andWhere('mmc.mention = :idMention')
+            ->andWhere('mmc.niveau = :idNiveau')
             ->andWhere('mmc.deletedAt IS NULL')
             ->setParameter('idMatiere', $idMatiere)
             ->setParameter('idMention', $idMention)
+            ->setParameter('idNiveau', $idNiveau)
             ->getQuery()
             ->getOneOrNullResult();
     }

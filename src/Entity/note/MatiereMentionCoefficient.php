@@ -4,6 +4,7 @@ namespace App\Entity\note;
 
 use App\Entity\proposEtudiant\Mentions;
 use App\Entity\proposEtudiant\Niveaux;
+use App\Entity\utilisateurs\Utilisateur;
 use App\Entity\utils\BaseEntite;
 use App\Repository\notes\MatiereMentionCoefficientRepository;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -28,6 +29,10 @@ class MatiereMentionCoefficient extends BaseEntite
     #[ORM\ManyToOne(inversedBy: 'niveaux')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Niveaux $niveau = null;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Utilisateur $professeur = null;
 
     /**
      * @var Collection<int, Notes>
@@ -89,6 +94,16 @@ class MatiereMentionCoefficient extends BaseEntite
     public function setNiveau(?Niveaux $niveau): static
     {
         $this->niveau = $niveau;
+        return $this;
+    }
+    public function getProfesseur(): ?Utilisateur
+    {
+        return $this->professeur;
+    }
+    
+    public function setProfesseur(?Utilisateur $professeur): static
+    {
+        $this->professeur = $professeur;
         return $this;
     }
 }

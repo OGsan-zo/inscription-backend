@@ -118,7 +118,7 @@ class NotesService extends BaseService
         return [
             'idNote'      => $note?->getId(),
             'idMatiere'   => $matiere?->getId(),
-            'nomMatiere'  => $matiere?->getNom(),
+            'nomMatiere'  => $matiere?->getName(),
             'coefficient' => $coefficient,
             'noteSur20'   => $valeur,
             'ecAvecCoef'  => $ecAvecCoef,

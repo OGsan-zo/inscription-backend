@@ -59,4 +59,18 @@ class Matieres extends BaseName
     {
         return $this->matiereMentionCoefficients;
     }
+    public function toArray(array $exclude = []): array
+    {
+        $result = parent::toArray($exclude);
+        $ue = new UE();
+        $ue->setId($this->getUe()->getId());
+        $ue->setName($this->getUe()->getName());
+        $semestre = new Semestres();
+        $semestre->setId($this->getSemestre()->getId());
+        $semestre->setGrade($this->getSemestre()->getGrade());
+        $semestre->setName($this->getSemestre()->getName());
+        $result['ue'] = $ue->toArray($exclude);
+        $result['semestre'] = $semestre->toArray($exclude);
+        return $result;
+    }
 }
