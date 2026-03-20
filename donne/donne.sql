@@ -6,6 +6,8 @@
 INSERT INTO role (id, name) VALUES (1, 'Admin');
 INSERT INTO role (id, name) VALUES (2, 'Utilisateur');
 INSERT INTO role (id, name) VALUES (3, 'Ecolage');
+INSERT INTO role (id, name) VALUES (4, 'ChefMention');
+INSERT INTO role (id, name) VALUES (5, 'Professeur');
 
 
 INSERT INTO Status (id, name) VALUES (1, 'Actif');
@@ -47,6 +49,13 @@ VALUES (
     1,
     3
 );
+
+
+-- mots de passe : test 
+INSERT INTO public.utilisateur ( role_id, status_id, email, mdp, nom, prenom, date_creation) VALUES( 5, 1, 'prof@gmail.com', '$2y$10$AXA4N6J.1iq9KpRTKwy.2eCMYmjJN7HzQGKD7mYrxl0/MdE.ofxF.', 'Mr', 'Prof', NULL);
+INSERT INTO public.utilisateur ( role_id, status_id, email, mdp, nom, prenom, date_creation) VALUES( 4, 1, 'chef@gmail.com', '$2y$10$RvemsPB/l6.nqalcDKoXpuY/07mGioL65B3hBdX6d4dJPcrXJ2Td.', 'Chef', 'Mention', NULL); 
+
+
 -- UPDATE utilisateur SET status_id = 2;
 
 -- Table Propos avec id manuel
