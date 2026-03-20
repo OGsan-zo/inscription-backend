@@ -5,7 +5,7 @@ doctrine:
         # IMPORTANT: You MUST configure your server version,
         # either here or in the DATABASE_URL env var (see .env file)
         #server_version: '16'
-        schema_filter: ~^(?!inscription|pin|pinutilisateur|tentative|vue_notes_etudiants).*~
+        schema_filter: ~^(?!inscription|pin|pinutilisateur|tentative|vue_notes_etudiants|vue_matiere_coeff_detail).*~
 
         profiling_collect_backtrace: '%kernel.debug%'
         use_savepoints: true
