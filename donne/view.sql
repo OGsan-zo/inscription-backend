@@ -90,8 +90,11 @@ SELECT DISTINCT ON (n.etudiant_id, n.matiere_mention_coefficient_id, n.type_note
 FROM notes n
 ORDER BY n.etudiant_id, n.matiere_mention_coefficient_id, n.type_note_id, n.annee, n.date_validation DESC, n.created_at DESC;
 
+drop view if exists vue_niveau_etudiants_details;
 create view vue_niveau_etudiants_details as
-select e.nom, 
+select
+    ne.id,
+    e.nom, 
     e.prenom, 
     e.id as etudiant_id,
     ne.niveau_id,

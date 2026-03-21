@@ -9,6 +9,7 @@ use App\Dto\utils\ConditionCriteria;
 use App\Dto\utils\OrderCriteria;
 use App\Repository\view\proposEtudiant\VueNiveauEtudiantsDetailsRepository;
 use App\Service\notes\CoefficientsService;
+use App\Service\notes\view\VueCoefficientDetailsService;
 use App\Service\notes\view\VueDernierNotesService;
 use App\Service\utils\BaseService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -19,7 +20,7 @@ class VueNiveauEtudiantsDetailsService extends BaseService
         EntityManagerInterface $em,
         private readonly VueNiveauEtudiantsDetailsRepository $vueNiveauEtudiantsDetailsRepository,
         private readonly VueDernierNotesService $vueDernierNoteService,
-        private readonly CoefficientsService $coefficientsService,
+        private readonly VueCoefficientDetailsService $vueCoefficientDetailsServiceService,
     ) {
         parent::__construct($em);
     }
@@ -43,13 +44,13 @@ class VueNiveauEtudiantsDetailsService extends BaseService
     }
     public function getEtudiantByNiveauMentionDetail(int $matiereMentionCoefficientId,int $annee): array{
         $result = [];
-        $matiereMentionCoefficient = $this->coefficientsService->getById($matiereMentionCoefficientId);
+        $matiereMentionCoefficientDetail = $this->vueCoefficientDetailsServiceService->getById($matiereMentionCoefficientId);
         
-        $listeNiveaux = $this->getEtudiantByNiveauMention($matiereMentionCoefficient->niveauId, $matiereMentionCoefficient->mentionId, $annee);
+        $listeNiveaux = $this->getEtudiantByNiveauMention($matiereMentionCoefficientDetail->getNiveauId(), $matiereMentionCoefficientDetail->getMentionId(), $annee);
         foreach ($listeNiveaux as $ls) {
             $vueNiveauDetailDto = new NiveauEtudiantDetailsDto();
             $vueNiveauDetailDto->details = $ls;
-            $vueNiveauDetailDto->notes = $this->vueDernierNoteService->getByMatiereCoefficientId($matiereMentionCoefficientId, $annee);
+            $vueNiveauDetailDto->notes = $this->vueDernierNoteService->getByMatiereCoefficientIdEtudiant($ls->getEtudiantId(), $matiereMentionCoefficientId, $annee);
             $result[] = $vueNiveauDetailDto;
         }   
         return $result;

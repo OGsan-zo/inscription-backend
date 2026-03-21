@@ -408,3 +408,256 @@
     ]
 }
 ```
+# Pour avoir les notes etudiant a chaque proffeseur
+
+**Url:** `GET /notes/matieres-coeff/professeur/1?annee=2026`
+
+**Header:** `Content-Type: application/json`
+    
+**Authorization:** `eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJ5b3VyLWFwcCIsImF1ZCI6InlvdXItY2xpZW50IiwiaWF0IjoxNzczMjk4MTg2LjE2NjQ4OSwiZXhwIjoxNzczMzAxNzg2LjE2NjQ4OSwiZW1haWwiOiJhZG1pbkBnbWFpbC5jb20iLCJub20iOiJBZG1pbiIsInByZW5vbSI6IkFkbWluIiwiYWRyZXNzZSI6IkFua2F0c28gLCBwb3J0ZSAxMDQiLCJpZCI6MSwicm9sZSI6IkFkbWluIn0.qaMEC_5W3hgEU5fnavlRuzfZFViP22dZ-CPppZRvDjE`
+
+**Role:**`Professeur , Admin`
+
+**Response:**
+```json
+{
+    "status": "success",
+    "data": [
+        {
+            "details": {
+                "etudiantId": 10064,
+                "nom": "ANDRIATAHIRY",
+                "prenom": "Rafanomezantsoa Henri",
+                "niveauId": 1,
+                "mentionId": 1,
+                "annee": 2026,
+                "id": 33365
+            },
+            "notes": []
+        },
+        {
+            "details": {
+                "etudiantId": 10180,
+                "nom": "BENAH",
+                "prenom": "Ny Aina Malala Irimanjaka",
+                "niveauId": 1,
+                "mentionId": 1,
+                "annee": 2026,
+                "id": 33314
+            },
+            "notes": []
+        },
+        {
+            "details": {
+                "etudiantId": 10190,
+                "nom": "RAKOTONIRINA",
+                "prenom": "Antsotiana Kôvenue",
+                "niveauId": 1,
+                "mentionId": 1,
+                "annee": 2026,
+                "id": 33138
+            },
+            "notes": []
+        },
+        {
+            "details": {
+                "etudiantId": 10173,
+                "nom": "ANDRIAMANANTENA",
+                "prenom": "Ionty",
+                "niveauId": 1,
+                "mentionId": 1,
+                "annee": 2026,
+                "id": 32981
+            },
+            "notes": []
+        },
+        {
+            "details": {
+                "etudiantId": 10202,
+                "nom": "TOLOTRANDRIANINA",
+                "prenom": "Fanirina Fiaro",
+                "niveauId": 1,
+                "mentionId": 1,
+                "annee": 2026,
+                "id": 32972
+            },
+            "notes": []
+        },
+        {
+            "details": {
+                "etudiantId": 10200,
+                "nom": "RAZAFIMAHATRATRA",
+                "prenom": "Nieferana Toela",
+                "niveauId": 1,
+                "mentionId": 1,
+                "annee": 2026,
+                "id": 32896
+            },
+            "notes": []
+        },
+        {
+            "details": {
+                "etudiantId": 10175,
+                "nom": "ANDRIAMIHARINJARA",
+                "prenom": "Lucero Médicis",
+                "niveauId": 1,
+                "mentionId": 1,
+                "annee": 2026,
+                "id": 32693
+            },
+            "notes": []
+        },
+        {
+            "details": {
+                "etudiantId": 10194,
+                "nom": "RANDRIAMALALA",
+                "prenom": "Andriana Mahery",
+                "niveauId": 1,
+                "mentionId": 1,
+                "annee": 2026,
+                "id": 32689
+            },
+            "notes": []
+        },
+        {
+            "details": {
+                "etudiantId": 10199,
+                "nom": "RATOVOHARIMIANDRA",
+                "prenom": "Valimpitia Andresy",
+                "niveauId": 1,
+                "mentionId": 1,
+                "annee": 2026,
+                "id": 32685
+            },
+            "notes": []
+        },
+        {
+            "details": {
+                "etudiantId": 10182,
+                "nom": "LANTOHARINIAINA",
+                "prenom": "Kaloina Iriantsoa Hendritiana",
+                "niveauId": 1,
+                "mentionId": 1,
+                "annee": 2026,
+                "id": 32675
+            },
+            "notes": []
+        },
+        {
+            "details": {
+                "etudiantId": 10192,
+                "nom": "RAMAROSONANJARA",
+                "prenom": "Mihaja Ikoriantsoa",
+                "niveauId": 1,
+                "mentionId": 1,
+                "annee": 2026,
+                "id": 32674
+            },
+            "notes": []
+        },
+        {
+            "details": {
+                "etudiantId": 10172,
+                "nom": "ANDRIAMAMPITA",
+                "prenom": "Tsiory",
+                "niveauId": 1,
+                "mentionId": 1,
+                "annee": 2026,
+                "id": 32644
+            },
+            "notes": []
+        },
+        {
+            "details": {
+                "etudiantId": 10184,
+                "nom": "RABARIVOLA",
+                "prenom": "Harimalala Mihantaniaina",
+                "niveauId": 1,
+                "mentionId": 1,
+                "annee": 2026,
+                "id": 32383
+            },
+            "notes": []
+        },
+        {
+            "details": {
+                "etudiantId": 10195,
+                "nom": "RANDRIAMIHAJARISON",
+                "prenom": "Miharisoa Faniry",
+                "niveauId": 1,
+                "mentionId": 1,
+                "annee": 2026,
+                "id": 32369
+            },
+            "notes": []
+        },
+        {
+            "details": {
+                "etudiantId": 10177,
+                "nom": "ANDRIAMIHARISOA",
+                "prenom": "Marie Rindra",
+                "niveauId": 1,
+                "mentionId": 1,
+                "annee": 2026,
+                "id": 32367
+            },
+            "notes": []
+        },
+        {
+            "details": {
+                "etudiantId": 10193,
+                "nom": "RAMASIARITIANA",
+                "prenom": "Andriniaina Judicaël",
+                "niveauId": 1,
+                "mentionId": 1,
+                "annee": 2026,
+                "id": 32360
+            },
+            "notes": [
+                {
+                    "etudiantId": 10193,
+                    "matiereMentionCoefficientId": 1,
+                    "typeNoteId": 1,
+                    "valeur": 16.5,
+                    "annee": 2026,
+                    "dateValidation": "2026-03-20 10:00:00",
+                    "id": 8
+                },
+                {
+                    "etudiantId": 10193,
+                    "matiereMentionCoefficientId": 1,
+                    "typeNoteId": 2,
+                    "valeur": 11,
+                    "annee": 2026,
+                    "dateValidation": "2026-03-20 11:00:00",
+                    "id": 9
+                }
+            ]
+        },
+        {
+            "details": {
+                "etudiantId": 10188,
+                "nom": "RAKOTOARIMANANA",
+                "prenom": "Miharisoa Rado",
+                "niveauId": 1,
+                "mentionId": 1,
+                "annee": 2026,
+                "id": 32348
+            },
+            "notes": []
+        },
+        {
+            "details": {
+                "etudiantId": 10178,
+                "nom": "ANDRIAVELOJAONA",
+                "prenom": "Miranto Princy",
+                "niveauId": 1,
+                "mentionId": 1,
+                "annee": 2026,
+                "id": 32291
+            },
+            "notes": []
+        }
+    ]
+}
+```

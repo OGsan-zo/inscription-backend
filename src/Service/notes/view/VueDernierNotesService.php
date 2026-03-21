@@ -36,4 +36,18 @@ class VueDernierNotesService extends BaseService
         return $result;
         
     }
+    public function getByMatiereCoefficientIdEtudiant(int $etudiantId,int $matiereMentionCoefficientId,int $annee): array
+    {
+        $conditions = [
+            new ConditionCriteria('etudiantId', $etudiantId, '='),
+            new ConditionCriteria('matiereMentionCoefficientId', $matiereMentionCoefficientId, '='),
+            new ConditionCriteria('annee', $annee, '='),
+        ];
+        $orderCriteria = new OrderCriteria('createdAt', 'DESC');
+
+        
+        $result = $this->search($conditions, $orderCriteria);
+        return $result;
+        
+    }
 }

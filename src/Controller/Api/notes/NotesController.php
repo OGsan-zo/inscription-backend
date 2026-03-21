@@ -239,7 +239,7 @@ class NotesController extends BaseApiController
         }
     }
     #[Route('/matieres-coeff/professeur/{idMatiereCoeff}', methods: ['GET'])]
-    // #[TokenRequired(['Professeur','Admin'])]
+    #[TokenRequired(['Professeur','Admin'])]
     public function etudiantParMatiereCoeff(Request $request, int $idMatiereCoeff): JsonResponse
     {
         $annee = $request->query->get('annee');
@@ -249,7 +249,9 @@ class NotesController extends BaseApiController
         }
         try {
             $listeEtudiant = $this->vueNiveauEtudiantsDetailsService->getEtudiantByNiveauMentionDetail($idMatiereCoeff,$annee);
-            return $this->jsonSuccess($listeEtudiant);
+            $exludesFields = ['id','createdAt','deletedAt'];
+            $data = $this->vueNiveauEtudiantsDetailsService->transformerArray($listeEtudiant, $exludesFields);
+            return $this->jsonSuccess($data);
         } catch (\Throwable $e) {
             return $this->jsonError($e->getMessage(), 400);
         }
