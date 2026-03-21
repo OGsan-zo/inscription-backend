@@ -38,7 +38,21 @@ class Notes extends BaseValidation
 
     public function setValeur(?string $valeur): static
     {
-        $this->valeur = $valeur;
+        if ($valeur === null) {
+            $this->valeur = null;
+            return $this;
+        }
+
+        // Convertir en float
+        $val = (float) $valeur;
+
+        // Vérification intervalle
+        if ($val < 0 || $val > 20) {
+            throw new \InvalidArgumentException("La note doit être comprise entre 0 et 20.");
+        }
+
+        $this->valeur = $val;
+
         return $this;
     }
 

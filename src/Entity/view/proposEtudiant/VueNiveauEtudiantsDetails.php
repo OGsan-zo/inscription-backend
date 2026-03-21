@@ -9,7 +9,6 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Table(name: "vue_niveau_etudiants_details")]
 class VueNiveauEtudiantsDetails extends BaseEntite
 {
-    #[ORM\Id]
     #[ORM\Column(type: "integer")]
     private int $etudiantId;
 
