@@ -7,6 +7,7 @@ use App\Controller\Api\utils\BaseApiController;
 use App\Dto\notes\CoefficientUpdateDto;
 use App\Dto\notes\MatiereDto;
 use App\Dto\notes\MatiereMentionCoefficientDto;
+use App\Dto\notes\NoteInsetionListeDto;
 use App\Dto\notes\NoteUpdateDto;
 use App\Dto\notes\UEDto;
 use App\Entity\view\proposEtudiant\VueNiveauEtudiantsDetails;
@@ -196,22 +197,6 @@ class NotesController extends BaseApiController
         }
     }
 
-    // -------------------------------------------------------
-    // PUT /notes/resultats/{idNote}
-    // -------------------------------------------------------
-    #[Route('/resultats/{idNote}', methods: ['PUT'])]
-    #[TokenRequired]
-    public function updateNote(int $idNote, Request $request): JsonResponse
-    {
-        try {
-            $dto  = $this->deserializeAndValidate($request, NoteUpdateDto::class);
-            $note = $this->notesService->updateNote($idNote, $dto);
-            $mmc  = $note->getMatiereMentionCoefficient();
-            return $this->jsonSuccess($this->notesService->formatLigneResultat($mmc, $note));
-        } catch (\Throwable $e) {
-            return $this->jsonError($e->getMessage(), $e->getCode() ?: 400);
-        }
-    }
     #[Route('/valider/{idNote}', methods: ['PUT'])]
     #[TokenRequired(['Admin', 'ChefMention'])]
     public function validerNote(int $idNote): JsonResponse
@@ -251,6 +236,20 @@ class NotesController extends BaseApiController
             $listeEtudiant = $this->vueNiveauEtudiantsDetailsService->getEtudiantByNiveauMentionDetail($idMatiereCoeff,$annee);
             $exludesFields = ['id','createdAt','deletedAt'];
             $data = $this->vueNiveauEtudiantsDetailsService->transformerArray($listeEtudiant, $exludesFields);
+            return $this->jsonSuccess($data);
+        } catch (\Throwable $e) {
+            return $this->jsonError($e->getMessage(), 400);
+        }
+    }
+    #[Route('/matieres-coeff/professeur', methods: ['POST'])]
+    #[TokenRequired(['Professeur','Admin'])]
+    public function insertListeNoteProfesseur(Request $request): JsonResponse
+    {
+        try {
+            $dto   = $this->deserializeAndValidate($request, NoteInsetionListeDto::class);
+            $notes = $this->notesService->insertListeNoteProfesseurDto($dto);
+            $exludesFields = ['id','createdAt','deletedAt'];
+            $data = $this->vueNiveauEtudiantsDetailsService->transformerArray($notes, $exludesFields);
             return $this->jsonSuccess($data);
         } catch (\Throwable $e) {
             return $this->jsonError($e->getMessage(), 400);

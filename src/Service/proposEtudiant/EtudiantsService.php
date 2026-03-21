@@ -456,7 +456,7 @@ class EtudiantsService
 
         return $entity;
     }
-    function getOrFailUtilisateur($idEtudiant)
+    public function getOrFailUtilisateur($idEtudiant)
     {
         $result = $this->getEntityOrFail(
             $this->etudiantsRepository,

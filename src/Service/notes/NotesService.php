@@ -2,7 +2,9 @@
 
 namespace App\Service\notes;
 
+use App\Dto\notes\NoteInsetionListeDto;
 use App\Dto\notes\NoteUpdateDto;
+use App\Entity\note\TypeNotes;
 use App\Entity\proposEtudiant\Etudiants;
 use App\Entity\note\MatiereMentionCoefficient;
 use App\Entity\proposEtudiant\NiveauEtudiants;
@@ -23,7 +25,7 @@ class NotesService extends BaseValidationService
         private readonly SemestresService $semestresService,
         private readonly EtudiantsService $etudiantsService,
         private readonly NiveauEtudiantsService $niveauEtudiantsService,
-        private readonly ValidationService $validationService,
+        private readonly TypeNotesService $typeNotesService
     ) {
         parent::__construct($em);
     }
@@ -33,21 +35,11 @@ class NotesService extends BaseValidationService
         return $this->notesRepository;
     }
 
-    // -------------------------------------------------------
-    // Étudiants (helpers)
-    // -------------------------------------------------------
-
-    public function getVerifiedEtudiant(int $id): Etudiants
-    {
-        $etudiant = $this->etudiantsService->getEtudiantById($id);
-        $this->validationService->throwIfNull($etudiant, "Étudiant introuvable pour l'ID $id.");
-        return $etudiant;
-    }
-
+    
     public function getDernierNiveauEtudiant(Etudiants $e): NiveauEtudiants
     {
         $ne = $this->niveauEtudiantsService->getDernierNiveauParEtudiant($e);
-        $this->validationService->throwIfNull($ne, "Aucun niveau trouvé pour l'étudiant ID {$e->getId()}.");
+        $this->throwIfNull($ne, "Aucun niveau trouvé pour l'étudiant ID {$e->getId()}.");
         return $ne;
     }
 
@@ -68,7 +60,7 @@ class NotesService extends BaseValidationService
 
     public function getResultatsEtudiant(int $idEtudiant, int $idSemestre): array
     {
-        $etudiant     = $this->getVerifiedEtudiant($idEtudiant);
+        $etudiant     = $this->getVerifierById($idEtudiant);
         $ne           = $this->getDernierNiveauEtudiant($etudiant);
         $mention      = $ne->getMention();
 
@@ -92,21 +84,6 @@ class NotesService extends BaseValidationService
         ];
     }
 
-    public function updateNote(int $id, NoteUpdateDto $dto): Notes
-    {
-        $this->em->getConnection()->beginTransaction();
-        try {
-            $note = $this->getVerifierById($id);
-            $note->setValeur((string) $dto->valeur);
-            $this->em->flush();
-            $this->em->getConnection()->commit();
-            return $note;
-        } catch (\Throwable $e) {
-            $this->em->getConnection()->rollBack();
-            throw $e;
-        }
-    }
-
     public function formatLigneResultat(MatiereMentionCoefficient $mmc, ?Notes $note): array
     {
         $matiere     = $mmc->getMatiere();
@@ -124,5 +101,48 @@ class NotesService extends BaseValidationService
             'ecAvecCoef'  => $ecAvecCoef,
             'resultat'    => $resultat,
         ];
+    }
+    public function saveNoteEtudiant(Etudiants $etudiant, MatiereMentionCoefficient $mmc,TypeNotes $typeNote,float $valeur,int $annee,bool $isValid = false): Notes
+    {
+        $result = new Notes();
+        $result->setEtudiant($etudiant);
+        $result->setMatiereMentionCoefficient($mmc);
+        $result->setTypeNote($typeNote);
+        $result->setValeur($valeur);
+        $result->setAnnee($annee);
+        if ($isValid) {
+            $result->setDateValidation(new \DateTime());
+        }
+        $result = $this->save($result);
+        return $result;
+    }
+    public function saveNoteEtudiantId(int $etudiantId,int $matiereCoefficientId,int $typeNoteId,float $valeur,int $annee,bool $isValid = false):Notes
+    {
+        $etudiant = $this->etudiantsService->getOrFailUtilisateur($etudiantId);
+        $matiereCoefficient = $this->coefficientsService->getVerifierById($matiereCoefficientId);
+        $typeNote = $this->typeNotesService->getVerifierById($typeNoteId);
+        $result = $this->saveNoteEtudiant($etudiant,$matiereCoefficient,$typeNote,$valeur,$annee,$isValid);
+        return $result;
+    }
+    public function insertListeNoteProfesseurDto(NoteInsetionListeDto $dto): array
+    {
+        $result = [];
+        $typeNoteId = 1;
+        if (!$dto->isNormale) {
+            $typeNoteId = 2;
+        }
+        $this->em->getConnection()->beginTransaction();
+        try {
+            foreach($dto->listeEtudiants as $etudiant)
+            {
+                $note = $this->saveNoteEtudiantId($etudiant['etudiantId'], $dto->idMatiereCoefficient, $typeNoteId, $etudiant['valeur'], $dto->annee);
+                $result[] = $note;
+            }
+            $this->em->getConnection()->commit();
+        } catch (\Exception $e) {
+            $this->em->getConnection()->rollBack();
+            throw $e;
+        }
+        return $result;
     }
 }

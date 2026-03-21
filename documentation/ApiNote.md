@@ -430,8 +430,7 @@
                 "prenom": "Rafanomezantsoa Henri",
                 "niveauId": 1,
                 "mentionId": 1,
-                "annee": 2026,
-                "id": 33365
+                "annee": 2026
             },
             "notes": []
         },
@@ -442,8 +441,7 @@
                 "prenom": "Ny Aina Malala Irimanjaka",
                 "niveauId": 1,
                 "mentionId": 1,
-                "annee": 2026,
-                "id": 33314
+                "annee": 2026
             },
             "notes": []
         },
@@ -454,8 +452,7 @@
                 "prenom": "Antsotiana Kôvenue",
                 "niveauId": 1,
                 "mentionId": 1,
-                "annee": 2026,
-                "id": 33138
+                "annee": 2026
             },
             "notes": []
         },
@@ -466,8 +463,7 @@
                 "prenom": "Ionty",
                 "niveauId": 1,
                 "mentionId": 1,
-                "annee": 2026,
-                "id": 32981
+                "annee": 2026
             },
             "notes": []
         },
@@ -478,8 +474,7 @@
                 "prenom": "Fanirina Fiaro",
                 "niveauId": 1,
                 "mentionId": 1,
-                "annee": 2026,
-                "id": 32972
+                "annee": 2026
             },
             "notes": []
         },
@@ -490,8 +485,7 @@
                 "prenom": "Nieferana Toela",
                 "niveauId": 1,
                 "mentionId": 1,
-                "annee": 2026,
-                "id": 32896
+                "annee": 2026
             },
             "notes": []
         },
@@ -502,8 +496,7 @@
                 "prenom": "Lucero Médicis",
                 "niveauId": 1,
                 "mentionId": 1,
-                "annee": 2026,
-                "id": 32693
+                "annee": 2026
             },
             "notes": []
         },
@@ -514,8 +507,7 @@
                 "prenom": "Andriana Mahery",
                 "niveauId": 1,
                 "mentionId": 1,
-                "annee": 2026,
-                "id": 32689
+                "annee": 2026
             },
             "notes": []
         },
@@ -526,8 +518,7 @@
                 "prenom": "Valimpitia Andresy",
                 "niveauId": 1,
                 "mentionId": 1,
-                "annee": 2026,
-                "id": 32685
+                "annee": 2026
             },
             "notes": []
         },
@@ -538,8 +529,7 @@
                 "prenom": "Kaloina Iriantsoa Hendritiana",
                 "niveauId": 1,
                 "mentionId": 1,
-                "annee": 2026,
-                "id": 32675
+                "annee": 2026
             },
             "notes": []
         },
@@ -550,8 +540,7 @@
                 "prenom": "Mihaja Ikoriantsoa",
                 "niveauId": 1,
                 "mentionId": 1,
-                "annee": 2026,
-                "id": 32674
+                "annee": 2026
             },
             "notes": []
         },
@@ -562,8 +551,7 @@
                 "prenom": "Tsiory",
                 "niveauId": 1,
                 "mentionId": 1,
-                "annee": 2026,
-                "id": 32644
+                "annee": 2026
             },
             "notes": []
         },
@@ -574,8 +562,7 @@
                 "prenom": "Harimalala Mihantaniaina",
                 "niveauId": 1,
                 "mentionId": 1,
-                "annee": 2026,
-                "id": 32383
+                "annee": 2026
             },
             "notes": []
         },
@@ -586,8 +573,7 @@
                 "prenom": "Miharisoa Faniry",
                 "niveauId": 1,
                 "mentionId": 1,
-                "annee": 2026,
-                "id": 32369
+                "annee": 2026
             },
             "notes": []
         },
@@ -598,8 +584,7 @@
                 "prenom": "Marie Rindra",
                 "niveauId": 1,
                 "mentionId": 1,
-                "annee": 2026,
-                "id": 32367
+                "annee": 2026
             },
             "notes": []
         },
@@ -610,8 +595,7 @@
                 "prenom": "Andriniaina Judicaël",
                 "niveauId": 1,
                 "mentionId": 1,
-                "annee": 2026,
-                "id": 32360
+                "annee": 2026
             },
             "notes": [
                 {
@@ -620,8 +604,7 @@
                     "typeNoteId": 1,
                     "valeur": 16.5,
                     "annee": 2026,
-                    "dateValidation": "2026-03-20 10:00:00",
-                    "id": 8
+                    "dateValidation": "2026-03-20 10:00:00"
                 },
                 {
                     "etudiantId": 10193,
@@ -629,8 +612,7 @@
                     "typeNoteId": 2,
                     "valeur": 11,
                     "annee": 2026,
-                    "dateValidation": "2026-03-20 11:00:00",
-                    "id": 9
+                    "dateValidation": "2026-03-20 11:00:00"
                 }
             ]
         },
@@ -641,8 +623,7 @@
                 "prenom": "Miharisoa Rado",
                 "niveauId": 1,
                 "mentionId": 1,
-                "annee": 2026,
-                "id": 32348
+                "annee": 2026
             },
             "notes": []
         },
@@ -653,10 +634,52 @@
                 "prenom": "Miranto Princy",
                 "niveauId": 1,
                 "mentionId": 1,
-                "annee": 2026,
-                "id": 32291
+                "annee": 2026
             },
             "notes": []
+        }
+    ]
+}
+```
+
+# Pour inserer des notes sur professeur
+
+**Url:** `POST /notes/matieres-coeff/professeur`
+
+**Header:** `Content-Type: application/json`
+
+**Authorization:** `eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJ5b3VyLWFwcCIsImF1ZCI6InlvdXItY2xpZW50IiwiaWF0IjoxNzczMjk4MTg2LjE2NjQ4OSwiZXhwIjoxNzczMzAxNzg2LjE2NjQ4OSwiZW1haWwiOiJhZG1pbkBnbWFpbC5jb20iLCJub20iOiJBZG1pbiIsInByZW5vbSI6IkFkbWluIiwiYWRyZXNzZSI6IkFua2F0c28gLCBwb3J0ZSAxMDQiLCJpZCI6MSwicm9sZSI6IkFkbWluIn0.qaMEC_5W3hgEU5fnavlRuzfZFViP22dZ-CPppZRvDjE`
+
+**Role:**`Admin,Professeur`
+
+**Body:**
+
+```json
+{
+  "idMatiereCoefficient": 1,
+  "annee": 2026,
+  "isNormale": true,
+  "listeEtudiants": [
+    {
+      "etudiantId": 10064,
+      "valeur": 15.5
+    },
+    {
+      "etudiantId": 10180,
+      "valeur": 12.0
+    }
+  ]
+}
+```
+**Response:**
+```json
+{
+    "status": "success",
+    "data": [
+        {
+            "valeur": "16",
+            "annee": 2026,
+            "dateValidation": null
         }
     ]
 }
