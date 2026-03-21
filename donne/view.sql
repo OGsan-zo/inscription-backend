@@ -104,3 +104,35 @@ select
     ne.annee
 from niveau_etudiants ne
 join etudiants e on ne.etudiant_id = e.id;
+
+drop view if exists vue_dernieres_notes_valide;
+CREATE OR REPLACE VIEW vue_dernieres_notes_valide AS
+SELECT DISTINCT ON (n.etudiant_id, n.matiere_mention_coefficient_id, n.type_note_id, n.annee)
+    n.id,
+    n.etudiant_id,
+    n.matiere_mention_coefficient_id,
+    n.type_note_id,
+    n.valeur,
+    n.date_validation,
+    n.created_at,
+    n.deleted_at,
+    n.annee
+FROM notes n
+WHERE n.date_validation IS NOT NULL
+ORDER BY n.etudiant_id, n.matiere_mention_coefficient_id, n.type_note_id, n.annee, n.date_validation DESC, n.created_at DESC;
+
+
+DROP VIEW IF EXISTS vue_notes_max_from_derniere;
+CREATE OR REPLACE VIEW vue_notes_max_from_derniere AS
+SELECT DISTINCT ON (
+    v.etudiant_id,
+    v.matiere_mention_coefficient_id,
+    v.type_note_id
+)
+    v.*
+FROM vue_dernieres_notes_valide v
+ORDER BY 
+    v.etudiant_id,
+    v.matiere_mention_coefficient_id,
+    v.type_note_id,
+    v.valeur DESC;

@@ -6,6 +6,7 @@ namespace App\Service\notes\view;
 
 use App\Dto\utils\ConditionCriteria;
 use App\Dto\utils\OrderCriteria;
+use App\Entity\utilisateurs\Utilisateur;
 use App\Repository\view\note\VueMatiereCoeffDetailsRepository;
 use App\Service\utils\BaseService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -35,10 +36,23 @@ class VueCoefficientDetailsService extends BaseService
         return $result;
         
     }
-    public function getByProfesseur($professeur): array
+    public function getByProfesseur(Utilisateur $professeur): array
     {
         $conditions = [
             new ConditionCriteria('professeurId', $professeur->getId(), '='),
+        ];
+        $orderCriteria = new OrderCriteria('createdAt', 'DESC');
+
+        
+        $result = $this->search($conditions, $orderCriteria);
+        return $result;
+        
+    }
+    public function getBySemestreIdMentionId(int $semestreId,int $mentionId): array
+    {
+        $conditions = [
+            new ConditionCriteria('semestreId', $semestreId, '='),
+            new ConditionCriteria('mentionId', $mentionId, '='),
         ];
         $orderCriteria = new OrderCriteria('createdAt', 'DESC');
 
