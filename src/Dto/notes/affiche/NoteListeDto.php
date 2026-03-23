@@ -4,15 +4,14 @@ namespace App\Dto\notes\affiche;
 
 class NoteListeDto
 {
-    public string $ue;
-    public array $notes;
-    public int $sommeCoefficients;
+    private string $ue = '';
+    private array $notes = []; // ✅ initialisé
 
-    public int $sommeNotesAvecCoefficient;
+    private int $sommeCoefficients = 0; // ✅ initialisé
+    private float $sommeNotesAvecCoefficient = 0; // ✅ float + initialisé
 
-    public float $moyenne;
-
-    public bool $isValid;
+    private float $moyenne = 0; // ✅ initialisé
+    private bool $isValid = false; // valeur par défaut
 
     public function getUe(): string
     {
@@ -31,8 +30,9 @@ class NoteListeDto
     
     public function setNotes(array $notes): void
     {
-        $this->notes = $notes;
+        $this->notes = $notes ?? []; // sécurité
     }
+
     public function ajouterNote(NoteAfficheDto $note): void
     {
         $this->notes[] = $note;
@@ -53,29 +53,9 @@ class NoteListeDto
         return $this->sommeCoefficients;
     }
     
-    public function setSommeCoefficients(int $sommeCoefficients): void
-    {
-        $this->sommeCoefficients = $sommeCoefficients;
-    }
-    
-    public function calculerSommeCoefficientsNotes(): void
-    {
-        $this->sommeCoefficients = 0;
-        $this->sommeNotesAvecCoefficient = 0;
-        foreach ($this->notes as $note) {
-            $this->sommeCoefficients += $note->getCoefficient();
-            $this->sommeNotesAvecCoefficient += $note->getNote() * $note->getCoefficient();
-        }
-    }
-    
-    public function getSommeNotesAvecCoefficient(): int
+    public function getSommeNotesAvecCoefficient(): float
     {
         return $this->sommeNotesAvecCoefficient;
-    }
-    
-    public function setSommeNotesAvecCoefficient(int $sommeNotesAvecCoefficient): void
-    {
-        $this->sommeNotesAvecCoefficient = $sommeNotesAvecCoefficient;
     }
 
     public function getMoyenne(): float
@@ -83,17 +63,31 @@ class NoteListeDto
         return $this->moyenne;
     }
 
-    public function setMoyenne(float $moyenne): void
+    /**
+     * ✅ Méthode sécurisée
+     */
+    public function calculerSommeCoefficientsNotes(): void
     {
-        $this->moyenne = $moyenne;
-    }
-    
-    public function calculerMoyenne(): void
-    {
-        if ($this->sommeCoefficients === 0) {
-            $this->moyenne = 0;
-            return;
+        $this->sommeCoefficients = 0;
+        $this->sommeNotesAvecCoefficient = 0;
+        $nandalo = 0;
+        foreach ($this->notes as $note) {
+            // 🔒 sécurité contre null ou non initialisé
+            $valeurNote = $note->getNote() ?? 0;
+            $coefficient = $note->getCoefficient() ?? 0;
+            if ($valeurNote < 6) {
+                $this->isValid = false;
+                $nandalo++;
+            }
+
+            $this->sommeCoefficients += $coefficient;
+            $this->sommeNotesAvecCoefficient += $valeurNote * $coefficient;
         }
         $this->moyenne = $this->sommeNotesAvecCoefficient / $this->sommeCoefficients;
+        if ($nandalo==0 && $this->moyenne>=10) {
+            $this->isValid = true;
+        }
     }
+
+    
 }

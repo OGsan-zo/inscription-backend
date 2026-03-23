@@ -684,3 +684,86 @@
     ]
 }
 ```
+
+
+# Pour avoir les resultats notes par etudiants
+
+**Url:** `GET /notes/resultats/10409?idSemestre=1`
+
+**Header:** `Content-Type: application/json`
+    
+**Authorization:** `eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJ5b3VyLWFwcCIsImF1ZCI6InlvdXItY2xpZW50IiwiaWF0IjoxNzczMjk4MTg2LjE2NjQ4OSwiZXhwIjoxNzczMzAxNzg2LjE2NjQ4OSwiZW1haWwiOiJhZG1pbkBnbWFpbC5jb20iLCJub20iOiJBZG1pbiIsInByZW5vbSI6IkFkbWluIiwiYWRyZXNzZSI6IkFua2F0c28gLCBwb3J0ZSAxMDQiLCJpZCI6MSwicm9sZSI6IkFkbWluIn0.qaMEC_5W3hgEU5fnavlRuzfZFViP22dZ-CPppZRvDjE`
+
+**Role:**`Admin,Utilisateur`
+
+**Response:**
+```json
+{
+    "status": "success",
+    "data": [
+        {
+            "type": "Normale",
+            "notesListes": [
+                {
+                    "ue": "Mathematique de l'ingenieur",
+                    "notes": [
+                        {
+                            "matiere": "Algebre",
+                            "coefficient": 3,
+                            "note": 9,
+                            "noteAvecCoefficient": 27
+                        }
+                    ],
+                    "isValid": false,
+                    "sommeCoefficients": 3,
+                    "sommeNotesAvecCoefficient": 27,
+                    "moyenne": 9
+                }
+            ],
+            "moyenne": 9
+        },
+        {
+            "type": "Rattrapage",
+            "notesListes": [
+                {
+                    "ue": "Mathematique de l'ingenieur",
+                    "notes": [
+                        {
+                            "matiere": "Algebre",
+                            "coefficient": 3,
+                            "note": 10,
+                            "noteAvecCoefficient": 30
+                        }
+                    ],
+                    "isValid": true,
+                    "sommeCoefficients": 3,
+                    "sommeNotesAvecCoefficient": 30,
+                    "moyenne": 10
+                }
+            ],
+            "moyenne": 10
+        },
+        {
+            "type": "Final",
+            "notesListes": [
+                {
+                    "ue": "Mathematique de l'ingenieur",
+                    "notes": [
+                        {
+                            "matiere": "Algebre",
+                            "coefficient": 3,
+                            "note": 10,
+                            "noteAvecCoefficient": 30
+                        }
+                    ],
+                    "isValid": true,
+                    "sommeCoefficients": 3,
+                    "sommeNotesAvecCoefficient": 30,
+                    "moyenne": 10
+                }
+            ],
+            "moyenne": 10
+        }
+    ]
+}
+```

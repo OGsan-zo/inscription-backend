@@ -2,48 +2,63 @@
 
 namespace App\Dto\notes\affiche;
 
-
 class NoteAfficheDto
 {
-    public string $matiere;
-    public int $coefficient;
-    public float $note;
+    private string $matiere = '';
+    private int $coefficient = 0;
 
-    public float $noteAvecCoefficient;
+    private ?float $note = null; // ✅ nullable
+    private float $noteAvecCoefficient = 0;
 
     public function getMatiere(): string
     {
         return $this->matiere;
     }
+
     public function setMatiere(string $matiere): void
     {
         $this->matiere = $matiere;
     }
+
     public function getCoefficient(): int
     {
         return $this->coefficient;
     }
+
     public function setCoefficient(int $coefficient): void
     {
         $this->coefficient = $coefficient;
+        $this->calculerNoteAvecCoefficient(); // auto recalcul
     }
 
-    public function getNote(): float
+    public function getNote(): ?float
     {
         return $this->note;
     }
-    public function setNote(float $note): void
+
+    public function setNote(?float $note): void
     {
+        // ✅ accepte 0 et null correctement
         $this->note = $note;
+        $this->calculerNoteAvecCoefficient(); // auto recalcul
     }
     
     public function getNoteAvecCoefficient(): float
     {
         return $this->noteAvecCoefficient;
     }
-    public function setNoteAvecCoefficient(float $noteAvecCoefficient): void
+    public function setNoteAvecCoefficient(?float $noteAvecCoef) : void
     {
-        $this->noteAvecCoefficient = $noteAvecCoefficient;
+        $this->noteAvecCoefficient = $noteAvecCoef;
     }
     
+    private function calculerNoteAvecCoefficient(): void
+    {
+        if ($this->note === null) {
+            $this->noteAvecCoefficient = 0;
+            return;
+        }
+
+        $this->noteAvecCoefficient = $this->note * $this->coefficient;
+    }
 }

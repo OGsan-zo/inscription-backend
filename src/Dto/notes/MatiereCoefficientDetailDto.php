@@ -2,6 +2,8 @@
 
 namespace App\Dto\notes;
 
+use App\Entity\view\note\VueMatiereCoeffDetails;
+
 
 class MatiereCoefficientDetailDto
 {
@@ -25,7 +27,7 @@ class MatiereCoefficientDetailDto
     {
         $this->matiereCoefficients = $matiereCoefficients;
     }
-    public function ajouterMatiere(MatiereCoefficientDetailDto $mcd): void
+    public function ajouterMatiere(VueMatiereCoeffDetails $mcd): void
     {
         $this->matiereCoefficients[] = $mcd;
     }
