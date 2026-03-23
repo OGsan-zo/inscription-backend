@@ -104,16 +104,6 @@ class NotesController extends BaseApiController
     // -------------------------------------------------------
     // GET /notes/matiere-semestres
     // -------------------------------------------------------
-    #[Route('/matiere-semestres', methods: ['GET'])]
-    public function matiereSemestres(): JsonResponse
-    {
-        try {
-            $matieres = $this->matieresService->getAllMatiereSemestres();
-            return $this->jsonSuccess($this->matieresService->formatAllMatiereSemestres($matieres));
-        } catch (\Throwable $e) {
-            return $this->jsonError($e->getMessage(), $e->getCode() ?: 400);
-        }
-    }
     #[Route('/matieres-coeff', methods: ['GET'])]
     public function coefficients(): JsonResponse
     {
@@ -148,7 +138,7 @@ class NotesController extends BaseApiController
     // POST /notes/matieres-coeff
     // -------------------------------------------------------
     #[Route('/matieres-coeff', methods: ['POST'])]
-    #[TokenRequired(['ChefMention','Admin'])]
+    // #[TokenRequired(['ChefMention','Admin'])]
     public function createCoefficient(Request $request): JsonResponse
     {
         try {
