@@ -39,6 +39,7 @@ drop view if exists vue_matiere_coeff_detail;
 CREATE OR REPLACE VIEW vue_matiere_coeff_detail AS
 SELECT 
     mmc.id,
+    mmc.credit,
     mmc.coefficient,
 
     -- Matière

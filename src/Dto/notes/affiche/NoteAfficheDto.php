@@ -7,6 +7,8 @@ class NoteAfficheDto
     private string $matiere = '';
     private int $coefficient = 0;
 
+    private int $credit = 0;
+
     private ?float $note = null; // ✅ nullable
     private float $noteAvecCoefficient = 0;
 
@@ -29,6 +31,16 @@ class NoteAfficheDto
     {
         $this->coefficient = $coefficient;
         $this->calculerNoteAvecCoefficient(); // auto recalcul
+    }
+
+    public function getCredit(): int
+    {
+        return $this->credit;
+    }
+    
+    public function setCredit(int $credit): void
+    {
+        $this->credit = $credit;
     }
 
     public function getNote(): ?float

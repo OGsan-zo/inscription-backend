@@ -18,6 +18,9 @@ class MatiereMentionCoefficient extends BaseEntite
     #[ORM\Column]
     private ?int $coefficient = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?int $credit = null;
+
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
     private ?Mentions $mention = null;
@@ -55,7 +58,15 @@ class MatiereMentionCoefficient extends BaseEntite
         $this->coefficient = $coefficient;
         return $this;
     }
-
+    public function getCredit(): ?int
+    {
+        return $this->credit;
+    }
+    public function setCredit(int $credit): static
+    {
+        $this->credit = $credit;
+        return $this;
+    }
     public function getMention(): ?Mentions
     {
         return $this->mention;

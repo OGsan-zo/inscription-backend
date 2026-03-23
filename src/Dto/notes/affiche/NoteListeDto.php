@@ -9,6 +9,9 @@ class NoteListeDto
 
     private int $sommeCoefficients = 0; // ✅ initialisé
     private float $sommeNotesAvecCoefficient = 0; // ✅ float + initialisé
+    private int $sommeCredit = 0;
+
+    private int $sommeCreditValide = 0;
 
     private float $moyenne = 0; // ✅ initialisé
     private bool $isValid = false; // valeur par défaut
@@ -75,6 +78,7 @@ class NoteListeDto
             // 🔒 sécurité contre null ou non initialisé
             $valeurNote = $note->getNote() ?? 0;
             $coefficient = $note->getCoefficient() ?? 0;
+            $credit = $note->getCredit() ?? 0;
             if ($valeurNote < 6) {
                 $this->isValid = false;
                 $nandalo++;
@@ -82,12 +86,30 @@ class NoteListeDto
 
             $this->sommeCoefficients += $coefficient;
             $this->sommeNotesAvecCoefficient += $valeurNote * $coefficient;
+            $this->sommeCredit += $credit;
         }
-        $this->moyenne = $this->sommeNotesAvecCoefficient / $this->sommeCoefficients;
+        $this->moyenne = $this->sommeCoefficients > 0 ? $this->sommeNotesAvecCoefficient / $this->sommeCoefficients : 0;
         if ($nandalo==0 && $this->moyenne>=10) {
             $this->isValid = true;
         }
+        if ($this->isValid) {
+            $this->sommeCreditValide = $this->sommeCredit;
+        }
     }
 
+    public function getSommeCredit(): int
+    {
+        return $this->sommeCredit;
+    }
+    
+    public function setSommeCredit(int $sommeCredit): void
+    {
+        $this->sommeCredit = $sommeCredit;
+    }
+    public function getSommeCreditValide(): int
+    {
+        return $this->sommeCreditValide;
+    }
+    
     
 }

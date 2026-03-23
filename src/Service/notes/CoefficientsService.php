@@ -45,7 +45,7 @@ class CoefficientsService extends BaseService
         return $this->coefficientRepository->getAll(new OrderCriteria('createdAt', 'ASC'));
     }
 
-    private function buildCoefficient(Matieres $matiere, Mentions $mention, Niveaux $niveau,Utilisateur $professeur, int $coefficient): MatiereMentionCoefficient
+    private function buildCoefficient(Matieres $matiere, Mentions $mention, Niveaux $niveau,Utilisateur $professeur, int $coefficient,int $credit): MatiereMentionCoefficient
     {
         $coeff = new MatiereMentionCoefficient();
         $coeff->setMatiere($matiere);
@@ -53,6 +53,7 @@ class CoefficientsService extends BaseService
         $coeff->setCoefficient($coefficient);
         $coeff->setProfesseur($professeur);
         $coeff->setNiveau($niveau);
+        $coeff->setCredit($credit);
         return $coeff;
     }
 
@@ -77,7 +78,7 @@ class CoefficientsService extends BaseService
                 );
             }
 
-            $coeff = $this->buildCoefficient($matiere, $mention, $niveau, $professeur, $dto->coefficient);
+            $coeff = $this->buildCoefficient($matiere, $mention, $niveau, $professeur, $dto->coefficient, $dto->credit);
 
             $this->em->persist($coeff);
             $this->em->flush();
@@ -99,7 +100,7 @@ class CoefficientsService extends BaseService
             $this->delete($ancien);
 
             // Création du nouveau avec les mêmes matière + mention
-            $nouveau = $this->buildCoefficient($ancien->getMatiere(), $ancien->getMention(), $ancien->getNiveau(), $ancien->getProfesseur(), $dto->coefficient);
+            $nouveau = $this->buildCoefficient($ancien->getMatiere(), $ancien->getMention(), $ancien->getNiveau(), $ancien->getProfesseur(), $dto->coefficient, $dto->credit);
 
             $this->em->persist($nouveau);
             $this->em->flush();
@@ -116,32 +117,7 @@ class CoefficientsService extends BaseService
         return $this->coefficientRepository->findByMentionAndSemestre($idMention, $idSemestre);
     }
 
-    public function formatCoefficient(MatiereMentionCoefficient $c): array
-    {
-        $matiere = $c->getMatiere();
-        $mention = $c->getMention();
-        $niveau = $c->getNiveau();
-        $niveauData = $this->niveauService->toArray($niveau);
-        $professeur = $c->getProfesseur();
-        $professeurData = $this->utilisateursService->toArray($professeur);
-        return [
-            'id'          => $c->getId(),
-            'matiere'     => ['id' => $matiere?->getId(), 'name' => $matiere?->getName()],
-            'semestre'    => [
-                'id'  => $matiere?->getSemestre()?->getId(),
-                'name' => $matiere?->getSemestre()?->getName(),
-            ],
-            'mention'     => $this->mentionsService->toArray($mention),
-            'coefficient' => $c->getCoefficient(),
-            'niveau'      => $niveauData,
-            'professeur'  => $professeurData,
-        ];
-    }
-
-    public function formatAllCoefficients(array $coefficients): array
-    {
-        return array_map(fn(MatiereMentionCoefficient $c) => $this->formatCoefficient($c), $coefficients);
-    }
+    
     public function getByProfesseur(Utilisateur $professeur): array
     {
         $conditions = [
