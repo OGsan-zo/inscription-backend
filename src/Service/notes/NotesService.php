@@ -178,15 +178,16 @@ class NotesService extends BaseValidationService
         $noteTypeNormaleDto->setNotesListes($noteListeNormales); 
         if ($nbUe > 0) {
             $noteTypeNormaleDto->setMoyenne($sommeMoyenneNormale / $nbUe);
+            $noteTypeRattrapageDto->setMoyenne($sommeMoyenneRatrrapage / $nbUe);
+            $noteTypeFinalDto->setMoyenne($sommeMoyenneFinal / $nbUe);
         }
        
         $noteTypeRattrapageDto->setNotesListes($noteListeRattrappages);  
-        if ($nbUe > 0) {
-            $noteTypeRattrapageDto->setMoyenne($sommeMoyenneRatrrapage / $nbUe);
-        }
+      
        
         $noteTypeFinalDto->setNotesListes($noteListeFinals);
-        $noteTypeFinalDto->setMoyenne($sommeMoyenneFinal / $nbUe);
+
+      
         $result[] = $noteTypeNormaleDto;
         $result[] = $noteTypeRattrapageDto;  
         $result[] = $noteTypeFinalDto;

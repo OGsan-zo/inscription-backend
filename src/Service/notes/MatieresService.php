@@ -69,20 +69,4 @@ class MatieresService extends BaseService
         return $this->matieresRepository->findAvecSemestre();
     }
 
-    public function formatMatiereSemestre(Matieres $m): array
-    {
-        return [
-            'id'       => $m->getId(),
-            'matiere'  => ['id' => $m->getId(), 'nom' => $m->getNom()],
-            'semestre' => [
-                'id'  => $m->getSemestre()?->getId(),
-                'nom' => $m->getSemestre()?->getNom(),
-            ],
-        ];
-    }
-
-    public function formatAllMatiereSemestres(array $matieres): array
-    {
-        return array_map(fn(Matieres $m) => $this->formatMatiereSemestre($m), $matieres);
-    }
 }
