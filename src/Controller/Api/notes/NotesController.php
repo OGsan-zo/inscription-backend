@@ -154,7 +154,8 @@ class NotesController extends BaseApiController
         try {
             $dto   = $this->deserializeAndValidate($request, MatiereMentionCoefficientDto::class);
             $coeff = $this->coefficientsService->createCoefficient($dto);
-            return $this->jsonSuccess($this->coefficientsService->formatCoefficient($coeff), 201);
+            $excludes = ['createdAt', 'deletedAt'];
+            return $this->jsonSuccess($coeff->toArray($excludes));
         } catch (\Throwable $e) {
             return $this->jsonError($e->getMessage(), $e->getCode() ?: 400);
         }
@@ -170,7 +171,8 @@ class NotesController extends BaseApiController
         try {
             $dto   = $this->deserializeAndValidate($request, CoefficientUpdateDto::class);
             $coeff = $this->coefficientsService->updateCoefficient($id, $dto);
-            return $this->jsonSuccess($this->coefficientsService->formatCoefficient($coeff));
+            $excludes = ['createdAt', 'deletedAt'];
+            return $this->jsonSuccess($coeff->toArray($excludes));
         } catch (\Throwable $e) {
             return $this->jsonError($e->getMessage(), $e->getCode() ?: 400);
         }

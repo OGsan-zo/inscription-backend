@@ -14,6 +14,10 @@ class MatiereMentionCoefficientDto
     #[Assert\Positive(message: "L'idMention doit être positif.")]
     public ?int $idMention = null;
 
+    #[Assert\NotNull(message: "Le credit est obligatoire.")]
+    #[Assert\Positive(message: "Le credit doit être positif.")]
+    public ?int $credit = null;
+    
     #[Assert\NotNull(message: "Le coefficient est obligatoire.")]
     #[Assert\Positive(message: "Le coefficient doit être positif.")]
     public ?int $coefficient = null;

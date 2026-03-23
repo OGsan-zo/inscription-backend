@@ -123,19 +123,23 @@ class NotesService extends BaseValidationService
                 $noteAfficheNormaleDto = new NoteAfficheDto();
                 $noteAfficheNormaleDto->setMatiere($matiereCoeff->getMatiereNom());
                 $noteAfficheNormaleDto->setCoefficient($matiereCoeff->getCoefficient());
-               
+                $noteAfficheNormaleDto->setCredit($matiereCoeff->getCredit());
+
                 $noteAfficheRattrappageDto = new NoteAfficheDto();
                 $noteAfficheRattrappageDto->setMatiere($matiereCoeff->getMatiereNom());
                 $noteAfficheRattrappageDto->setCoefficient($matiereCoeff->getCoefficient());
+                $noteAfficheRattrappageDto->setCredit($matiereCoeff->getCredit());
 
                 $noteAfficheFinalDto = new NoteAfficheDto();
                 $noteAfficheFinalDto->setMatiere($matiereCoeff->getMatiereNom());
                 $noteAfficheFinalDto->setCoefficient($matiereCoeff->getCoefficient());
+                $noteAfficheFinalDto->setCredit($matiereCoeff->getCredit());
 
                 #Pour avoir le dernier note session normale
                 $dernierNotesNormale = $this->vueNotesMaxService->getByMatiereCoefficientIdEtudiant($etudiantId, $matiereCoeff->getId(),1);
                 $noteNormale = $dernierNotesNormale?->getValeur() ?? null;
                 $noteAfficheNormaleDto->setNote($noteNormale);
+                $noteAfficheNormaleDto->setCredit($matiereCoeff->getCredit());
                 $noteAfficheNormaleDto->setNoteAvecCoefficient($noteNormale * $matiereCoeff->getCoefficient());
                 $noteListeNormaleDto->ajouterNote($noteAfficheNormaleDto);
                
@@ -144,12 +148,14 @@ class NotesService extends BaseValidationService
                 $noteRattrappage = $dernierNotesRattrappage?->getValeur() ?? null;
                 $noteAfficheRattrappageDto->setNote($noteRattrappage);
                 $noteAfficheRattrappageDto->setNoteAvecCoefficient($noteRattrappage * $matiereCoeff->getCoefficient());
+                $noteAfficheRattrappageDto->setCredit($matiereCoeff->getCredit());
                 $noteListeRattrappage->ajouterNote($noteAfficheRattrappageDto);
 
                 #Pour le note final
                 $noteFinal = max($noteNormale, $noteRattrappage);
                 $noteAfficheFinalDto->setNote($noteFinal);
                 $noteAfficheFinalDto->setNoteAvecCoefficient($noteFinal * $matiereCoeff->getCoefficient());
+                $noteAfficheFinalDto->setCredit($matiereCoeff->getCredit());
                 $noteListeFinal->ajouterNote($noteAfficheFinalDto);
 
             }
