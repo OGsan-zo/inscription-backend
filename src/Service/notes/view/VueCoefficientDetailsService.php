@@ -4,8 +4,10 @@ namespace App\Service\notes\view;
 
 
 
+use App\Dto\notes\MatiereCoefficientDetailDto;
 use App\Dto\utils\ConditionCriteria;
 use App\Dto\utils\OrderCriteria;
+use App\Entity\utilisateurs\Utilisateur;
 use App\Repository\view\note\VueMatiereCoeffDetailsRepository;
 use App\Service\utils\BaseService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -35,7 +37,7 @@ class VueCoefficientDetailsService extends BaseService
         return $result;
         
     }
-    public function getByProfesseur($professeur): array
+    public function getByProfesseur(Utilisateur $professeur): array
     {
         $conditions = [
             new ConditionCriteria('professeurId', $professeur->getId(), '='),
@@ -46,5 +48,46 @@ class VueCoefficientDetailsService extends BaseService
         $result = $this->search($conditions, $orderCriteria);
         return $result;
         
+    }
+    public function getBySemestreIdMentionId(int $semestreId,int $mentionId): array
+    {
+        $conditions = [
+            new ConditionCriteria('semestreId', $semestreId, '='),
+            new ConditionCriteria('mentionId', $mentionId, '='),
+        ];
+        $orderCriteria = new OrderCriteria('createdAt', 'DESC');
+
+        
+        $result = $this->search($conditions, $orderCriteria);
+        return $result;
+        
+    }
+    public function regrouperParUe(array $viewMatiereCoefficientDetail): array
+    {
+        $result = [];
+
+        foreach ($viewMatiereCoefficientDetail as $item) {
+            $ue = $item->getUe() ?? 'Sans UE';
+
+            // Si UE n'existe pas encore
+            if (!isset($result[$ue])) {
+                $dto = new MatiereCoefficientDetailDto();
+                $dto->setUe($ue);
+                $dto->setMatiereCoefficients([]);
+
+                $result[$ue] = $dto;
+            }
+
+            // Ajouter la matière dans le groupe UE
+            $result[$ue]->matiereCoefficients[] = $item;
+        }
+
+        // Réindexer en tableau simple
+        return array_values($result);
+    }
+    public function getBySemestreIdMentionIdGroupedByUe(int $semestreId,int $mentionId): array
+    {
+        $listeMatiereCoefficientDetail = $this->getBySemestreIdMentionId($semestreId, $mentionId);
+        return $this->regrouperParUe($listeMatiereCoefficientDetail);
     }
 }

@@ -2,18 +2,20 @@
 
 namespace App\Service\notes;
 
+use App\Dto\notes\affiche\NoteAfficheDto;
+use App\Dto\notes\affiche\NoteListeDto;
+use App\Dto\notes\affiche\NoteTypeDto;
 use App\Dto\notes\NoteInsetionListeDto;
-use App\Dto\notes\NoteUpdateDto;
 use App\Entity\note\TypeNotes;
 use App\Entity\proposEtudiant\Etudiants;
 use App\Entity\note\MatiereMentionCoefficient;
-use App\Entity\proposEtudiant\NiveauEtudiants;
 use App\Entity\note\Notes;
 use App\Repository\notes\NotesRepository;
+use App\Service\notes\view\VueCoefficientDetailsService;
+use App\Service\notes\view\VueNotesMaxService;
 use App\Service\proposEtudiant\EtudiantsService;
 use App\Service\proposEtudiant\NiveauEtudiantsService; 
 use App\Service\utils\BaseValidationService;
-use App\Service\utils\ValidationService;
 use Doctrine\ORM\EntityManagerInterface;
 
 class NotesService extends BaseValidationService
@@ -25,7 +27,9 @@ class NotesService extends BaseValidationService
         private readonly SemestresService $semestresService,
         private readonly EtudiantsService $etudiantsService,
         private readonly NiveauEtudiantsService $niveauEtudiantsService,
-        private readonly TypeNotesService $typeNotesService
+        private readonly TypeNotesService $typeNotesService,
+        private readonly VueCoefficientDetailsService $vueCoefficientDetailsService,
+        private readonly VueNotesMaxService $vueNotesMaxService
     ) {
         parent::__construct($em);
     }
@@ -33,74 +37,6 @@ class NotesService extends BaseValidationService
     protected function getRepository(): NotesRepository
     {
         return $this->notesRepository;
-    }
-
-    
-    public function getDernierNiveauEtudiant(Etudiants $e): NiveauEtudiants
-    {
-        $ne = $this->niveauEtudiantsService->getDernierNiveauParEtudiant($e);
-        $this->throwIfNull($ne, "Aucun niveau trouvé pour l'étudiant ID {$e->getId()}.");
-        return $ne;
-    }
-
-    public function formatEtudiantPourNotes(Etudiants $e, NiveauEtudiants $ne): array
-    {
-        return [
-            'id'      => $e->getId(),
-            'nom'     => $e->getNom(),
-            'prenom'  => $e->getPrenom(),
-            'mention' => $ne->getMention()?->getNom(),
-            'niveau'  => $ne->getNiveau()?->getNom(),
-        ];
-    }
-
-    // -------------------------------------------------------
-    // Résultats
-    // -------------------------------------------------------
-
-    public function getResultatsEtudiant(int $idEtudiant, int $idSemestre): array
-    {
-        $etudiant     = $this->getVerifierById($idEtudiant);
-        $ne           = $this->getDernierNiveauEtudiant($etudiant);
-        $mention      = $ne->getMention();
-
-        $coefficients = $this->coefficientsService->findByMentionAndSemestre(
-            $mention->getId(),
-            $idSemestre
-        );
-
-        $notes = [];
-        foreach ($coefficients as $mmc) {
-            $note    = $this->notesRepository->findByEtudiantAndMMC($etudiant->getId(), $mmc->getId());
-            $notes[] = $this->formatLigneResultat($mmc, $note);
-        }
-
-        return [
-            'etudiant' => $this->formatEtudiantPourNotes($etudiant, $ne),
-            'semestre' => $this->semestresService->formatSemestre(
-                $this->semestresService->getVerifierById($idSemestre)
-            ),
-            'notes'    => $notes,
-        ];
-    }
-
-    public function formatLigneResultat(MatiereMentionCoefficient $mmc, ?Notes $note): array
-    {
-        $matiere     = $mmc->getMatiere();
-        $coefficient = $mmc->getCoefficient();
-        $valeur      = $note !== null ? (float) $note->getValeur() : null;
-        $ecAvecCoef  = $valeur !== null ? round($valeur * $coefficient, 2) : null;
-        $resultat    = $valeur !== null ? ($valeur >= 10 ? 'Validé' : 'Non validé') : null;
-
-        return [
-            'idNote'      => $note?->getId(),
-            'idMatiere'   => $matiere?->getId(),
-            'nomMatiere'  => $matiere?->getName(),
-            'coefficient' => $coefficient,
-            'noteSur20'   => $valeur,
-            'ecAvecCoef'  => $ecAvecCoef,
-            'resultat'    => $resultat,
-        ];
     }
     public function saveNoteEtudiant(Etudiants $etudiant, MatiereMentionCoefficient $mmc,TypeNotes $typeNote,float $valeur,int $annee,bool $isValid = false): Notes
     {
@@ -144,5 +80,48 @@ class NotesService extends BaseValidationService
             throw $e;
         }
         return $result;
+    }
+    public function getNoteEtudiant(int $etudiantId, int $semestreId): NoteTypeDto
+    {
+        $noteTypeNormaleDto = new NoteTypeDto();
+        $noteTypeNormaleDto->setType("Normale");
+        // $noteTypeRattrapageDto = new NoteTypeDto();
+        // $noteTypeRattrapageDto->setType("Rattrapage");
+        $etudiant = $this->etudiantsService->getOrFailUtilisateur($etudiantId);
+        $niveau_etudiants = $this->niveauEtudiantsService->getDernierNiveauParEtudiant($etudiant);
+        $mentionId = $niveau_etudiants->getMention()->getId();
+        $listeMatiereCoeffDetail = $this->vueCoefficientDetailsService->getBySemestreIdMentionIdGroupedByUe($semestreId, $mentionId);
+        $noteListeNormales= [];
+        foreach($listeMatiereCoeffDetail as $ue)
+        {
+            $noteListeNormaleDto = new NoteListeDto();
+            $noteListeNormaleDto->setUe($ue->getUe());
+            foreach($ue as $matiereCoeff)
+            {
+                $listeNote = $this->vueNotesMaxService->getByMatiereCoefficientIdEtudiant($etudiantId, $matiereCoeff->getId(), 1);
+                foreach($listeNote as $note)
+                {
+                    $noteAfficheNormaleDto = new NoteAfficheDto();
+                    $noteAfficheNormaleDto->setMatiere($note->getMatiere());
+                    $noteAfficheNormaleDto->setCoefficient($note->getCoefficient());
+               
+                    #Pour avoir le dernier note session normale
+                    $dernierNotes = $this->vueNotesMaxService->getByMatiereCoefficientIdEtudiant($etudiantId, $matiereCoeff->getId(),1);
+                    $noteNormale = $dernierNotes?->getValeur() ?? null;
+                    $noteAfficheNormaleDto->setNote($noteNormale);
+                    $noteAfficheNormaleDto->setNoteAvecCoefficient($noteNormale * $note->getCoefficient());
+                    $noteListeNormaleDto->ajouterNote($noteAfficheNormaleDto);
+                }
+
+
+            }
+            $noteListeNormaleDto->calculerSommeCoefficientsNotes();
+            $noteListeNormaleDto->calculerMoyenne();
+            $noteListeNormales[] = $noteListeNormaleDto;
+            
+        }
+        $noteTypeNormaleDto->setNotesListes($noteListeNormales);   
+        return $noteTypeNormaleDto;
+        
     }
 }

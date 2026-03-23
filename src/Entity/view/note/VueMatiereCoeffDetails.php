@@ -13,6 +13,9 @@ class VueMatiereCoeffDetails extends BaseEntite
     #[ORM\Column(type: "integer")]
     private int $coefficient;
     
+    #[ORM\Column(type: "string", nullable: true)]
+    private ?string $ue = null;
+    
     #[ORM\Column(type: "integer")]
     private ?int $matiereId;
     
@@ -53,6 +56,7 @@ class VueMatiereCoeffDetails extends BaseEntite
 
     public function getId(): int { return $this->id; }
     public function getCoefficient(): int { return $this->coefficient; }
+    public function getUe(): ?string { return $this->ue; }
     public function getMatiereId(): ?int { return $this->matiereId; }
     public function getMatiereNom(): ?string { return $this->matiereNom; }
     public function getSemestreId(): ?int { return $this->semestreId; }
