@@ -767,3 +767,12 @@
     ]
 }
 ```
+
+### Erreur de validation
+
+```json
+{
+    "status": "error",
+    "message": "Erreur de validation : idMatiere : L'idMatiere est obligatoire. | idMention : L'idMention est obligatoire. | credit : Le credit est obligatoire. | coefficient : Le coefficient est obligatoire. | idNiveau : L'idNiveau est obligatoire. | idProfesseur : L'idProfesseur est obligatoire."
+}
+```
