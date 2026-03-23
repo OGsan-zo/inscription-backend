@@ -25,6 +25,16 @@ JOIN type_notes tn
 
 -- SELECT * FROM vue_notes_etudiants;
 
+drop view if exists vue_matiere_detail;
+create view vue_matiere_detail as
+select
+    m.id,
+    m.name as matiere_name,
+    ue.name as ue,
+    m.semestre_id
+from matieres m
+join ue on m.ue_id = ue.id;
+
 drop view if exists vue_matiere_coeff_detail;
 CREATE OR REPLACE VIEW vue_matiere_coeff_detail AS
 SELECT 
@@ -32,8 +42,9 @@ SELECT
     mmc.coefficient,
 
     -- Matière
-    m.id AS matiere_id,
-    m.name AS matiere_nom,
+    vmd.ue,
+    vmd.id AS matiere_id,
+    vmd.matiere_name AS matiere_nom,
 
     -- Semestre
     s.id AS semestre_id,
@@ -58,11 +69,11 @@ SELECT
 
 FROM matiere_mention_coefficient mmc
 
-JOIN matieres m 
-    ON mmc.matiere_id = m.id
+JOIN vue_matiere_detail vmd
+ON mmc.matiere_id = vmd.id
 
 JOIN semestres s 
-    ON m.semestre_id = s.id
+    ON vmd.semestre_id = s.id
 
 JOIN mentions me 
     ON mmc.mention_id = me.id
@@ -72,6 +83,7 @@ JOIN niveaux n
 
 JOIN utilisateur u 
     ON mmc.professeur_id = u.id;
+
 
 --- SELECT * FROM vue_matiere_coeff_detail;
 

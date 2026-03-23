@@ -4,6 +4,7 @@ namespace App\Service\notes\view;
 
 
 
+use App\Dto\notes\MatiereCoefficientDetailDto;
 use App\Dto\utils\ConditionCriteria;
 use App\Dto\utils\OrderCriteria;
 use App\Entity\utilisateurs\Utilisateur;
@@ -60,5 +61,33 @@ class VueCoefficientDetailsService extends BaseService
         $result = $this->search($conditions, $orderCriteria);
         return $result;
         
+    }
+    public function regrouperParUe(array $viewMatiereCoefficientDetail): array
+    {
+        $result = [];
+
+        foreach ($viewMatiereCoefficientDetail as $item) {
+            $ue = $item->getUe() ?? 'Sans UE';
+
+            // Si UE n'existe pas encore
+            if (!isset($result[$ue])) {
+                $dto = new MatiereCoefficientDetailDto();
+                $dto->setUe($ue);
+                $dto->setMatiereCoefficients([]);
+
+                $result[$ue] = $dto;
+            }
+
+            // Ajouter la matière dans le groupe UE
+            $result[$ue]->matiereCoefficients[] = $item;
+        }
+
+        // Réindexer en tableau simple
+        return array_values($result);
+    }
+    public function getBySemestreIdMentionIdGroupedByUe(int $semestreId,int $mentionId): array
+    {
+        $listeMatiereCoefficientDetail = $this->getBySemestreIdMentionId($semestreId, $mentionId);
+        return $this->regrouperParUe($listeMatiereCoefficientDetail);
     }
 }

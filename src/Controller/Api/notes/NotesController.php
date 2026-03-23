@@ -180,7 +180,7 @@ class NotesController extends BaseApiController
     // GET /notes/resultats/{idEtudiant}?idSemestre=
     // -------------------------------------------------------
     #[Route('/resultats/{idEtudiant}', methods: ['GET'])]
-    #[TokenRequired]
+    // #[TokenRequired]
     public function resultats(int $idEtudiant, Request $request): JsonResponse
     {
         try {
@@ -188,7 +188,7 @@ class NotesController extends BaseApiController
             if ($idSemestre === null) {
                 return $this->jsonError("Le paramètre idSemestre est obligatoire.", 400);
             }
-            $data = $this->notesService->getResultatsEtudiant($idEtudiant, (int) $idSemestre);
+            $data = $this->notesService->getNoteEtudiant($idEtudiant, (int) $idSemestre);
             return $this->jsonSuccess($data);
         } catch (\Throwable $e) {
             return $this->jsonError($e->getMessage(), $e->getCode() ?: 400);
@@ -249,6 +249,21 @@ class NotesController extends BaseApiController
             $exludesFields = ['id','createdAt','deletedAt'];
             $data = $this->vueNiveauEtudiantsDetailsService->transformerArray($notes, $exludesFields);
             return $this->jsonSuccess($data);
+        } catch (\Throwable $e) {
+            return $this->jsonError($e->getMessage(), 400);
+        }
+    }
+    #[Route('/matieres-coeff-detail', methods: ['GET'])]
+    public function coefficientsDetail(Request $request): JsonResponse
+    {
+        $semestreId = $request->query->get('semestreId');
+        $mentionId = $request->query->get('mentionId');
+   
+        try {
+            $requiredFields = ['semestreId', 'mentionId'];
+            $this->validatorService->validateRequiredFields(['semestreId' => $semestreId, 'mentionId' => $mentionId], $requiredFields);
+            $coefficients = $this->vueCoefficientDetailService->getBySemestreIdMentionIdGroupedByUe($semestreId, $mentionId);
+            return $this->jsonSuccess($coefficients);
         } catch (\Throwable $e) {
             return $this->jsonError($e->getMessage(), 400);
         }
