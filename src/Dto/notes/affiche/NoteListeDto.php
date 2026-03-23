@@ -88,7 +88,7 @@ class NoteListeDto
             $this->sommeNotesAvecCoefficient += $valeurNote * $coefficient;
             $this->sommeCredit += $credit;
         }
-        $this->moyenne = $this->sommeNotesAvecCoefficient / $this->sommeCoefficients;
+        $this->moyenne = $this->sommeCoefficients > 0 ? $this->sommeNotesAvecCoefficient / $this->sommeCoefficients : 0;
         if ($nandalo==0 && $this->moyenne>=10) {
             $this->isValid = true;
         }
