@@ -134,17 +134,17 @@ WHERE n.date_validation IS NOT NULL
 ORDER BY n.etudiant_id, n.matiere_mention_coefficient_id, n.type_note_id, n.annee, n.date_validation DESC, n.created_at DESC;
 
 
-DROP VIEW IF EXISTS vue_notes_max_from_derniere;
-CREATE OR REPLACE VIEW vue_notes_max_from_derniere AS
-SELECT DISTINCT ON (
-    v.etudiant_id,
-    v.matiere_mention_coefficient_id,
-    v.type_note_id
-)
-    v.*
-FROM vue_dernieres_notes_valide v
-ORDER BY 
-    v.etudiant_id,
-    v.matiere_mention_coefficient_id,
-    v.type_note_id,
-    v.valeur DESC;
+-- DROP VIEW IF EXISTS vue_notes_max_from_derniere;
+-- CREATE OR REPLACE VIEW vue_notes_max_from_derniere AS
+-- SELECT DISTINCT ON (
+--     v.etudiant_id,
+--     v.matiere_mention_coefficient_id,
+--     v.type_note_id
+-- )
+--     v.*
+-- FROM vue_dernieres_notes_valide v
+-- ORDER BY 
+--     v.etudiant_id,
+--     v.matiere_mention_coefficient_id,
+--     v.type_note_id,
+--     v.valeur DESC;

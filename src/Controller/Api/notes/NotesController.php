@@ -148,7 +148,7 @@ class NotesController extends BaseApiController
     // POST /notes/matieres-coeff
     // -------------------------------------------------------
     #[Route('/matieres-coeff', methods: ['POST'])]
-    #[TokenRequired(['ChefMention'])]
+    #[TokenRequired(['ChefMention','Admin'])]
     public function createCoefficient(Request $request): JsonResponse
     {
         try {
@@ -191,7 +191,7 @@ class NotesController extends BaseApiController
             $data = $this->notesService->getNoteEtudiant($idEtudiant, (int) $idSemestre);
             return $this->jsonSuccess($data);
         } catch (\Throwable $e) {
-            return $this->jsonError($e->getMessage(), $e->getCode() ?: 400);
+            return $this->jsonError($e->getMessage(), 400);
         }
     }
 
