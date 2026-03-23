@@ -1,10 +1,10 @@
 <?php
 
 namespace App\Service\proposEtudiant;
+use App\Entity\utilisateurs\Utilisateur;
 use App\Repository\proposEtudiant\MentionsRepository;
 use App\Entity\proposEtudiant\Mentions;
 use App\Service\utils\BaseService;
-use App\Service\utils\ValidationService;
 use Doctrine\ORM\EntityManagerInterface;
 
 class MentionsService extends BaseService
@@ -12,11 +12,10 @@ class MentionsService extends BaseService
 
     public function __construct(
         MentionsRepository $mentionRepository,
-        EntityManagerInterface $em,
-        ValidationService $validationService,
+        EntityManagerInterface $em
     ) {
         $this->mentionRepository = $mentionRepository;
-        parent::__construct($em, $validationService);
+        parent::__construct($em);
     }
 
     public function getAllMentions(): array
@@ -50,5 +49,9 @@ class MentionsService extends BaseService
     public function getById(int $id): ?Mentions
     {
         return $this->mentionRepository->find($id);
+    }
+    public function getAllIdMentionParChefMention(Utilisateur $utilisateur): array
+    {
+        return $this->mentionRepository->getAllIdMentionParChefMention($utilisateur);
     }
 }

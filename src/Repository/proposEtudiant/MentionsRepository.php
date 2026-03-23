@@ -3,6 +3,7 @@
 namespace App\Repository\proposEtudiant;
 
 use App\Entity\proposEtudiant\Mentions;
+use App\Entity\utilisateurs\Utilisateur;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -55,5 +56,21 @@ class MentionsRepository extends ServiceEntityRepository
                 ->getQuery()
                 ->getResult();
     }
+public function getAllIdMentionParChefMention(Utilisateur $utilisateur): array
+{
+    $qb = $this->createQueryBuilder('m')
+        ->select('m.id')
+        ->orderBy('m.id', 'ASC');
+
+    // ✅ appliquer condition seulement si pas admin
+    if ($utilisateur->getRole()->getId() != 1) {
+        $qb->andWhere('m.chefMention = :val')
+           ->setParameter('val', $utilisateur);
+    }
+
+    $results = $qb->getQuery()->getScalarResult();
+
+    return array_column($results, 'id');
+}
 
 }

@@ -105,10 +105,12 @@ class NotesController extends BaseApiController
     // GET /notes/matiere-semestres
     // -------------------------------------------------------
     #[Route('/matieres-coeff', methods: ['GET'])]
-    public function coefficients(): JsonResponse
+    #[TokenRequired(['ChefMention','Admin'])]
+    public function coefficients(Request $request): JsonResponse
     {
         try {
-            $coefficients = $this->vueCoefficientDetailService->getAll();
+            $utilisateur = $this->getUserFromRequest($request);
+            $coefficients = $this->vueCoefficientDetailService->getByChefMention($utilisateur);
             $exludesFields = ['createdAt','deletedAt'];
             return $this->jsonSuccess($this->vueCoefficientDetailService->transformerArray($coefficients, $exludesFields));
         } catch (\Throwable $e) {
