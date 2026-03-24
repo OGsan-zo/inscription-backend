@@ -38,6 +38,7 @@ class MentionsService extends BaseService
             'id'    => $mention->getId(),
             'nom'   => $mention->getNom(),
             'abr' => $mention->getAbr(),
+            'chefMentionId' => $mention->getChefMention()?->getId(),
         ];
     }
 

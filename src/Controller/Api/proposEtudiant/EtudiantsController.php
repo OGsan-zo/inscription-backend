@@ -243,7 +243,7 @@ class EtudiantsController extends BaseApiController
 
     #[Route('/mentions', name: 'get_mention', methods: ['GET'])]
     // #[TokenRequired(['Admin'])]
-    public function getAllMentions(Request $request): JsonResponse
+    public function getAllMentions(): JsonResponse
     {
         try {
             // $mentionClass = $this->mentionsService->getAllMentions();

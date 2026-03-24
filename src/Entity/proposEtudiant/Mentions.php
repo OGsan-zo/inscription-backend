@@ -128,6 +128,7 @@ class Mentions
             'id' => $this->getId(),
             'nom' => $this->getNom(),
             'abr' => $this->getAbr(),
+            'chefMentionId' => $this->getChefMention()?->getId(),
         ];
     }
 }
