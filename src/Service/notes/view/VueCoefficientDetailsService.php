@@ -9,6 +9,7 @@ use App\Dto\utils\ConditionCriteria;
 use App\Dto\utils\OrderCriteria;
 use App\Entity\utilisateurs\Utilisateur;
 use App\Repository\view\note\VueMatiereCoeffDetailsRepository;
+use App\Service\proposEtudiant\MentionsService;
 use App\Service\utils\BaseService;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -17,6 +18,7 @@ class VueCoefficientDetailsService extends BaseService
     public function __construct(
         EntityManagerInterface $em,
         private readonly VueMatiereCoeffDetailsRepository $vueMatiereCoeffDetailsRepository,
+        private readonly MentionsService $mentionsService
     ) {
         parent::__construct($em);
     }
@@ -39,8 +41,23 @@ class VueCoefficientDetailsService extends BaseService
     }
     public function getByProfesseur(Utilisateur $professeur): array
     {
+        $conditions = [];
+
+        // ✅ si ce n'est pas admin → filtrer
+        if ($professeur->getRole()->getId() != 1) {
+            $conditions[] = new ConditionCriteria('professeurId', $professeur->getId(), '=');
+        }
+
+        $orderCriteria = new OrderCriteria('createdAt', 'DESC');
+
+        return $this->search($conditions, $orderCriteria);
+    }
+    public function getByChefMention(Utilisateur $chefMention): array
+    {
+        $listeIdMention = $this->mentionsService->getAllIdMentionParChefMention($chefMention);
+
         $conditions = [
-            new ConditionCriteria('professeurId', $professeur->getId(), '='),
+            new ConditionCriteria('mentionId', $listeIdMention, 'IN'),
         ];
         $orderCriteria = new OrderCriteria('createdAt', 'DESC');
 
@@ -90,4 +107,10 @@ class VueCoefficientDetailsService extends BaseService
         $listeMatiereCoefficientDetail = $this->getBySemestreIdMentionId($semestreId, $mentionId);
         return $this->regrouperParUe($listeMatiereCoefficientDetail);
     }
+    public function getAllMentionParChefMention(Utilisateur $utilisateur): array
+    {
+        $listeMatiereCoefficientDetail = $this->getByProfesseur($utilisateur);
+        return $this->regrouperParUe($listeMatiereCoefficientDetail);
+    }
+
 }

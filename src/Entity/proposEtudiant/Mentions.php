@@ -2,6 +2,7 @@
 
 namespace App\Entity\proposEtudiant;
 
+use App\Entity\utilisateurs\Utilisateur;
 use App\Repository\proposEtudiant\MentionsRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -32,6 +33,12 @@ class Mentions
 
     #[ORM\Column(length: 20, nullable: true)]
     private ?string $abr = null;
+
+    
+    #[ORM\ManyToOne(inversedBy: 'utilisateur')]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?Utilisateur $chefMention = null;
+
 
     public function __construct()
     {
@@ -85,6 +92,16 @@ class Mentions
 
         return $this;
     }
+    public function setChefMention(?Utilisateur $chefMention): static
+    {
+        $this->chefMention = $chefMention;
+
+        return $this;
+    }
+    public function getChefMention(): ?Utilisateur
+    {
+        return $this->chefMention;
+    }
 
     /**
      * @return Collection<int, Parcours>
@@ -111,6 +128,7 @@ class Mentions
             'id' => $this->getId(),
             'nom' => $this->getNom(),
             'abr' => $this->getAbr(),
+            'chefMentionId' => $this->getChefMention()?->getId(),
         ];
     }
 }
