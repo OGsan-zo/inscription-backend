@@ -13,8 +13,8 @@ class VueMatiereCoeffDetails extends BaseEntite
     #[ORM\Column(type: "integer")]
     private int $credit;
 
-    #[ORM\Column(type: "integer")]
-    private int $coefficient;
+    #[ORM\Column(type: "float")]
+    private float $coefficient;
     
     #[ORM\Column(type: "string", nullable: true)]
     private ?string $ue = null;
@@ -49,6 +49,7 @@ class VueMatiereCoeffDetails extends BaseEntite
     private int $professeurId;
 
     #[ORM\Column(type: "string", nullable: true)]
+    
     private ?string $professeurNom = null;
 
     #[ORM\Column(type: "string", nullable: true)]
@@ -59,7 +60,7 @@ class VueMatiereCoeffDetails extends BaseEntite
 
     public function getId(): int { return $this->id; }
     public function getCredit(): int { return $this->credit; }
-    public function getCoefficient(): int { return $this->coefficient; }
+    public function getCoefficient(): float { return $this->coefficient; }
     public function getUe(): ?string { return $this->ue; }
     public function getMatiereId(): ?int { return $this->matiereId; }
     public function getMatiereNom(): ?string { return $this->matiereNom; }
