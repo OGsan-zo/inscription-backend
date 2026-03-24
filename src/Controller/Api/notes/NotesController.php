@@ -140,7 +140,7 @@ class NotesController extends BaseApiController
     // POST /notes/matieres-coeff
     // -------------------------------------------------------
     #[Route('/matieres-coeff', methods: ['POST'])]
-    // #[TokenRequired(['ChefMention','Admin'])]
+    #[TokenRequired(['ChefMention','Admin'])]
     public function createCoefficient(Request $request): JsonResponse
     {
         try {
@@ -174,7 +174,7 @@ class NotesController extends BaseApiController
     // GET /notes/resultats/{idEtudiant}?idSemestre=
     // -------------------------------------------------------
     #[Route('/resultats/{idEtudiant}', methods: ['GET'])]
-    // #[TokenRequired]
+    #[TokenRequired]
     public function resultats(int $idEtudiant, Request $request): JsonResponse
     {
         try {

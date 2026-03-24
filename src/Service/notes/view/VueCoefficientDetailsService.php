@@ -41,15 +41,16 @@ class VueCoefficientDetailsService extends BaseService
     }
     public function getByProfesseur(Utilisateur $professeur): array
     {
-        $conditions = [
-            new ConditionCriteria('professeurId', $professeur->getId(), '='),
-        ];
+        $conditions = [];
+
+        // ✅ si ce n'est pas admin → filtrer
+        if ($professeur->getRole()->getId() != 1) {
+            $conditions[] = new ConditionCriteria('professeurId', $professeur->getId(), '=');
+        }
+
         $orderCriteria = new OrderCriteria('createdAt', 'DESC');
 
-        
-        $result = $this->search($conditions, $orderCriteria);
-        return $result;
-        
+        return $this->search($conditions, $orderCriteria);
     }
     public function getByChefMention(Utilisateur $chefMention): array
     {
