@@ -45,7 +45,7 @@ class CoefficientsService extends BaseService
         return $this->coefficientRepository->getAll(new OrderCriteria('createdAt', 'ASC'));
     }
 
-    private function buildCoefficient(Matieres $matiere, Mentions $mention, Niveaux $niveau,Utilisateur $professeur, int $coefficient,int $credit): MatiereMentionCoefficient
+    private function buildCoefficient(Matieres $matiere, Mentions $mention, Niveaux $niveau,Utilisateur $professeur,  float $coefficient,int $credit): MatiereMentionCoefficient
     {
         $coeff = new MatiereMentionCoefficient();
         $coeff->setMatiere($matiere);

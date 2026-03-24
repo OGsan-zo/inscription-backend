@@ -16,7 +16,7 @@ use Doctrine\ORM\Mapping as ORM;
 class MatiereMentionCoefficient extends BaseEntite
 {
     #[ORM\Column]
-    private ?int $coefficient = null;
+    private ?float $coefficient = null;
 
     #[ORM\Column(nullable: true)]
     private ?int $credit = null;
@@ -48,12 +48,12 @@ class MatiereMentionCoefficient extends BaseEntite
         $this->notes = new ArrayCollection();
     }
 
-    public function getCoefficient(): ?int
+    public function getCoefficient(): ?float
     {
         return $this->coefficient;
     }
 
-    public function setCoefficient(int $coefficient): static
+    public function setCoefficient(float $coefficient): static
     {
         $this->coefficient = $coefficient;
         return $this;

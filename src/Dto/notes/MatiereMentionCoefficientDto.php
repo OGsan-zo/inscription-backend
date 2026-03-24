@@ -20,7 +20,12 @@ class MatiereMentionCoefficientDto
     
     #[Assert\NotNull(message: "Le coefficient est obligatoire.")]
     #[Assert\Positive(message: "Le coefficient doit être positif.")]
-    public ?int $coefficient = null;
+    #[Assert\Type(type: 'numeric', message: "Le coefficient doit être un nombre.")]
+    #[Assert\Regex(
+        pattern: '/^\d+(\.\d{1,2})?$/',
+        message: "Maximum 2 chiffres après la virgule."
+    )]
+    public ?float $coefficient = null;
     
     #[Assert\NotNull(message: "L'idNiveau est obligatoire.")]
     #[Assert\Positive(message: "L'idNiveau doit être positif.")]
