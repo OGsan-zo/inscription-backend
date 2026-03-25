@@ -92,8 +92,11 @@ class Mentions
 
         return $this;
     }
-    public function setChefMention(?Utilisateur $chefMention): static
+    public function setChefMention(Utilisateur $chefMention): static
     {
+        if ($chefMention->getRole()->getId() !== 4) {
+            throw new \Exception('L\'utilisateur doit être un chef de mention');
+        }
         $this->chefMention = $chefMention;
 
         return $this;
@@ -124,11 +127,15 @@ class Mentions
     }
     public function toArray(): array
     {
+        $chefMention = $this->getChefMention();
         return [
             'id' => $this->getId(),
             'nom' => $this->getNom(),
             'abr' => $this->getAbr(),
-            'chefMentionId' => $this->getChefMention()?->getId(),
+            'chefMentionId' => $chefMention?->getId(),
+            'chefMentionNom' => $chefMention?->getNom(),
+            'chefMentionPrenom' => $chefMention?->getPrenom(),
+
         ];
     }
 }

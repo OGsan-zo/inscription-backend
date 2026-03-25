@@ -256,6 +256,23 @@ class EtudiantsController extends BaseApiController
             return $this->jsonError($e->getMessage(), 400);
         }
     }
+    #[Route('/mentions/{mentionId}/chef', name: 'update_mention_chef', methods: ['PUT'])]
+    #[TokenRequired(['Admin'])]
+    public function updateMentionChef(Request $request, int $mentionId): JsonResponse
+    {
+        try {
+            $data = json_decode($request->getContent(), true);
+            $requiredFields = ['chefId'];
+            $this->validatorService->validateRequiredFields($data, $requiredFields);
+            $chefId = (int)$data['chefId'];
+            $mention = $this->mentionsService->updateChefMention($mentionId, $chefId);
+            return $this->jsonSuccess($mention->toArray());
+
+
+        } catch (\Exception $e) {
+            return $this->jsonError($e->getMessage(), 400);
+        }
+    }
 
     #[Route('/inscrits-par-annee', name: 'etudiants_inscrits_par_annee', methods: ['GET'])]
     #[TokenRequired(['Admin', 'Utilisateur'])]

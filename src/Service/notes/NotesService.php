@@ -82,10 +82,10 @@ class NotesService extends BaseValidationService
         }
         return $result;
     }
-    public function getNoteEtudiant(int $etudiantId, int $semestreId): array
+    public function getNoteEtudiant(int $etudiantId, int $semestreId, bool $isCalculerParCredit = false): array
     {
-
         $result = [];
+
         $noteTypeNormaleDto = new NoteTypeDto();
         $noteTypeNormaleDto->setType("Normale");
 
@@ -94,21 +94,26 @@ class NotesService extends BaseValidationService
 
         $noteTypeFinalDto = new NoteTypeDto();
         $noteTypeFinalDto->setType("Final");
+
         $etudiant = $this->etudiantsService->getOrFailUtilisateur($etudiantId);
         $niveau_etudiants = $this->niveauEtudiantsService->getDernierNiveauParEtudiant($etudiant);
         $mentionId = $niveau_etudiants->getMention()->getId();
-        $listeMatiereCoeffDetail = $this->vueCoefficientDetailsService->getBySemestreIdMentionIdGroupedByUe($semestreId, $mentionId);
-        $noteListeNormales= [];
+
+        $listeMatiereCoeffDetail = $this->vueCoefficientDetailsService
+            ->getBySemestreIdMentionIdGroupedByUe($semestreId, $mentionId);
+
+        $noteListeNormales = [];
         $noteListeRattrappages = [];
-        $noteListeFinals= [];
+        $noteListeFinals = [];
 
         $sommeMoyenneNormale = 0;
         $sommeMoyenneRatrrapage = 0;
         $sommeMoyenneFinal = 0;
 
-        $nbUe =0;
-        foreach($listeMatiereCoeffDetail as $ue)
-        {
+        $nbUe = 0;
+
+        foreach ($listeMatiereCoeffDetail as $ue) {
+
             $noteListeNormaleDto = new NoteListeDto();
             $noteListeNormaleDto->setUe($ue->getUe());
 
@@ -118,8 +123,13 @@ class NotesService extends BaseValidationService
             $noteListeFinal = new NoteListeDto();
             $noteListeFinal->setUe($ue->getUe());
 
-            foreach($ue->getMatiereCoefficients() as $matiereCoeff)
-            {                
+            foreach ($ue->getMatiereCoefficients() as $matiereCoeff) {
+
+                // 🔥 choix dynamique : coefficient ou crédit
+                $poids = $isCalculerParCredit 
+                    ? $matiereCoeff->getCredit() 
+                    : $matiereCoeff->getCoefficient();
+
                 $noteAfficheNormaleDto = new NoteAfficheDto();
                 $noteAfficheNormaleDto->setMatiere($matiereCoeff->getMatiereNom());
                 $noteAfficheNormaleDto->setCoefficient($matiereCoeff->getCoefficient());
@@ -135,63 +145,72 @@ class NotesService extends BaseValidationService
                 $noteAfficheFinalDto->setCoefficient($matiereCoeff->getCoefficient());
                 $noteAfficheFinalDto->setCredit($matiereCoeff->getCredit());
 
-                #Pour avoir le dernier note session normale
-                $dernierNotesNormale = $this->vueNotesMaxService->getByMatiereCoefficientIdEtudiant($etudiantId, $matiereCoeff->getId(),1);
+                // ===== NORMALE =====
+                $dernierNotesNormale = $this->vueNotesMaxService
+                    ->getByMatiereCoefficientIdEtudiant($etudiantId, $matiereCoeff->getId(), 1);
+
                 $noteNormale = $dernierNotesNormale?->getValeur() ?? null;
+
                 $noteAfficheNormaleDto->setNote($noteNormale);
-                $noteAfficheNormaleDto->setCredit($matiereCoeff->getCredit());
-                $noteAfficheNormaleDto->setNoteAvecCoefficient($noteNormale * $matiereCoeff->getCoefficient());
+                $noteAfficheNormaleDto->setNoteAvecCoefficient(
+                    $noteNormale !== null ? $noteNormale * $poids : null
+                );
+
                 $noteListeNormaleDto->ajouterNote($noteAfficheNormaleDto);
-               
-                #Pour note rattrappage
-                $dernierNotesRattrappage = $this->vueNotesMaxService->getByMatiereCoefficientIdEtudiant($etudiantId, $matiereCoeff->getId(),2);
+
+                // ===== RATTRAPAGE =====
+                $dernierNotesRattrappage = $this->vueNotesMaxService
+                    ->getByMatiereCoefficientIdEtudiant($etudiantId, $matiereCoeff->getId(), 2);
+
                 $noteRattrappage = $dernierNotesRattrappage?->getValeur() ?? null;
+
                 $noteAfficheRattrappageDto->setNote($noteRattrappage);
-                $noteAfficheRattrappageDto->setNoteAvecCoefficient($noteRattrappage * $matiereCoeff->getCoefficient());
-                $noteAfficheRattrappageDto->setCredit($matiereCoeff->getCredit());
+                $noteAfficheRattrappageDto->setNoteAvecCoefficient(
+                    $noteRattrappage !== null ? $noteRattrappage * $poids : null
+                );
+
                 $noteListeRattrappage->ajouterNote($noteAfficheRattrappageDto);
 
-                #Pour le note final
-                $noteFinal = max($noteNormale, $noteRattrappage);
-                $noteAfficheFinalDto->setNote($noteFinal);
-                $noteAfficheFinalDto->setNoteAvecCoefficient($noteFinal * $matiereCoeff->getCoefficient());
-                $noteAfficheFinalDto->setCredit($matiereCoeff->getCredit());
-                $noteListeFinal->ajouterNote($noteAfficheFinalDto);
+                // ===== FINAL =====
+                $noteFinal = max($noteNormale ?? 0, $noteRattrappage ?? 0);
 
+                $noteAfficheFinalDto->setNote($noteFinal);
+                $noteAfficheFinalDto->setNoteAvecCoefficient($noteFinal * $poids);
+
+                $noteListeFinal->ajouterNote($noteAfficheFinalDto);
             }
-            $noteListeNormaleDto->calculerSommeCoefficientsNotes();
+
+            // ⚠️ IMPORTANT : adapter aussi cette méthode !
+            $noteListeNormaleDto->calculerSommeCoefficientsNotes($isCalculerParCredit);
             $sommeMoyenneNormale += $noteListeNormaleDto->getMoyenne();
 
-            $noteListeRattrappage->calculerSommeCoefficientsNotes();
+            $noteListeRattrappage->calculerSommeCoefficientsNotes($isCalculerParCredit);
             $sommeMoyenneRatrrapage += $noteListeRattrappage->getMoyenne();
 
-            $noteListeFinal->calculerSommeCoefficientsNotes();
+            $noteListeFinal->calculerSommeCoefficientsNotes($isCalculerParCredit);
             $sommeMoyenneFinal += $noteListeFinal->getMoyenne();
-            
+
             $noteListeNormales[] = $noteListeNormaleDto;
             $noteListeRattrappages[] = $noteListeRattrappage;
             $noteListeFinals[] = $noteListeFinal;
 
-            $nbUe ++;
-            
+            $nbUe++;
         }
-        $noteTypeNormaleDto->setNotesListes($noteListeNormales); 
+
+        $noteTypeNormaleDto->setNotesListes($noteListeNormales);
+        $noteTypeRattrapageDto->setNotesListes($noteListeRattrappages);
+        $noteTypeFinalDto->setNotesListes($noteListeFinals);
+
         if ($nbUe > 0) {
             $noteTypeNormaleDto->setMoyenne($sommeMoyenneNormale / $nbUe);
             $noteTypeRattrapageDto->setMoyenne($sommeMoyenneRatrrapage / $nbUe);
             $noteTypeFinalDto->setMoyenne($sommeMoyenneFinal / $nbUe);
         }
-       
-        $noteTypeRattrapageDto->setNotesListes($noteListeRattrappages);  
-      
-       
-        $noteTypeFinalDto->setNotesListes($noteListeFinals);
 
-      
         $result[] = $noteTypeNormaleDto;
-        $result[] = $noteTypeRattrapageDto;  
+        $result[] = $noteTypeRattrapageDto;
         $result[] = $noteTypeFinalDto;
+
         return $result;
-        
     }
 }

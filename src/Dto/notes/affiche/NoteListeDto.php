@@ -69,29 +69,49 @@ class NoteListeDto
     /**
      * ✅ Méthode sécurisée
      */
-    public function calculerSommeCoefficientsNotes(): void
+    public function calculerSommeCoefficientsNotes(bool $isCalculerParCredit = false): void
     {
         $this->sommeCoefficients = 0;
         $this->sommeNotesAvecCoefficient = 0;
+        $this->sommeCredit = 0;
+        $this->sommeCreditValide = 0;
+        $this->isValid = true;
+
         $nandalo = 0;
+
         foreach ($this->notes as $note) {
-            // 🔒 sécurité contre null ou non initialisé
+
             $valeurNote = $note->getNote() ?? 0;
             $coefficient = $note->getCoefficient() ?? 0;
             $credit = $note->getCredit() ?? 0;
+
+            // 🔥 choix dynamique du poids
+            $poids = $isCalculerParCredit ? $credit : $coefficient;
+
+            // ❌ note éliminatoire
             if ($valeurNote < 6) {
                 $this->isValid = false;
                 $nandalo++;
             }
 
-            $this->sommeCoefficients += $coefficient;
-            $this->sommeNotesAvecCoefficient += $valeurNote * $coefficient;
+            $this->sommeCoefficients += $poids;
+            $this->sommeNotesAvecCoefficient += $valeurNote * $poids;
+
+            // toujours utile pour validation
             $this->sommeCredit += $credit;
         }
-        $this->moyenne = $this->sommeCoefficients > 0 ? $this->sommeNotesAvecCoefficient / $this->sommeCoefficients : 0;
-        if ($nandalo==0 && $this->moyenne>=10) {
+
+        // ✅ moyenne pondérée
+        $this->moyenne = $this->sommeCoefficients > 0
+            ? $this->sommeNotesAvecCoefficient / $this->sommeCoefficients
+            : 0;
+
+        // ✅ validation UE
+        if ($nandalo === 0 && $this->moyenne >= 10) {
             $this->isValid = true;
         }
+
+        // ✅ crédits validés
         if ($this->isValid) {
             $this->sommeCreditValide = $this->sommeCredit;
         }
