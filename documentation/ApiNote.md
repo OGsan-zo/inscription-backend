@@ -190,7 +190,6 @@
         }
     ]
 }
-```
 
 # Pour avoir les matieres coefficient
 
@@ -774,5 +773,111 @@
 {
     "status": "error",
     "message": "Erreur de validation : idMatiere : L'idMatiere est obligatoire. | idMention : L'idMention est obligatoire. | credit : Le credit est obligatoire. | coefficient : Le coefficient est obligatoire. | idNiveau : L'idNiveau est obligatoire. | idProfesseur : L'idProfesseur est obligatoire."
+}
+```
+
+```
+
+# Pour mettre à jour une UE
+
+**Url:** `PUT /notes/ue/{id}`
+
+**Header:** `Content-Type: application/json`
+
+**Authorization:** `eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJ5b3VyLWFwcCIsImF1ZCI6InlvdXItY2xpZW50IiwiaWF0IjoxNzczMjk4MTg2LjE2NjQ4OSwiZXhwIjoxNzczMzAxNzg2LjE2NjQ4OSwiZW1haWwiOiJhZG1pbkBnbWFpbC5jb20iLCJub20iOiJBZG1pbiIsInByZW5vbSI6IkFkbWluIiwiYWRyZXNzZSI6IkFua2F0c28gLCBwb3J0ZSAxMDQiLCJpZCI6MSwicm9sZSI6IkFkbWluIn0.qaMEC_5W3hgEU5fnavlRuzfZFViP22dZ-CPppZRvDjE`
+
+**Role:** `Admin`
+
+**Body:**
+
+```json
+{
+    "name": "Mathématiques Appliquées"
+}
+```
+
+**Response:**
+```json
+{
+    "status": "success",
+    "data": {
+        "name": "Mathématiques Appliquées",
+        "id": 1
+    }
+}
+```
+
+# Pour mettre à jour une matière
+
+**Url:** `PUT /notes/matieres/{id}`
+
+**Header:** `Content-Type: application/json`
+
+**Authorization:** `eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJ5b3VyLWFwcCIsImF1ZCI6InlvdXItY2xpZW50IiwiaWF0IjoxNzczMjk4MTg2LjE2NjQ4OSwiZXhwIjoxNzczMzAxNzg2LjE2NjQ4OSwiZW1haWwiOiJhZG1pbkBnbWFpbC5jb20iLCJub20iOiJBZG1pbiIsInByZW5vbSI6IkFkbWluIiwiYWRyZXNzZSI6IkFua2F0c28gLCBwb3J0ZSAxMDQiLCJpZCI6MSwicm9sZSI6IkFkbWluIn0.qaMEC_5W3hgEU5fnavlRuzfZFViP22dZ-CPppZRvDjE`
+
+**Role:** `Admin`
+
+**Body:**
+
+```json
+{
+    "name": "Algèbre Linéaire",
+    "semestreId": 1,
+    "ueId": 1
+}
+```
+
+**Response:**
+```json
+{
+    "status": "success",
+    "data": {
+        "name": "Algèbre Linéaire",
+        "id": 1,
+        "ue": {
+            "name": "Mathématiques Appliquées",
+            "id": 1
+        },
+        "semestre": {
+            "grade": 1,
+            "name": "Semestre 1",
+            "id": 1
+        }
+    }
+}
+```
+
+# Pour mettre à jour une matière coefficient
+
+**Url:** `PUT /notes/matieres-coeff/{id}`
+
+**Header:** `Content-Type: application/json`
+
+**Authorization:** `eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJ5b3VyLWFwcCIsImF1ZCI6InlvdXItY2xpZW50IiwiaWF0IjoxNzczMjk4MTg2LjE2NjQ4OSwiZXhwIjoxNzczMzAxNzg2LjE2NjQ4OSwiZW1haWwiOiJhZG1pbkBnbWFpbC5jb20iLCJub20iOiJBZG1pbiIsInByZW5vbSI6IkFkbWluIiwiYWRyZXNzZSI6IkFua2F0c28gLCBwb3J0ZSAxMDQiLCJpZCI6MSwicm9sZSI6IkFkbWluIn0.qaMEC_5W3hgEU5fnavlRuzfZFViP22dZ-CPppZRvDjE`
+
+**Role:** `Admin, ChefMention`
+
+**Body:**
+
+```json
+{
+    "idMatiere": 1,
+    "idMention": 1,
+    "idNiveau": 1,
+    "idProfesseur": 1,
+    "credit": 3,
+    "coefficient": 3
+}
+```
+
+**Response:**
+```json
+{
+    "status": "success",
+    "data": {
+        "id": 1,
+        "coefficient": 3,
+        "credit": 3
+    }
 }
 ```
