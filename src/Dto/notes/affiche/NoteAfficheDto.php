@@ -30,7 +30,6 @@ class NoteAfficheDto
     public function setCoefficient(int $coefficient): void
     {
         $this->coefficient = $coefficient;
-        $this->calculerNoteAvecCoefficient(); // auto recalcul
     }
 
     public function getCredit(): int
@@ -52,25 +51,16 @@ class NoteAfficheDto
     {
         // ✅ accepte 0 et null correctement
         $this->note = $note;
-        $this->calculerNoteAvecCoefficient(); // auto recalcul
     }
     
     public function getNoteAvecCoefficient(): float
     {
         return $this->noteAvecCoefficient;
     }
-    public function setNoteAvecCoefficient(?float $noteAvecCoef) : void
+    public function setNoteAvecCoefficient(?float $noteAvecCoef): void
     {
-        $this->noteAvecCoefficient = $noteAvecCoef;
+        $this->noteAvecCoefficient = $noteAvecCoef ?? 0;
     }
     
-    private function calculerNoteAvecCoefficient(): void
-    {
-        if ($this->note === null) {
-            $this->noteAvecCoefficient = 0;
-            return;
-        }
-
-        $this->noteAvecCoefficient = $this->note * $this->coefficient;
-    }
+    
 }

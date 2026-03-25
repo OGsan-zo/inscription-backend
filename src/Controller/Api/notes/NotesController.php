@@ -201,19 +201,35 @@ class NotesController extends BaseApiController
     }
 
     // -------------------------------------------------------
-    // GET /notes/resultats/{idEtudiant}?idSemestre=
+    // 0 si false, 1 si true
+    // GET /notes/resultats/{idEtudiant}?idSemestre=1&isCredit=false 
     // -------------------------------------------------------
     #[Route('/resultats/{idEtudiant}', methods: ['GET'])]
-    #[TokenRequired]
+    // #[TokenRequired]
     public function resultats(int $idEtudiant, Request $request): JsonResponse
     {
         try {
             $idSemestre = $request->query->get('idSemestre');
+            $isCreditParam = $request->query->get('isCredit');
+
             if ($idSemestre === null) {
                 return $this->jsonError("Le paramètre idSemestre est obligatoire.", 400);
             }
-            $data = $this->notesService->getNoteEtudiant($idEtudiant, (int) $idSemestre);
+
+            // ✅ conversion propre en bool
+            $isCredit = filter_var($isCreditParam, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
+
+            // valeur par défaut si null
+            $isCredit = $isCredit ?? false;
+
+            $data = $this->notesService->getNoteEtudiant(
+                $idEtudiant,
+                (int) $idSemestre,
+                $isCredit
+            );
+
             return $this->jsonSuccess($data);
+
         } catch (\Throwable $e) {
             return $this->jsonError($e->getMessage(), 400);
         }

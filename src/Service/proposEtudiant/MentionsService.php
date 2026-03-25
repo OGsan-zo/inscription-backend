@@ -4,15 +4,18 @@ namespace App\Service\proposEtudiant;
 use App\Entity\utilisateurs\Utilisateur;
 use App\Repository\proposEtudiant\MentionsRepository;
 use App\Entity\proposEtudiant\Mentions;
+use App\Service\utilisateurs\UtilisateursService;
 use App\Service\utils\BaseService;
 use Doctrine\ORM\EntityManagerInterface;
 
 class MentionsService extends BaseService
-{   private $mentionRepository;
+{   private  MentionsRepository $mentionRepository;
+    private UtilisateursService $utilisateurService;
 
     public function __construct(
         MentionsRepository $mentionRepository,
-        EntityManagerInterface $em
+        EntityManagerInterface $em,
+        UtilisateursService $utilisateurService
     ) {
         $this->mentionRepository = $mentionRepository;
         parent::__construct($em);
@@ -54,5 +57,13 @@ class MentionsService extends BaseService
     public function getAllIdMentionParChefMention(Utilisateur $utilisateur): array
     {
         return $this->mentionRepository->getAllIdMentionParChefMention($utilisateur);
+    }
+    public function updateChefMention(int $mentionId,int $utilisateurId):Mentions
+    {
+        $mention = $this->getVerifierById($mentionId);
+        $utilisateur = $this->utilisateurService->getUserById($utilisateurId);
+        $mention->setChefMention($utilisateur);
+        $mention = $this->save($mention);
+        return $mention;
     }
 }
