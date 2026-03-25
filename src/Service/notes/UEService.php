@@ -28,4 +28,10 @@ class UEService extends BaseService
         $this->save($ue);
         return $ue;
     }
+    public function updateDto(int $id, UEDto $dto): UE{
+        $ue = $this->getVerifierById($id);
+        $ue->setName($dto->name);
+        $this->save($ue);
+        return $ue;
+    }
 }

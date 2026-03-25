@@ -49,6 +49,19 @@ class MatieresService extends BaseService
             throw $e;
         }
     }
+    public function updateMatiere(int $id, MatiereDto $dto): Matieres
+    {
+        try {
+            $matiere = $this->getVerifierById($id);
+            $matiere->setName($dto->name);
+            $matiere->setSemestre($this->semestresService->getVerifierById($dto->semestreId));
+            $matiere->setUe($this->ueService->getVerifierById($dto->ueId));
+            $this->save($matiere);
+            return $matiere;
+        } catch (\Throwable $e) {
+            throw $e;
+        }
+    }
 
     public function format(Matieres $m): array
     {

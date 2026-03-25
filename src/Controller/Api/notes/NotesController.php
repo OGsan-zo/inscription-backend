@@ -54,6 +54,7 @@ class NotesController extends BaseApiController
     public function createUE(Request $request): JsonResponse
     {
         try {
+
             $dto= $this->deserializeAndValidate($request, UEDto::class);
             $ue = $this->ueService->saveDto($dto);
             $excludedFields = ['createdAt', 'deletedAt'];
@@ -62,6 +63,21 @@ class NotesController extends BaseApiController
             return $this->jsonError($e->getMessage(), $e->getCode() ?: 400);
         }
     }
+    #[Route('/ue/{id}', methods: ['PUT'])]
+    #[TokenRequired(['Admin'])]
+    public function updateUE(int $id, Request $request): JsonResponse
+    {
+        try {
+            
+            $dto= $this->deserializeAndValidate($request, UEDto::class);
+            $ue = $this->ueService->updateDto($id, $dto);
+            $excludedFields = ['createdAt', 'deletedAt'];
+            return $this->jsonSuccess($ue->toArray($excludedFields));
+        } catch (\Throwable $e) {
+            return $this->jsonError($e->getMessage(), $e->getCode() ?: 400);
+        }
+    }
+
 
     #[Route('/semestres', methods: ['GET'])]
     public function semestres(): JsonResponse
@@ -100,6 +116,20 @@ class NotesController extends BaseApiController
             return $this->jsonError($e->getMessage(), $e->getCode() ?: 400);
         }
     }
+    
+    #[Route('/matieres/{id}', methods: ['PUT'])]
+    #[TokenRequired(['Admin'])]
+    public function updateMatiere(int $id, Request $request): JsonResponse
+    {
+        try {
+            $dto= $this->deserializeAndValidate($request, MatiereDto::class);
+            $matiere = $this->matieresService->updateMatiere($id, $dto);
+            return $this->jsonSuccess($this->matieresService->format($matiere), 201);
+        } catch (\Throwable $e) {
+            return $this->jsonError($e->getMessage(), $e->getCode() ?: 400);
+        }
+    }
+    
 
     // -------------------------------------------------------
     // GET /notes/matiere-semestres
@@ -161,7 +191,7 @@ class NotesController extends BaseApiController
     public function updateCoefficient(int $id, Request $request): JsonResponse
     {
         try {
-            $dto   = $this->deserializeAndValidate($request, CoefficientUpdateDto::class);
+            $dto   = $this->deserializeAndValidate($request, MatiereMentionCoefficientDto::class);
             $coeff = $this->coefficientsService->updateCoefficient($id, $dto);
             $excludes = ['createdAt', 'deletedAt'];
             return $this->jsonSuccess($coeff->toArray($excludes));

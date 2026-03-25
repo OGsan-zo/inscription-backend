@@ -45,9 +45,9 @@ class CoefficientsService extends BaseService
         return $this->coefficientRepository->getAll(new OrderCriteria('createdAt', 'ASC'));
     }
 
-    private function buildCoefficient(Matieres $matiere, Mentions $mention, Niveaux $niveau,Utilisateur $professeur,  float $coefficient,int $credit): MatiereMentionCoefficient
+    private function buildCoefficient(Matieres $matiere, Mentions $mention, Niveaux $niveau,Utilisateur $professeur,  float $coefficient,int $credit, ?int $id = null): MatiereMentionCoefficient
     {
-        $coeff = new MatiereMentionCoefficient();
+        $coeff = $id ? $this->getVerifierById($id) : new MatiereMentionCoefficient();
         $coeff->setMatiere($matiere);
         $coeff->setMention($mention);
         $coeff->setCoefficient($coefficient);
@@ -90,22 +90,21 @@ class CoefficientsService extends BaseService
         }
     }
 
-    public function updateCoefficient(int $id, CoefficientUpdateDto $dto): MatiereMentionCoefficient
+    public function updateCoefficient(int $id, MatiereMentionCoefficientDto $dto): MatiereMentionCoefficient
     {
-        $this->em->getConnection()->beginTransaction();
+         $this->em->getConnection()->beginTransaction();
         try {
-            $ancien = $this->getVerifierById($id);
+            $matiere = $this->matieresService->getVerifierById($dto->idMatiere);
+            $mention = $this->mentionsService->getVerifierById($dto->idMention);
+            $niveau = $this->niveauService->getVerifierById($dto->idNiveau);
+            $professeur = $this->utilisateursService->getVerifierById($dto->idProfesseur);
 
-            // Soft delete de l'ancien
-            $this->delete($ancien);
+            $coeff = $this->buildCoefficient($matiere, $mention, $niveau, $professeur, $dto->coefficient, $dto->credit,$id);
 
-            // Création du nouveau avec les mêmes matière + mention
-            $nouveau = $this->buildCoefficient($ancien->getMatiere(), $ancien->getMention(), $ancien->getNiveau(), $ancien->getProfesseur(), $dto->coefficient, $dto->credit);
-
-            $this->em->persist($nouveau);
+            $this->em->persist($coeff);
             $this->em->flush();
             $this->em->getConnection()->commit();
-            return $nouveau;
+            return $coeff;
         } catch (\Throwable $e) {
             $this->em->getConnection()->rollBack();
             throw $e;
