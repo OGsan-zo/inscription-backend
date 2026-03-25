@@ -925,3 +925,30 @@
     "message": "L'utilisateur doit être un chef de mention"
 }
 ```
+
+# Pour avoir la liste des chefs de mention
+
+**Url:** `GET /utilisateur/chefMention`
+
+**Header:** `Content-Type: application/json`
+
+**Authorization:** `Bearer <token>`
+
+**Role:** `Tous (token requis)`
+
+**Response:**
+```json
+{
+    "status": "success",
+    "data": [
+        {
+            "id": 2,
+            "nom": "RAKOTO",
+            "prenom": "Jean",
+            "email": "jean.rakoto@espa.mg",
+            "role": "ChefMention",
+            "status": "Actif"
+        }
+    ]
+}
+```

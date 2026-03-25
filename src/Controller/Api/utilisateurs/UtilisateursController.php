@@ -31,6 +31,18 @@ class UtilisateursController extends BaseApiController
         }
 
     }
+    #[Route('/chefMention', name: 'chef_mention', methods: ['GET'])]
+    public function getChefMention(): JsonResponse
+    {
+        try {
+            $users = $this->utilisateurService->getAllChefMention();
+            $data = $this->utilisateurService->transformerArray($users);
+            return $this->jsonSuccess($data);
+        } catch (\Throwable $e) {
+            return $this->jsonError($e->getMessage(), $e->getCode() ?: 400);
+        }
+    }
+
     #[Route('/professeurChefMention', name: 'professeur_chef_mention', methods: ['GET'])]
     public function getProfesseurChefMention(Request $request): JsonResponse
     {
