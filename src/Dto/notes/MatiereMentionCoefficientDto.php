@@ -6,6 +6,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 class MatiereMentionCoefficientDto
 {
+    
     #[Assert\NotNull(message: "L'idMatiere est obligatoire.")]
     #[Assert\Positive(message: "L'idMatiere doit être positif.")]
     public ?int $idMatiere = null;

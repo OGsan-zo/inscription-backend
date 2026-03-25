@@ -134,7 +134,7 @@ class PaymentService
     /**
      * Insère un nouveau paiement de type 'Ecolage' lié au niveau actuel de l'étudiant.
      */
-    public function addEcolage(Etudiants $etudiant, float $montant, string $reference, \DateTimeInterface $date, UtilisateurEntity $agent): Payments
+    public function addEcolage(Etudiants $etudiant, float $montant, string $reference, \DateTimeInterface $date, Utilisateur $agent): Payments
     {
         $dernierNiveauEtudiant = $this->niveauEtudiantsRepository->getDernierNiveauParEtudiant($etudiant);
         if (!$dernierNiveauEtudiant) {
