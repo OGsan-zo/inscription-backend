@@ -140,7 +140,7 @@ class NotesController extends BaseApiController
     // POST /notes/matieres-coeff
     // -------------------------------------------------------
     #[Route('/matieres-coeff', methods: ['POST'])]
-    #[TokenRequired(['ChefMention','Admin'])]
+    #[TokenRequired(['Admin','ChefMention'])]
     public function createCoefficient(Request $request): JsonResponse
     {
         try {
