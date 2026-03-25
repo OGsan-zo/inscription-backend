@@ -268,7 +268,8 @@ class EtudiantsController extends BaseApiController
             $mention = $this->mentionsService->updateChefMention($mentionId, $chefId);
             return $this->jsonSuccess($mention->toArray());
 
-
+        } catch (\Throwable $e) {
+            return $this->jsonError($e->getMessage(), $e->getCode() ?: 400);
         } catch (\Exception $e) {
             return $this->jsonError($e->getMessage(), 400);
         }

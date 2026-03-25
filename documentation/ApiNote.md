@@ -881,3 +881,47 @@
     }
 }
 ```
+
+# Pour assigner un chef de mention
+
+**Url:** `PUT /etudiants/mentions/{mentionId}/chef`
+
+**Header:** `Content-Type: application/json`
+
+**Authorization:** `eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJ5b3VyLWFwcCIsImF1ZCI6InlvdXItY2xpZW50IiwiaWF0IjoxNzczMjk4MTg2LjE2NjQ4OSwiZXhwIjoxNzczMzAxNzg2LjE2NjQ4OSwiZW1haWwiOiJhZG1pbkBnbWFpbC5jb20iLCJub20iOiJBZG1pbiIsInByZW5vbSI6IkFkbWluIiwiYWRyZXNzZSI6IkFua2F0c28gLCBwb3J0ZSAxMDQiLCJpZCI6MSwicm9sZSI6IkFkbWluIn0.qaMEC_5W3hgEU5fnavlRuzfZFViP22dZ-CPppZRvDjE`
+
+**Role:** `Admin`
+
+**Body:**
+
+```json
+{
+    "chefId": 1
+}
+```
+
+> L'utilisateur désigné doit avoir le rôle `ChefMention` (role id = 4), sinon une erreur est retournée.
+
+**Response:**
+```json
+{
+    "status": "success",
+    "data": {
+        "id": 1,
+        "nom": "BATIMENT ET TRAVAUX PUBLICS",
+        "abr": "BTP",
+        "chefMentionId": 1,
+        "chefMentionNom": "admin",
+        "chefMentionPrenom": "admin"
+    }
+}
+```
+
+### Erreur si l'utilisateur n'est pas ChefMention
+
+```json
+{
+    "status": "error",
+    "message": "L'utilisateur doit être un chef de mention"
+}
+```

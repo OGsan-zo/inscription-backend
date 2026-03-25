@@ -7,6 +7,7 @@ use App\Entity\proposEtudiant\Mentions;
 use App\Service\utilisateurs\UtilisateursService;
 use App\Service\utils\BaseService;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class MentionsService extends BaseService
 {   private  MentionsRepository $mentionRepository;
@@ -18,6 +19,7 @@ class MentionsService extends BaseService
         UtilisateursService $utilisateurService
     ) {
         $this->mentionRepository = $mentionRepository;
+        $this->utilisateurService = $utilisateurService;
         parent::__construct($em);
     }
 
@@ -62,6 +64,10 @@ class MentionsService extends BaseService
     {
         $mention = $this->getVerifierById($mentionId);
         $utilisateur = $this->utilisateurService->getUserById($utilisateurId);
+        if ($utilisateur === null) {
+            throw new NotFoundHttpException("Utilisateur introuvable pour l'ID $utilisateurId.");
+        }
+
         $mention->setChefMention($utilisateur);
         $mention = $this->save($mention);
         return $mention;
