@@ -952,3 +952,128 @@
     ]
 }
 ```
+
+# Pour avoir le dasboard des utilisateurs
+
+**Url:** `GET /utilisateur/dasboard`
+
+**Header:** `Content-Type: application/json`
+
+**Authorization:** `Bearer <token>`
+
+**Role:** `Tous (token requis)`
+
+**Response:**
+```json
+{
+    "status": "success",
+    "data": {
+        "Utilisateur": [
+            {
+                "nom": "Rakotonandrasana",
+                "prenom": "Edinho",
+                "roleNom": "Utilisateur",
+                "id": 3
+            },
+            {
+                "nom": "RAKOTOVAO RADO",
+                "prenom": "Mazavason Firmin",
+                "roleNom": "Utilisateur",
+                "id": 4
+            },
+            {
+                "nom": "ANDRIAMARORANTO",
+                "prenom": "Fenosoa Harivelo",
+                "roleNom": "Utilisateur",
+                "id": 5
+            },
+            {
+                "nom": "NOROSON",
+                "prenom": "Njakarimanana",
+                "roleNom": "Utilisateur",
+                "id": 6
+            },
+            {
+                "nom": "LARISSA",
+                "prenom": "Nomenjanahary",
+                "roleNom": "Utilisateur",
+                "id": 8
+            },
+            {
+                "nom": "RANDRIAMBOAVAHY",
+                "prenom": "Rindraniaina",
+                "roleNom": "Utilisateur",
+                "id": 12
+            },
+            {
+                "nom": "ROVANIAINA ",
+                "prenom": "Jordan",
+                "roleNom": "Utilisateur",
+                "id": 7
+            },
+            {
+                "nom": "Testeur",
+                "prenom": "Testeur",
+                "roleNom": "Utilisateur",
+                "id": 9
+            }
+        ],
+        "Ecolage": [
+            {
+                "nom": "ecolage",
+                "prenom": "ecolage",
+                "roleNom": "Ecolage",
+                "id": 10
+            },
+            {
+                "nom": "RAZAFINTSALAMA",
+                "prenom": "Hantanirina Tahinasoa",
+                "roleNom": "Ecolage",
+                "id": 13
+            },
+            {
+                "nom": "RAZAFINTSALAMA",
+                "prenom": "Hantanirina Tahinasoa",
+                "roleNom": "Ecolage",
+                "id": 11
+            },
+            {
+                "nom": "dode",
+                "prenom": "ecolagedode",
+                "roleNom": "Ecolage",
+                "id": 14
+            },
+            {
+                "nom": "ecolage",
+                "prenom": "ecolage",
+                "roleNom": "Ecolage",
+                "id": 2
+            }
+        ],
+        "Admin": [
+            {
+                "nom": "admin",
+                "prenom": "admin",
+                "roleNom": "Admin",
+                "id": 1
+            }
+        ],
+        "ChefMention": [
+            {
+                "nom": "Chef Mention",
+                "prenom": "Dode",
+                "roleNom": "ChefMention",
+                "id": 15
+            }
+        ],
+        "Professeur": [
+            {
+                "nom": "professeur",
+                "prenom": "prof",
+                "roleNom": "Professeur",
+                "id": 16
+            }
+        ]
+    }
+}
+```

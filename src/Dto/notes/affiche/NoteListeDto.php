@@ -13,6 +13,8 @@ class NoteListeDto
 
     private int $sommeCreditValide = 0;
 
+    private float $sommeNotes = 0;
+
     private float $moyenne = 0; // ✅ initialisé
     private bool $isValid = false; // valeur par défaut
 
@@ -65,6 +67,14 @@ class NoteListeDto
     {
         return $this->moyenne;
     }
+    public function getSommeNotes(): float
+    {
+        return $this->sommeNotes;
+    }
+    public function setSommeNotes(float $sommeNotes): void
+    {
+        $this->sommeNotes = $sommeNotes;
+    }
 
     /**
      * ✅ Méthode sécurisée
@@ -76,6 +86,7 @@ class NoteListeDto
         $this->sommeCredit = 0;
         $this->sommeCreditValide = 0;
         $this->isValid = true;
+        $this->sommeNotes = 0;
 
         $nandalo = 0;
 
@@ -99,6 +110,7 @@ class NoteListeDto
 
             // toujours utile pour validation
             $this->sommeCredit += $credit;
+            $this->sommeNotes += $valeurNote;
         }
 
         // ✅ moyenne pondérée

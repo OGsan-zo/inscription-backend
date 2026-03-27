@@ -149,3 +149,9 @@ ORDER BY n.etudiant_id, n.matiere_mention_coefficient_id, n.type_note_id, n.anne
 --     v.matiere_mention_coefficient_id,
 --     v.type_note_id,
 --     v.valeur DESC;
+
+drop view if exists vue_utilisateur_role;
+create or REPLACE view vue_utilisateur_role as
+select u.id, u.nom, u.prenom,role_id ,r.name as role_nom , date_creation as created_at,u.deleted_at
+from Utilisateur u
+join Role  r on u.role_id = r.id;

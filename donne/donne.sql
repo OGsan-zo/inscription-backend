@@ -13,6 +13,8 @@ INSERT INTO role (id, name) VALUES (5, 'Professeur');
 INSERT INTO Status (id, name) VALUES (1, 'Actif');
 INSERT INTO Status (id, name) VALUES (2, 'Inactif');
 
+
+
 -- INSERT INTO status_etudiants (id, name) VALUES (1, 'Passant');
 -- INSERT INTO status_etudiants (id, name) VALUES (2, 'Redoublant');
 

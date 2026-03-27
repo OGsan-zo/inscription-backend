@@ -44,6 +44,9 @@ class Utilisateur
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $dateCreation = null;
 
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $deletedAt = null;
+
     /**
      * @var Collection<int, Inscrits>
      */
@@ -218,6 +221,16 @@ class Utilisateur
             'role' => $this->getRole()?->getName(),
             'status' => $this->getStatus()?->getName()
         ];
+    }
+    public function getDeletedAt(): ?\DateTimeInterface
+    {
+        return $this->deletedAt;
+    }
+    public function setDeletedAt(?\DateTimeInterface $deletedAt): static
+    {
+        $this->deletedAt = $deletedAt;
+
+        return $this;
     }
     
 }

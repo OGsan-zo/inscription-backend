@@ -5,6 +5,7 @@ namespace App\Controller\Api\utilisateurs;
 
 use App\Controller\Api\utils\BaseApiController;
 use App\Entity\utilisateurs\Utilisateur;
+use App\Service\proposEtudiant\view\VueUtilisateurRolesService;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -13,6 +14,12 @@ use App\Annotation\TokenRequired;
 #[Route('/utilisateur')]
 class UtilisateursController extends BaseApiController
 {
+    private VueUtilisateurRolesService $vueUtilisateurRolesService;
+
+    public function __construct(VueUtilisateurRolesService $vueUtilisateurRolesService)
+    {
+        $this->vueUtilisateurRolesService = $vueUtilisateurRolesService;
+    }
 
     #[Route('', name: 'user', methods: ['GET'])]
     #[TokenRequired(['Admin'])]
@@ -88,7 +95,7 @@ class UtilisateursController extends BaseApiController
 		}        
     }
 
-    #[Route('/{id}', name: 'api_utilisateur_get_one', methods: ['GET'])]
+    #[Route('/{id}', name: 'api_utilisateur_get_one', methods: ['GET'] , requirements: ['id' => '\d+'])] 
     #[TokenRequired(['Admin'])]
     public function getOneUser(int $id): JsonResponse
     {
@@ -168,5 +175,16 @@ class UtilisateursController extends BaseApiController
             'token' => $tokenString
         ];
         return $this->jsonSuccess($data);
+    }
+    #[Route('/dashboard', name: 'dasboard', methods: ['GET'])]
+    // #[TokenRequired(['Admin'])]
+    public function getDasboard(): JsonResponse
+    {
+        try {
+            $data = $this->vueUtilisateurRolesService->getAllRegrouperArray();
+            return $this->jsonSuccess($data);
+        } catch (\Throwable $e) {
+            return $this->jsonError($e->getMessage(), $e->getCode() ?: 400);
+        }
     }
 }

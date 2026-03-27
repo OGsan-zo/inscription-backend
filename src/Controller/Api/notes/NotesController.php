@@ -205,7 +205,7 @@ class NotesController extends BaseApiController
     // GET /notes/resultats/{idEtudiant}?idSemestre=1&isCredit=false 
     // -------------------------------------------------------
     #[Route('/resultats/{idEtudiant}', methods: ['GET'])]
-    #[TokenRequired]
+    // #[TokenRequired]
     public function resultats(int $idEtudiant, Request $request): JsonResponse
     {
         try {
