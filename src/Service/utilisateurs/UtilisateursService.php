@@ -162,5 +162,10 @@ class UtilisateursService extends BaseService
         $roleIds = [5]; // IDs des rôles Admin et Professeur
         return $this->utilisateurRepository->findAllIdsParRole($roleIds);
     }
+
+    public function getAllChefMention(): array
+    {
+        return $this->utilisateurRepository->findAllIdsParRole([4]);
+    }
 }
 
